@@ -29,32 +29,34 @@ void GameDisplay::Run() {
 
     TD.Render(Frame);
 
-    if (M.BlackScore < 10)
-      // One's
-      BigNumber::Render(Frame, 0, M.BlackScore % 10, /*xo=*/10, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
-    else if (10 <= M.BlackScore && M.BlackScore < 100) {
-      // Ten's
-      BigNumber::Render(Frame, 0, (M.BlackScore / 10) % 10, /*xo=*/0, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
+    if (M.State != GameModel::WallClock) {
+      if (M.BlackScore < 10)
+        // One's
+        BigNumber::Render(Frame, 0, M.BlackScore % 10, /*xo=*/10, /*yo=*/1,
+                          BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
+      else if (10 <= M.BlackScore && M.BlackScore < 100) {
+        // Ten's
+        BigNumber::Render(Frame, 0, (M.BlackScore / 10) % 10, /*xo=*/0, /*yo=*/1,
+                          BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
 
-      // One's
-      BigNumber::Render(Frame, 0, M.BlackScore % 10, /*xo=*/17, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
-    }
+        // One's
+        BigNumber::Render(Frame, 0, M.BlackScore % 10, /*xo=*/17, /*yo=*/1,
+                          BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
+      }
 
-    if (M.WhiteScore < 10)
-      // One's
-      BigNumber::Render(Frame, 2, M.WhiteScore % 10, /*xo=*/10, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
-    else if (10 <= M.WhiteScore && M.WhiteScore < 100) {
-      // Ten's
-      BigNumber::Render(Frame, 2, (M.WhiteScore / 10) % 10, /*xo=*/0, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
+      if (M.WhiteScore < 10)
+        // One's
+        BigNumber::Render(Frame, 2, M.WhiteScore % 10, /*xo=*/10, /*yo=*/1,
+                          BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
+      else if (10 <= M.WhiteScore && M.WhiteScore < 100) {
+        // Ten's
+        BigNumber::Render(Frame, 2, (M.WhiteScore / 10) % 10, /*xo=*/0, /*yo=*/1,
+                          BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
 
-      // One's
-      BigNumber::Render(Frame, 2, M.WhiteScore % 10, /*xo=*/17, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
+        // One's
+        BigNumber::Render(Frame, 2, M.WhiteScore % 10, /*xo=*/17, /*yo=*/1,
+                          BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
+      }
     }
 
     Frame = Mtx->SwapOnVSync(Frame);
