@@ -137,10 +137,10 @@ std::string XBeeSyncPeer::addr() const {
   return "<nyi>";
 }
 
-const char *XBeeSyncServer::XBeeKind          = "xbee2";
+const char *XBeeSyncServer::XBeeKind          = "xbee1";
 const char *XBeeSyncServer::XBeeSerialConsole = "/dev/ttyAMA0";
 const int   XBeeSyncServer::XBeeBaudRate      = 9600;
-const char *XBeeSyncClient::XBeeKind          = "xbee2";
+const char *XBeeSyncClient::XBeeKind          = "xbee1";
 const char *XBeeSyncClient::XBeeSerialConsole = "/dev/ttyAMA0";
 const int   XBeeSyncClient::XBeeBaudRate      = 9600;
 
