@@ -27,8 +27,8 @@ public:
 
 class GameDisplay : public ThreadedCanvasManipulator {
 public:
-    GameDisplay(Canvas *Canvas, GameModel *Model)
-        : ThreadedCanvasManipulator(Canvas) {}
+    GameDisplay(RGBMatrix *M, GameModel *Model)
+        : ThreadedCanvasManipulator(M), M(M) {}
 
     void Run() {
       Font F;
@@ -41,16 +41,20 @@ public:
       Color Yellow(255, 255, 0);
       Color Black(0, 0, 0);
       int v = 0;
+      FrameCanvas *Frame = M->CreateFrameCanvas();
       while (running()) {
         //DrawText(canvas(), F, -2, F.baseline()-2, Yellow, "123456");
         v++;
         if (v>=999) v = 0;
-        BigNumber::Render(canvas(), 0, v / 100, Blue, &Black);
-        BigNumber::Render(canvas(), 1, v % 100, White, &Black);
-        SecondsRing::Render(canvas(), 0, v, Yellow, &Black);
+        BigNumber::Render(Frame, 0, v / 100, Blue, &Black);
+        BigNumber::Render(Frame, 1, v % 100, White, &Black);
+        SecondsRing::Render(Frame, 0, v, Yellow, &Black);
+        Frame = M->SwapOnVSync(Frame);
         usleep(1000000);
       }
     }
+private:
+    RGBMatrix *M;
 };
 
 int main(int argc, char *argv[]) {
