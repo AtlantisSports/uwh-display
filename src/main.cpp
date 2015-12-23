@@ -1,4 +1,5 @@
 #include "BigNumber.h"
+#include "SecondsRing.h"
 
 #include "graphics.h"
 #include "gpio.h"
@@ -36,17 +37,18 @@ public:
         exit(-1);
       }
       Color Blue(0, 0, 255);
-      Color White(255, 255, 255);
+      Color White(200, 200, 200);
       Color Yellow(255, 255, 0);
       Color Black(0, 0, 0);
       int v = 0;
       while (running()) {
         //DrawText(canvas(), F, -2, F.baseline()-2, Yellow, "123456");
         v++;
-        if (v>=99) v = 0;
-        BigNumber::Render(canvas(), 0, v, Blue, &Black);
-        BigNumber::Render(canvas(), 1, v+1, White, &Black);
-        usleep(100000);
+        if (v>=999) v = 0;
+        BigNumber::Render(canvas(), 0, v / 100, Blue, &Black);
+        BigNumber::Render(canvas(), 1, v % 100, White, &Black);
+        SecondsRing::Render(canvas(), 0, v, Yellow, &Black);
+        usleep(1000000);
       }
     }
 };
