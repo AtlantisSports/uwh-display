@@ -1,7 +1,7 @@
 
 VERBOSE ?= 0
 
-CXX_FLAGS=-O3 -std=c++11
+CXX_FLAGS=-O0 -g -std=c++11
 
 RGB_INCDIR=matrix/include
 RGB_LIBDIR=matrix/lib
