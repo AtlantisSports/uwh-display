@@ -1,7 +1,7 @@
 
 VERBOSE ?= 0
 
-CXX_FLAGS=-O3
+CXX_FLAGS=-O3 -std=c++11
 
 RGB_INCDIR=matrix/include
 RGB_LIBDIR=matrix/lib
@@ -46,5 +46,5 @@ bin/uwh-display: $(OBJ_FILES) $(RGB_LIBRARY)
 obj/%.o: src/%.cpp
 	$(call colorecho, "Compiling: $@")
 	$(V)mkdir -p obj
-	$(V)$(CXX) $(CXX_FLAGS) -c -o $@ $<
+	$(V)$(CXX) -I$(RGB_INCDIR) $(CXX_FLAGS) -c -o $@ $<
 
