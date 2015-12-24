@@ -1,5 +1,6 @@
 #include "BigNumber.h"
 #include "SecondsRing.h"
+#include "TimeDisplay.h"
 
 #include "graphics.h"
 #include "gpio.h"
@@ -47,9 +48,7 @@ public:
         //DrawText(canvas(), F, -2, F.baseline()-2, Yellow, "123456");
         v++;
         if (v>=999) v = 0;
-        BigNumber::Render(Frame, 0, v / 100, Blue, &Black);
         BigNumber::Render(Frame, 1, v % 100, White, &Black);
-        SecondsRing::Render(Frame, 0, time(nullptr), Yellow, &Black);
         Frame = M->SwapOnVSync(Frame);
         usleep(100000);
       }
@@ -73,6 +72,9 @@ int main(int argc, char *argv[]) {
 
     auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix, &Model));
     Display->Start();
+
+    auto Time = std::unique_ptr<TimeDisplay>(new TimeDisplay(&*Matrix, 0));
+    Time->Start();
 
     sleep(INT_MAX);
 }

@@ -13,18 +13,21 @@ public:
   static void RenderHalf(rgb_matrix::Canvas *Canvas,
                          unsigned Display,
                          unsigned Value,
+                         unsigned X, unsigned Y,
                          const rgb_matrix::Color &FG,
                          const rgb_matrix::Color *BG = nullptr);
 
   static void RenderHalfSingle(rgb_matrix::Canvas *Canvas,
                                unsigned Display,
                                unsigned Value,
+                               unsigned X, unsigned Y,
                                const rgb_matrix::Color &FG,
                                const rgb_matrix::Color *BG = nullptr);
 
   static void RenderHalfDouble(rgb_matrix::Canvas *Canvas,
                                unsigned Display,
                                unsigned Value,
+                               unsigned X, unsigned Y,
                                const rgb_matrix::Color &FG,
                                const rgb_matrix::Color *BG = nullptr);
 
