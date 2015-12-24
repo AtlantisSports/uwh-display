@@ -62,7 +62,7 @@ void TimeDisplay::Render(Canvas *C) {
   C->SetPixel(xoffs + 6, 26, ColonColor.r, ColonColor.g, ColonColor.b);
   C->SetPixel(xoffs + 7, 26, ColonColor.r, ColonColor.g, ColonColor.b);
 
-  SecondsRing::Render(C, DisplayNum, Now, RingColor, &Black);
+  SecondsRing::Render(C, DisplayNum, 120 - (Now % 120), RingColor, &Black);
 }
 
 #endif
