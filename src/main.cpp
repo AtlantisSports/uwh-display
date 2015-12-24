@@ -13,6 +13,7 @@
 #include <iostream>
 #include <memory>
 #include <unistd.h>
+#include <ctime>
 
 using namespace rgb_matrix;
 using namespace uwhtimer;
@@ -48,9 +49,9 @@ public:
         if (v>=999) v = 0;
         BigNumber::Render(Frame, 0, v / 100, Blue, &Black);
         BigNumber::Render(Frame, 1, v % 100, White, &Black);
-        SecondsRing::Render(Frame, 0, v, Yellow, &Black);
+        SecondsRing::Render(Frame, 0, time(nullptr), Yellow, &Black);
         Frame = M->SwapOnVSync(Frame);
-        usleep(1000000);
+        usleep(100000);
       }
     }
 private:
