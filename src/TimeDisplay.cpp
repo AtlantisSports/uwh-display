@@ -24,17 +24,23 @@ void TimeDisplay::Render(Canvas *C) {
   Color Black(0, 0, 0);
 
   unsigned Now = time(nullptr);
-  unsigned Secs = Now % 60;
-  unsigned Tens = Secs / 10;
-  unsigned Ones = Secs % 10;
+
+  // Note that we show 1h30m as 90m here:
+  unsigned Mins = (Now / 60) % 100;
+  unsigned MTens = Mins / 10;
+  unsigned MOnes = Mins % 10;
 
   // Minutes
-  BigNumber::RenderHalfSingle(C, DisplayNum, Tens, 1, 2, Green, &Black);
-  BigNumber::RenderHalfSingle(C, DisplayNum, Ones, 15, 2, Green, &Black);
+  BigNumber::RenderHalfSingle(C, DisplayNum, MTens, 1, 2, Green, &Black);
+  BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 15, 2, Green, &Black);
+
+  unsigned Secs = Now % 60;
+  unsigned STens = Secs / 10;
+  unsigned SOnes = Secs % 10;
 
   // Seconds
-  BigNumber::RenderQuarterSingle(C, DisplayNum, Tens, 8, 20, Green, &Black);
-  BigNumber::RenderQuarterSingle(C, DisplayNum, Ones, 15, 20, Green, &Black);
+  BigNumber::RenderQuarterSingle(C, DisplayNum, STens, 8, 20, Green, &Black);
+  BigNumber::RenderQuarterSingle(C, DisplayNum, SOnes, 15, 20, Green, &Black);
 
   // Top Colon
   C->SetPixel(6, 22, Green.r, Green.g, Green.b);
