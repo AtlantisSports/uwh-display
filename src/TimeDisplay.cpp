@@ -7,10 +7,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
-#ifndef TIMEDISPLAY_H
-#define TIMEDISPLAY_H
-
 #include "TimeDisplay.h"
 
 #include "SecondsRing.h"
@@ -69,5 +65,3 @@ void TimeDisplay::Render(Canvas *C) {
 
   SecondsRing::Render(C, DisplayNum, 120 - (Now % 120), RingColor, &Black);
 }
-
-#endif

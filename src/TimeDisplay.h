@@ -15,8 +15,6 @@
 
 #include <graphics.h>
 
-#include <ctime>
-
 namespace rgb_matrix {
 class Canvas;
 }
@@ -44,3 +42,4 @@ private:
 }
 
 #endif
+
