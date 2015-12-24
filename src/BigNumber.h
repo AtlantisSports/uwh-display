@@ -10,6 +10,27 @@ namespace uwhtimer {
 
 class BigNumber {
 public:
+  static void RenderQuarter(rgb_matrix::Canvas *Canvas,
+                         unsigned Display,
+                         unsigned Value,
+                         unsigned X, unsigned Y,
+                         const rgb_matrix::Color &FG,
+                         const rgb_matrix::Color *BG = nullptr);
+
+  static void RenderQuarterSingle(rgb_matrix::Canvas *Canvas,
+                               unsigned Display,
+                               unsigned Value,
+                               unsigned X, unsigned Y,
+                               const rgb_matrix::Color &FG,
+                               const rgb_matrix::Color *BG = nullptr);
+
+  static void RenderQuarterDouble(rgb_matrix::Canvas *Canvas,
+                               unsigned Display,
+                               unsigned Value,
+                               unsigned X, unsigned Y,
+                               const rgb_matrix::Color &FG,
+                               const rgb_matrix::Color *BG = nullptr);
+
   static void RenderHalf(rgb_matrix::Canvas *Canvas,
                          unsigned Display,
                          unsigned Value,

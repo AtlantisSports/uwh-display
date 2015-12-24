@@ -30,8 +30,15 @@ void TimeDisplay::Run() {
     unsigned Secs = Now % 60;
     unsigned Tens = Secs / 10;
     unsigned Ones = Secs % 10;
+
+    // Minutes
     BigNumber::RenderHalfSingle(Frame, DisplayNum, Tens, 1, 2, Green, &Black);
     BigNumber::RenderHalfSingle(Frame, DisplayNum, Ones, 15, 2, Green, &Black);
+
+    // Seconds
+    BigNumber::RenderQuarterSingle(Frame, DisplayNum, Tens, 8, 18, Green, &Black);
+    BigNumber::RenderQuarterSingle(Frame, DisplayNum, Ones, 15, 18, Green, &Black);
+
     SecondsRing::Render(Frame, DisplayNum, Secs, Yellow, &Black);
     Frame = M->SwapOnVSync(Frame);
   }

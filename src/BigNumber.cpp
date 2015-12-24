@@ -479,6 +479,20 @@ void BigNumber::RenderHalf(Canvas *Canvas,
     RenderHalfDouble(Canvas, Display, X, Y, Value, FG, BG);
 }
 
+void BigNumber::RenderQuarter(Canvas *Canvas,
+                              unsigned Display,
+                              unsigned Value,
+                              unsigned X, unsigned Y,
+                              const Color &FG,
+                              const Color *BG) {
+  assert(Value < 100 && "Value out of range");
+
+  if (Value < 10)
+    RenderQuarterSingle(Canvas, Display, X, Y, Value, FG, BG);
+  else if (Value < 100)
+    RenderQuarterDouble(Canvas, Display, X, Y, Value, FG, BG);
+}
+
 void BigNumber::RenderSingle(Canvas *Canvas,
                              unsigned Display,
                              unsigned Value,
@@ -534,6 +548,27 @@ void BigNumber::RenderHalfSingle(Canvas *Canvas,
     }
   }
 }
+
+void BigNumber::RenderQuarterSingle(Canvas *Canvas,
+                                    unsigned Display,
+                                    unsigned Value,
+                                    unsigned X, unsigned Y,
+                                    const Color &FG,
+                                    const Color *BG) {
+  assert(Value < 10 && "Value out of range");
+  unsigned xoffs = Display * 32 + X;
+  unsigned yoffs = Y;
+  for (unsigned y = 0; y < 8; y++) {
+    for (unsigned x = 0; x < 8; x++) {
+      if (Numbers32x32[Value][x * 2 + y * 2 * 16]) {
+        Canvas->SetPixel(xoffs + x, yoffs + y, FG.r, FG.g, FG.b);
+      } else if (BG) {
+        Canvas->SetPixel(xoffs + x, yoffs + y, BG->r, BG->g, BG->b);
+      }
+    }
+  }
+}
+
 
 void BigNumber::RenderDouble(Canvas *Canvas,
                              unsigned Display,
@@ -641,3 +676,38 @@ void BigNumber::RenderHalfDouble(Canvas *Canvas,
   }
 }
 
+void BigNumber::RenderQuarterDouble(Canvas *Canvas,
+                                    unsigned Display,
+                                    unsigned Value,
+                                    unsigned X, unsigned Y,
+                                    const Color &FG,
+                                    const Color *BG) {
+  assert(Value < 100 && "Value out of range");
+
+  unsigned Tens = Value / 10;
+  unsigned Ones = Value % 10;
+
+  unsigned xoffs = Display * 32 + X;
+  unsigned yoffs = Y;
+
+  for (unsigned y = 0; y < 8; y++) {
+    for (unsigned x = 0; x < 4; x++) {
+      if (Tens != 0 && Numbers16x32[Tens][x * 2 + y * 2 * 8]) {
+        Canvas->SetPixel(xoffs + x, yoffs + y, FG.r, FG.g, FG.b);
+      } else if (BG) {
+        Canvas->SetPixel(xoffs + x, yoffs + y, BG->r, BG->g, BG->b);
+      }
+    }
+  }
+
+  xoffs += 4;
+  for (unsigned y = 0; y < 8; y++) {
+    for (unsigned x = 0; x < 4; x++) {
+      if (Numbers16x32[Ones][x * 2 + y * 2 * 8]) {
+        Canvas->SetPixel(xoffs + x, yoffs + y, FG.r, FG.g, FG.b);
+      } else if (BG) {
+        Canvas->SetPixel(xoffs + x, yoffs + y, BG->r, BG->g, BG->b);
+      }
+    }
+  }
+}
