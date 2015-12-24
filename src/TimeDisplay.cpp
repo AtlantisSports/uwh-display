@@ -4,26 +4,28 @@
 #include "TimeDisplay.h"
 
 #include "SecondsRing.h"
+#include "GameModel.h"
+#include "BigNumber.h"
 
 #include <graphics.h>
-#include <gpio.h>
-#include <led-matrix.h>
-#include <threaded-canvas-manipulator.h>
 
 #include <ctime>
 
 using namespace rgb_matrix;
 using namespace uwhtimer;
 
-TimeDisplay::TimeDisplay(unsigned DisplayNum)
-  : DisplayNum(DisplayNum) {}
+const Color TimeDisplay::SecondsColor = Color(  0, 255,   0);
+const Color TimeDisplay::MinutesColor = Color(  0, 255,   0);
+const Color TimeDisplay::ColonColor   = Color(  0, 255,   0);
+const Color TimeDisplay::RingColor    = Color(255, 255,   0);
 
 void TimeDisplay::Render(Canvas *C) {
   Color Yellow(255, 255, 0);
   Color Green(0, 255, 0);
   Color Black(0, 0, 0);
 
-  unsigned Now = time(nullptr);
+  GameModel *Model = Mgr.getModel();
+  unsigned Now = Model->GameClockSecs;
 
   // Note that we show 1h30m as 90m here:
   unsigned Mins = (Now / 60) % 100;
@@ -32,10 +34,10 @@ void TimeDisplay::Render(Canvas *C) {
 
   // Minutes
   if (MTens) {
-    BigNumber::RenderHalfSingle(C, DisplayNum, MTens, 1, 2, Green, &Black);
-    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 15, 2, Green, &Black);
+    BigNumber::RenderHalfSingle(C, DisplayNum, MTens, 1, 2, MinutesColor, &Black);
+    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 15, 2, MinutesColor, &Black);
   } else {
-    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 8, 2, Green, &Black);
+    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 8, 2, MinutesColor, &Black);
   }
 
   unsigned Secs = Now % 60;
@@ -43,22 +45,24 @@ void TimeDisplay::Render(Canvas *C) {
   unsigned SOnes = Secs % 10;
 
   // Seconds
-  BigNumber::RenderQuarterSingle(C, DisplayNum, STens, 8, 20, Green, &Black);
-  BigNumber::RenderQuarterSingle(C, DisplayNum, SOnes, 15, 20, Green, &Black);
+  BigNumber::RenderQuarterSingle(C, DisplayNum, STens, 8, 20, SecondsColor, &Black);
+  BigNumber::RenderQuarterSingle(C, DisplayNum, SOnes, 15, 20, SecondsColor, &Black);
+
+  unsigned xoffs = DisplayNum * 32;
 
   // Top Colon
-  C->SetPixel(6, 22, Green.r, Green.g, Green.b);
-  C->SetPixel(7, 22, Green.r, Green.g, Green.b);
-  C->SetPixel(6, 23, Green.r, Green.g, Green.b);
-  C->SetPixel(7, 23, Green.r, Green.g, Green.b);
+  C->SetPixel(xoffs + 6, 22, ColonColor.r, ColonColor.g, ColonColor.b);
+  C->SetPixel(xoffs + 7, 22, ColonColor.r, ColonColor.g, ColonColor.b);
+  C->SetPixel(xoffs + 6, 23, ColonColor.r, ColonColor.g, ColonColor.b);
+  C->SetPixel(xoffs + 7, 23, ColonColor.r, ColonColor.g, ColonColor.b);
 
   // Bottom Colon
-  C->SetPixel(6, 25, Green.r, Green.g, Green.b);
-  C->SetPixel(7, 25, Green.r, Green.g, Green.b);
-  C->SetPixel(6, 26, Green.r, Green.g, Green.b);
-  C->SetPixel(7, 26, Green.r, Green.g, Green.b);
+  C->SetPixel(xoffs + 6, 25, ColonColor.r, ColonColor.g, ColonColor.b);
+  C->SetPixel(xoffs + 7, 25, ColonColor.r, ColonColor.g, ColonColor.b);
+  C->SetPixel(xoffs + 6, 26, ColonColor.r, ColonColor.g, ColonColor.b);
+  C->SetPixel(xoffs + 7, 26, ColonColor.r, ColonColor.g, ColonColor.b);
 
-  SecondsRing::Render(C, DisplayNum, Now, Yellow, &Black);
+  SecondsRing::Render(C, DisplayNum, Now, RingColor, &Black);
 }
 
 #endif

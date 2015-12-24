@@ -1,4 +1,5 @@
 #include "BigNumber.h"
+#include "GameModel.h"
 #include "SecondsRing.h"
 #include "TimeDisplay.h"
 
@@ -19,61 +20,47 @@
 using namespace rgb_matrix;
 using namespace uwhtimer;
 
-class GameModel {
-public:
-    unsigned BlackScore;
-    unsigned WhiteScore;
-    unsigned GameClockMins;
-    unsigned GameClockSecs;
-};
-
 class GameDisplay : public ThreadedCanvasManipulator {
 public:
-    GameDisplay(RGBMatrix *M, GameModel *Model)
-        : ThreadedCanvasManipulator(M)
-        , M(M)
-        , TD(0) {}
+  GameDisplay(RGBMatrix *Mtx)
+    : ThreadedCanvasManipulator(Mtx)
+    , Mtx(Mtx)
+    , Mgr()
+    , TD(1, Mgr)
+  {}
 
-    void Run() {
-      Font F;
-      if (!F.LoadFont("matrix/fonts/9x18.bdf")) {
-        std::cerr << "Error: couldn't load font\n";
-        exit(-1);
-      }
-      Color Blue(0, 0, 255);
-      Color White(200, 200, 200);
-      Color Yellow(255, 255, 0);
-      Color Black(0, 0, 0);
-      int v = 0;
-      FrameCanvas *Frame = M->CreateFrameCanvas();
-      while (running()) {
-        //DrawText(canvas(), F, -2, F.baseline()-2, Yellow, "123456");
-        v++;
-        BigNumber::Render(Frame, 1, (v / 10) % 100, White, &Black);
-        TD.Render(Frame);
-        Frame = M->SwapOnVSync(Frame);
-      }
+  void Run() {
+    Color Blue(0, 0, 255);
+    Color White(200, 200, 200);
+    Color Black(0, 0, 0);
+    FrameCanvas *Frame = Mtx->CreateFrameCanvas();
+    while (running()) {
+      GameModel *Model = Mgr.getModel();
+      BigNumber::Render(Frame, 0, Model->BlackScore, Blue, &Black);
+      TD.Render(Frame);
+      BigNumber::Render(Frame, 2, Model->WhiteScore, White, &Black);
+      Frame = Mtx->SwapOnVSync(Frame);
     }
+  }
 private:
-    RGBMatrix *M;
-    TimeDisplay TD;
+  RGBMatrix *Mtx;
+  GameModelManager Mgr;
+  TimeDisplay TD;
 };
 
 int main(int argc, char *argv[]) {
-    GPIO IO;
+  GPIO IO;
 
-    if (!IO.Init()) {
-        std::cerr << "Error: Could not init GPIO. Try again with 'sudo'?\n";
-        exit(-1);
-    }
+  if (!IO.Init()) {
+      std::cerr << "Error: Could not init GPIO. Try again with 'sudo'?\n";
+      exit(-1);
+  }
 
-    auto Matrix = std::unique_ptr<RGBMatrix>(new RGBMatrix(&IO, 32, 2, 1));
-    Matrix->SetPWMBits(4);
+  auto Matrix = std::unique_ptr<RGBMatrix>(new RGBMatrix(&IO, 32, 3, 1));
+  Matrix->SetPWMBits(4);
 
-    GameModel Model;
+  auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
+  Display->Start();
 
-    auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix, &Model));
-    Display->Start();
-
-    sleep(INT_MAX);
+  sleep(INT_MAX);
 }
