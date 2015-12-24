@@ -15,45 +15,40 @@
 using namespace rgb_matrix;
 using namespace uwhtimer;
 
-TimeDisplay::TimeDisplay(RGBMatrix *M, unsigned DisplayNum)
-  : ThreadedCanvasManipulator(M)
-  , M(M)
-  , DisplayNum(DisplayNum) {}
+TimeDisplay::TimeDisplay(unsigned DisplayNum)
+  : DisplayNum(DisplayNum) {}
 
-void TimeDisplay::Run() {
+void TimeDisplay::Render(Canvas *C) {
   Color Yellow(255, 255, 0);
   Color Green(0, 255, 0);
   Color Black(0, 0, 0);
-  FrameCanvas *Frame = M->CreateFrameCanvas();
-  while (running()) {
-    unsigned Now = time(nullptr);
-    unsigned Secs = Now % 60;
-    unsigned Tens = Secs / 10;
-    unsigned Ones = Secs % 10;
 
-    // Minutes
-    BigNumber::RenderHalfSingle(Frame, DisplayNum, Tens, 1, 2, Green, &Black);
-    BigNumber::RenderHalfSingle(Frame, DisplayNum, Ones, 15, 2, Green, &Black);
+  unsigned Now = time(nullptr);
+  unsigned Secs = Now % 60;
+  unsigned Tens = Secs / 10;
+  unsigned Ones = Secs % 10;
 
-    // Seconds
-    BigNumber::RenderQuarterSingle(Frame, DisplayNum, Tens, 8, 18, Green, &Black);
-    BigNumber::RenderQuarterSingle(Frame, DisplayNum, Ones, 15, 18, Green, &Black);
+  // Minutes
+  BigNumber::RenderHalfSingle(C, DisplayNum, Tens, 1, 2, Green, &Black);
+  BigNumber::RenderHalfSingle(C, DisplayNum, Ones, 15, 2, Green, &Black);
 
-    // Top Colon
-    Frame->SetPixel(7, 20, Green.r, Green.g, Green.b);
-    Frame->SetPixel(8, 20, Green.r, Green.g, Green.b);
-    Frame->SetPixel(7, 21, Green.r, Green.g, Green.b);
-    Frame->SetPixel(8, 21, Green.r, Green.g, Green.b);
+  // Seconds
+  BigNumber::RenderQuarterSingle(C, DisplayNum, Tens, 8, 20, Green, &Black);
+  BigNumber::RenderQuarterSingle(C, DisplayNum, Ones, 15, 20, Green, &Black);
 
-    // Bottom Colon
-    Frame->SetPixel(7, 23, Green.r, Green.g, Green.b);
-    Frame->SetPixel(8, 23, Green.r, Green.g, Green.b);
-    Frame->SetPixel(7, 24, Green.r, Green.g, Green.b);
-    Frame->SetPixel(8, 24, Green.r, Green.g, Green.b);
+  // Top Colon
+  C->SetPixel(6, 22, Green.r, Green.g, Green.b);
+  C->SetPixel(7, 22, Green.r, Green.g, Green.b);
+  C->SetPixel(6, 23, Green.r, Green.g, Green.b);
+  C->SetPixel(7, 23, Green.r, Green.g, Green.b);
 
-    SecondsRing::Render(Frame, DisplayNum, Now, Yellow, &Black);
-    Frame = M->SwapOnVSync(Frame);
-  }
+  // Bottom Colon
+  C->SetPixel(6, 25, Green.r, Green.g, Green.b);
+  C->SetPixel(7, 25, Green.r, Green.g, Green.b);
+  C->SetPixel(6, 26, Green.r, Green.g, Green.b);
+  C->SetPixel(7, 26, Green.r, Green.g, Green.b);
+
+  SecondsRing::Render(C, DisplayNum, Now, Yellow, &Black);
 }
 
 #endif

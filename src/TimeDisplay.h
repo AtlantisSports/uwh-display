@@ -1,4 +1,5 @@
 #include "BigNumber.h"
+#include "RenderElement.h"
 
 #include "graphics.h"
 #include "gpio.h"
@@ -10,11 +11,10 @@
 using namespace rgb_matrix;
 using namespace uwhtimer;
 
-class TimeDisplay : public ThreadedCanvasManipulator {
+class TimeDisplay : public RenderElement {
 public:
-    TimeDisplay(RGBMatrix *M, unsigned DisplayNum);
-    void Run();
+    TimeDisplay(unsigned DisplayNum);
+    void Render(rgb_matrix::Canvas *C) override;
 private:
-    RGBMatrix *M;
     unsigned DisplayNum;
 };

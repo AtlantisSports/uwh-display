@@ -30,7 +30,9 @@ public:
 class GameDisplay : public ThreadedCanvasManipulator {
 public:
     GameDisplay(RGBMatrix *M, GameModel *Model)
-        : ThreadedCanvasManipulator(M), M(M) {}
+        : ThreadedCanvasManipulator(M)
+        , M(M)
+        , TD(0) {}
 
     void Run() {
       Font F;
@@ -47,14 +49,14 @@ public:
       while (running()) {
         //DrawText(canvas(), F, -2, F.baseline()-2, Yellow, "123456");
         v++;
-        if (v>=999) v = 0;
-        BigNumber::Render(Frame, 1, v % 100, White, &Black);
+        BigNumber::Render(Frame, 1, (v / 10) % 100, White, &Black);
+        TD.Render(Frame);
         Frame = M->SwapOnVSync(Frame);
-        usleep(100000);
       }
     }
 private:
     RGBMatrix *M;
+    TimeDisplay TD;
 };
 
 int main(int argc, char *argv[]) {
@@ -72,9 +74,6 @@ int main(int argc, char *argv[]) {
 
     auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix, &Model));
     Display->Start();
-
-    auto Time = std::unique_ptr<TimeDisplay>(new TimeDisplay(&*Matrix, 0));
-    Time->Start();
 
     sleep(INT_MAX);
 }
