@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
   }
 
   auto Matrix = std::unique_ptr<RGBMatrix>(new RGBMatrix(&IO, 32, 3, 1));
-  Matrix->SetPWMBits(4);
+  Matrix->SetPWMBits(11);
 
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
