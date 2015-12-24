@@ -21,10 +21,6 @@ using namespace rgb_matrix;
 using namespace uwhtimer;
 
 void TimeDisplay::Render(Canvas *C) {
-  Color Yellow(255, 255, 0);
-  Color Green(0, 255, 0);
-  Color Black(0, 0, 0);
-
   GameModel *Model = Mgr.getModel();
   unsigned Now = Model->GameClockSecs;
 
@@ -35,10 +31,10 @@ void TimeDisplay::Render(Canvas *C) {
 
   // Minutes
   if (MTens) {
-    BigNumber::RenderHalfSingle(C, DisplayNum, MTens, 1, 2, MinutesColor, &Black);
-    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 15, 2, MinutesColor, &Black);
+    BigNumber::RenderHalfSingle(C, DisplayNum, MTens, 1, 2, MinutesColor, &Background);
+    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 15, 2, MinutesColor, &Background);
   } else {
-    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 8, 2, MinutesColor, &Black);
+    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 8, 2, MinutesColor, &Background);
   }
 
   unsigned Secs = Now % 60;
@@ -46,8 +42,8 @@ void TimeDisplay::Render(Canvas *C) {
   unsigned SOnes = Secs % 10;
 
   // Seconds
-  BigNumber::RenderQuarterSingle(C, DisplayNum, STens, 8, 20, SecondsColor, &Black);
-  BigNumber::RenderQuarterSingle(C, DisplayNum, SOnes, 15, 20, SecondsColor, &Black);
+  BigNumber::RenderQuarterSingle(C, DisplayNum, STens, 8, 20, SecondsColor, &Background);
+  BigNumber::RenderQuarterSingle(C, DisplayNum, SOnes, 15, 20, SecondsColor, &Background);
 
   unsigned xoffs = DisplayNum * 32;
 
@@ -63,5 +59,5 @@ void TimeDisplay::Render(Canvas *C) {
   C->SetPixel(xoffs + 6, 26, ColonColor.r, ColonColor.g, ColonColor.b);
   C->SetPixel(xoffs + 7, 26, ColonColor.r, ColonColor.g, ColonColor.b);
 
-  SecondsRing::Render(C, DisplayNum, 120 - (Now % 120), RingColor, &Black);
+  SecondsRing::Render(C, DisplayNum, 120 - (Now % 120), RingColor, &Background);
 }

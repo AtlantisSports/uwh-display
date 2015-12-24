@@ -40,10 +40,12 @@ private:
   GameModelManager Mgr;
   TimeDisplay TD;
 
+public:
   static const rgb_matrix::Color WhiteTeamFG;
   static const rgb_matrix::Color WhiteTeamBG;
   static const rgb_matrix::Color BlackTeamFG;
   static const rgb_matrix::Color BlackTeamBG;
+  static const rgb_matrix::Color Background;
 };
 
 }

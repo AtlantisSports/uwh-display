@@ -15,13 +15,15 @@
 using namespace rgb_matrix;
 using namespace uwhtimer;
 
+const Color GameDisplay::Background   = Color(  0,   0,   0);
 const Color GameDisplay::WhiteTeamFG  = Color(255, 255, 255);
 const Color GameDisplay::BlackTeamFG  = Color(  0,   0, 255);
-const Color GameDisplay::WhiteTeamBG  = Color(  0,   0,   0);
-const Color GameDisplay::BlackTeamBG  = Color(  0,   0,   0);
+const Color GameDisplay::WhiteTeamBG  = Background;
+const Color GameDisplay::BlackTeamBG  = Background;
 
 const Color TimeDisplay::SecondsColor = Color(  0, 255,   0);
 const Color TimeDisplay::MinutesColor = Color(  0, 255,   0);
 const Color TimeDisplay::ColonColor   = Color(  0, 255,   0);
 const Color TimeDisplay::RingColor    = Color(255, 255,   0);
+const Color TimeDisplay::Background   = GameDisplay::Background;
 

@@ -33,10 +33,13 @@ public:
 private:
     unsigned DisplayNum;
     GameModelManager &Mgr;
+
+public:
     static const rgb_matrix::Color SecondsColor;
     static const rgb_matrix::Color MinutesColor;
     static const rgb_matrix::Color ColonColor;
     static const rgb_matrix::Color RingColor;
+    static const rgb_matrix::Color Background;
 };
 
 }
