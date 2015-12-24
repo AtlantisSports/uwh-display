@@ -11,6 +11,7 @@ LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread
 
 SRC_FILES=$(wildcard src/*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(SRC_FILES:.cpp=.o)))
+DEP_FILES=$(addprefix obj/,$(notdir $(SRC_FILES:.cpp=.d)))
 
 ifeq ($(VERBOSE),0)
   V := @
@@ -58,3 +59,12 @@ obj/%.o: src/%.cpp
 	$(V)mkdir -p obj
 	$(V)$(CXX) -I$(RGB_INCDIR) $(CXX_FLAGS) -c -o $@ $<
 
+obj/%.d: src/%.cpp
+	$(call colorecho, "Create Dependencies: $@")
+	$(V)mkdir -p obj
+	$(V)set -e; rm -f $@; \
+	$(CXX) -M -I$(RGB_INCDIR) $(CXX_FLAGS)  $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+include $(DEP_FILES)
