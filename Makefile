@@ -27,6 +27,10 @@ endef
 .PHONY: all
 all: bin/uwh-display
 
+.PHONY: run
+run: all
+	sudo bin/uwh-display
+
 .PHONY: clean
 clean:
 	$(call colorecho, "Cleaning: obj/")
