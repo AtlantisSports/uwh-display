@@ -24,16 +24,22 @@ define colorecho
 	@tput sgr0
 endef
 
+.PHONY: all
 all: bin/uwh-display
 
+.PHONY: clean
 clean:
 	$(call colorecho, "Cleaning: obj/")
 	$(V)rm -rf obj/
 	$(call colorecho, "Cleaning: bin/")
 	$(V)rm -rf bin/
+
+.PHONY: mrproper
+mrproper: clean
 	$(call colorecho, "Cleaning: $(RGB_LIBDIR)")
 	$(V)$(MAKE) -C $(RGB_LIBDIR) clean
 
+.PHONY: $(RGB_LIBRARY)
 $(RGB_LIBRARY):
 	$(call colorecho, "Building: lib$(RGB_LIBRARY_NAME).a...")
 	$(V)$(MAKE) -C $(RGB_LIBDIR)
