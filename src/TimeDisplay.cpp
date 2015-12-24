@@ -14,11 +14,6 @@
 using namespace rgb_matrix;
 using namespace uwhtimer;
 
-const Color TimeDisplay::SecondsColor = Color(  0, 255,   0);
-const Color TimeDisplay::MinutesColor = Color(  0, 255,   0);
-const Color TimeDisplay::ColonColor   = Color(  0, 255,   0);
-const Color TimeDisplay::RingColor    = Color(255, 255,   0);
-
 void TimeDisplay::Render(Canvas *C) {
   Color Yellow(255, 255, 0);
   Color Green(0, 255, 0);

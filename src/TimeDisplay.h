@@ -1,3 +1,6 @@
+#ifndef TIMEDISPLAY_H
+#define TIMEDISPLAY_H
+
 #include "RenderElement.h"
 
 #include <graphics.h>
@@ -29,3 +32,5 @@ private:
 };
 
 }
+
+#endif

@@ -4,6 +4,7 @@
 #include "GameModel.h"
 #include "TimeDisplay.h"
 
+#include <graphics.h>
 #include <canvas.h>
 #include <led-matrix.h>
 #include <threaded-canvas-manipulator.h>
@@ -29,6 +30,11 @@ private:
   rgb_matrix::RGBMatrix *Mtx;
   GameModelManager Mgr;
   TimeDisplay TD;
+
+  static const rgb_matrix::Color WhiteTeamFG;
+  static const rgb_matrix::Color WhiteTeamBG;
+  static const rgb_matrix::Color BlackTeamFG;
+  static const rgb_matrix::Color BlackTeamBG;
 };
 
 }
