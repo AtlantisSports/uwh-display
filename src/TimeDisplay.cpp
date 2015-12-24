@@ -39,7 +39,19 @@ void TimeDisplay::Run() {
     BigNumber::RenderQuarterSingle(Frame, DisplayNum, Tens, 8, 18, Green, &Black);
     BigNumber::RenderQuarterSingle(Frame, DisplayNum, Ones, 15, 18, Green, &Black);
 
-    SecondsRing::Render(Frame, DisplayNum, Secs, Yellow, &Black);
+    // Top Colon
+    Frame->SetPixel(7, 20, Green.r, Green.g, Green.b);
+    Frame->SetPixel(8, 20, Green.r, Green.g, Green.b);
+    Frame->SetPixel(7, 21, Green.r, Green.g, Green.b);
+    Frame->SetPixel(8, 21, Green.r, Green.g, Green.b);
+
+    // Bottom Colon
+    Frame->SetPixel(7, 23, Green.r, Green.g, Green.b);
+    Frame->SetPixel(8, 23, Green.r, Green.g, Green.b);
+    Frame->SetPixel(7, 24, Green.r, Green.g, Green.b);
+    Frame->SetPixel(8, 24, Green.r, Green.g, Green.b);
+
+    SecondsRing::Render(Frame, DisplayNum, Now, Yellow, &Black);
     Frame = M->SwapOnVSync(Frame);
   }
 }
