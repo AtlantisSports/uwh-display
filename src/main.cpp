@@ -1,3 +1,12 @@
+//===-- main.cpp - Entry-Point for the uwhtimer driver ------------- c++ --===//
+//
+//                               UWH Timer
+//
+//           This file is distributed under the BSD 3-Clause License.
+//                      See LICENSE.TXT for details.
+//
+//===----------------------------------------------------------------------===//
+
 #include "GameDisplay.h"
 
 #include <led-matrix.h>

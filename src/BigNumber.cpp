@@ -1,3 +1,12 @@
+//===-- BigNumber.cpp - Large Format Number Rendering  ------------- c++ --===//
+//
+//                               UWH Timer
+//
+//           This file is distributed under the BSD 3-Clause License.
+//                      See LICENSE.TXT for details.
+//
+//===----------------------------------------------------------------------===//
+
 #include "BigNumber.h"
 
 #include <canvas.h>

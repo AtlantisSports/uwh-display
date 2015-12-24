@@ -1,3 +1,12 @@
+//===-- GameDisplay.cpp - Rendering Manager ------------------------ c++ --===//
+//
+//                               UWH Timer
+//
+//           This file is distributed under the BSD 3-Clause License.
+//                      See LICENSE.TXT for details.
+//
+//===----------------------------------------------------------------------===//
+
 #include "GameDisplay.h"
 
 #include "BigNumber.h"
