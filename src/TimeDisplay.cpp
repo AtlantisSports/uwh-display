@@ -31,8 +31,12 @@ void TimeDisplay::Render(Canvas *C) {
   unsigned MOnes = Mins % 10;
 
   // Minutes
-  BigNumber::RenderHalfSingle(C, DisplayNum, MTens, 1, 2, Green, &Black);
-  BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 15, 2, Green, &Black);
+  if (MTens) {
+    BigNumber::RenderHalfSingle(C, DisplayNum, MTens, 1, 2, Green, &Black);
+    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 15, 2, Green, &Black);
+  } else {
+    BigNumber::RenderHalfSingle(C, DisplayNum, MOnes, 8, 2, Green, &Black);
+  }
 
   unsigned Secs = Now % 60;
   unsigned STens = Secs / 10;
