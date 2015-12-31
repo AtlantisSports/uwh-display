@@ -7,7 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "uwhd/GameDisplay.h"
+#include "uwhd/display/GameDisplay.h"
 
 #include <led-matrix.h>
 #include <gpio.h>

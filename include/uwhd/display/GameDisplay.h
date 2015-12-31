@@ -10,8 +10,8 @@
 #ifndef GAMEDISPLAY_H
 #define GAMEDISPLAY_H
 
-#include "GameModel.h"
-#include "TimeDisplay.h"
+#include "uwhd/display/TimeDisplay.h"
+#include "uwhd/model/GameModel.h"
 
 #include <graphics.h>
 #include <canvas.h>

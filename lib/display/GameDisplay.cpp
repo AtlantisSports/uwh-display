@@ -7,9 +7,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "uwhd/GameDisplay.h"
+#include "uwhd/display/GameDisplay.h"
 
-#include "uwhd/BigNumber.h"
+#include "uwhd/display/BigNumber.h"
 
 #include <graphics.h>
 #include <led-matrix.h>

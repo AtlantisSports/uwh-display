@@ -7,8 +7,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "uwhd/GameDisplay.h"
-#include "uwhd/TimeDisplay.h"
+#include "uwhd/display/GameDisplay.h"
+#include "uwhd/display/TimeDisplay.h"
 
 #include <graphics.h>
 

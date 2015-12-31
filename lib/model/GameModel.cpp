@@ -7,7 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "uwhd/GameModel.h"
+#include "uwhd/model/GameModel.h"
 
 #include <ctime>
 
