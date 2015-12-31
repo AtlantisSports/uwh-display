@@ -7,7 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "SecondsRing.h"
+#include "uwhd/SecondsRing.h"
 
 #include <canvas.h>
 #include <led-matrix.h>

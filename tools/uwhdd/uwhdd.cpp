@@ -1,4 +1,4 @@
-//===-- main.cpp - Entry-Point for the uwhtimer driver ------------- c++ --===//
+//===-- uwhdisplayd.cpp - Entry-Point for the uwh-display daemon --- c++ --===//
 //
 //                               UWH Timer
 //
@@ -7,7 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "GameDisplay.h"
+#include "uwhd/GameDisplay.h"
 
 #include <led-matrix.h>
 #include <gpio.h>

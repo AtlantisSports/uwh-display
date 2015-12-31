@@ -7,11 +7,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "TimeDisplay.h"
+#include "uwhd/TimeDisplay.h"
 
-#include "SecondsRing.h"
-#include "GameModel.h"
-#include "BigNumber.h"
+#include "uwhd/SecondsRing.h"
+#include "uwhd/GameModel.h"
+#include "uwhd/BigNumber.h"
 
 #include <graphics.h>
 

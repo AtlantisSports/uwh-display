@@ -7,7 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "BigNumber.h"
+#include "uwhd/BigNumber.h"
 
 #include <canvas.h>
 #include <led-matrix.h>
