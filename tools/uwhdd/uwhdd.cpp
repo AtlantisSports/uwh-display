@@ -17,23 +17,86 @@
 #include <iostream>
 #include <memory>
 #include <unistd.h>
+#include <syslog.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 using namespace rgb_matrix;
 using namespace uwhtimer;
 
-int main(int argc, char *argv[]) {
-  GPIO IO;
+class SysLog {
+public:
+  SysLog() {
+    openlog("uwhdd", LOG_PID, LOG_DAEMON);
+  }
+  ~SysLog() {
+    closelog();
+  }
+};
 
-  if (!IO.Init()) {
-      std::cerr << "Error: Could not init GPIO. Try again with 'sudo'?\n";
-      exit(-1);
+int main(int argc, char *argv[]) {
+  // Check whether we have root privelege
+  uid_t uid  = getuid();
+  uid_t euid = geteuid();
+  if (uid<0 || uid!=euid) {
+    std::cerr << "Error: must be run as root." << std::endl;
+    exit(-1);
   }
 
+  pid_t pid = fork();
+  if (pid < 0) {
+    std::cerr << "Error: could not fork." << std::endl;
+    exit(-1);
+  } else if (pid > 0) {
+    // We got a good pid. Kill the parent process,
+    // creating an orphaned process.
+    exit(0);
+  }
+
+  // Start the syslog
+  static SysLog Log;
+
+  // Change the file node mask
+  umask(0);
+
+  // Create a new SID for the child process
+  pid_t sid = setsid();
+  if (sid < 0) {
+    syslog(LOG_ERR, "Could not create SID for child process.");
+    exit(-1);
+  }
+
+  // Change the working directory
+  if (chdir("/") < 0) {
+    syslog(LOG_ERR, "Could not chdir to '/'.");
+    exit(-1);
+  }
+
+  // Close the standard file descriptors: we can't use them anyway.
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
+
+  GPIO IO;
+  if (!IO.Init()) {
+    syslog(LOG_ERR, "Could not init GPIO.");
+    exit(-1);
+  }
+
+  // Start the display matrix
   auto Matrix = std::unique_ptr<RGBMatrix>(new RGBMatrix(&IO, 32, 3, 1));
   Matrix->SetPWMBits(11);
 
+  // Start the rendering loop
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
 
-  sleep(INT_MAX);
+  syslog(LOG_INFO, "Display started.");
+
+  // Enter the daemon loop
+  while (true) {
+    sleep(1);
+  }
+
+  return 0;
 }

@@ -1,4 +1,4 @@
-//===-- uwhdisplayd.cpp - Entry-Point for the uwh-display daemon --- c++ --===//
+//===-- uwhdi.cpp - Entry-Point for the interactive uwh-display ---- c++ --===//
 //
 //                               UWH Timer
 //
@@ -35,5 +35,9 @@ int main(int argc, char *argv[]) {
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
 
-  sleep(INT_MAX);
+  while (true) {
+    sleep(1);
+  }
+
+  return 0;
 }
