@@ -9,6 +9,8 @@
 
 #include "uwhd/display/GameDisplay.h"
 
+#include "uwhd/sync/ModelSync.h"
+
 #include <led-matrix.h>
 #include <gpio.h>
 
@@ -34,6 +36,9 @@ int main(int argc, char *argv[]) {
 
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
+
+  auto BTSync = ModelSync::CreateSocket(true, 5555);
+  BTSync->Init();
 
   while (true) {
     sleep(1);
