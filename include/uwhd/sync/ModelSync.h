@@ -14,6 +14,7 @@
 #include "uwhd/model/GameModel.h"
 
 #include <memory>
+#include <string>
 
 namespace uwhtimer {
 
@@ -25,7 +26,9 @@ public:
 
   virtual GameModel PullModel() = 0;
 
-  static std::unique_ptr<ModelSync> CreateSocket(bool IsMaster, uint16_t Port);
+  static std::unique_ptr<ModelSync> CreateSocketServer(const std::string &Port);
+  static std::unique_ptr<ModelSync> CreateSocketClient(const std::string &Host,
+                                                       const std::string &Port);
 };
 
 }

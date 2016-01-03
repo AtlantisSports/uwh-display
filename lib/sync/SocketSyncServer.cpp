@@ -1,4 +1,4 @@
-//===-- SocketSync.cpp - Socket Syncing for GameModel -------------- c++ --===//
+//===-- SocketSyncServer.cpp - Socket Syncing for GameModel -------- c++ --===//
 //
 //                               UWH Timer
 //
@@ -8,6 +8,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "uwhd/sync/ModelSync.h"
+
+#include <string>
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -28,9 +30,9 @@ static const int MAX_EVENTS = 16;
 
 using namespace uwhtimer;
 
-class SocketSync : public ModelSync {
+class SocketSyncServer : public ModelSync {
 public:
-  SocketSync(bool IsMaster, uint16_t Port);
+  SocketSyncServer(const std::string &Port);
 
   virtual void Init() override;
 
@@ -39,12 +41,18 @@ public:
   virtual GameModel PullModel() override;
 
 private:
-  uint16_t Port;
-  int ListenFD;
-  sockaddr_in ServAddr;
+  void ProcessEvent(struct epoll_event &E);
+  void AcceptConnection(struct epoll_event &E);
+
+  std::string Port;
+  int SocketFD;
+  int EPollFD;
 };
 
-SocketSync::SocketSync(bool IsMaster, uint16_t Port) : Port(Port) {
+SocketSyncServer::SocketSyncServer(const std::string &Port)
+    : Port(Port)
+    , SocketFD(0)
+    , EPollFD(0) {
 }
 
 static int
@@ -60,40 +68,39 @@ create_and_bind(const char *port)
 
   int s = getaddrinfo(NULL, port, &hints, &result);
   if (s != 0) {
-    fprintf (stderr, "getaddrinfo: %s\n", gai_strerror (s));
+    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
     return -1;
   }
 
   int SocketFD;
   for (rp = result; rp != NULL; rp = rp->ai_next)
   {
-    SocketFD = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+    SocketFD = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
     if (SocketFD == -1)
       continue;
 
-    s = bind (SocketFD, rp->ai_addr, rp->ai_addrlen);
-    if (s == 0)
-    {
+    s = bind(SocketFD, rp->ai_addr, rp->ai_addrlen);
+    if (s == 0) {
       /* We managed to bind successfully! */
       break;
     }
 
-    close (SocketFD);
+    close(SocketFD);
   }
 
   if (rp == NULL)
   {
-    fprintf (stderr, "Could not bind\n");
+    fprintf(stderr, "Could not bind\n");
     return -1;
   }
 
-  freeaddrinfo (result);
+  freeaddrinfo(result);
 
   return SocketFD;
 }
 
 static int
-make_socket_non_blocking (int SocketFD)
+make_socket_non_blocking(int SocketFD)
 {
   int flags = fcntl(SocketFD, F_GETFL, 0);
   if (flags == -1) {
@@ -111,8 +118,7 @@ make_socket_non_blocking (int SocketFD)
   return 0;
 }
 
-
-static void accept_connection(int SocketFD, int EPollFD, struct epoll_event &E) {
+void SocketSyncServer::AcceptConnection(struct epoll_event &E) {
   // We have a notification on the listening socket, which
   // means one or more incoming connections.
   while (1) {
@@ -139,7 +145,7 @@ static void accept_connection(int SocketFD, int EPollFD, struct epoll_event &E) 
         NI_NUMERICHOST | NI_NUMERICSERV);
     if (s == 0) {
       printf("Accepted connection on descriptor %d "
-          "(host=%s, port=%s)\n", infd, hbuf, sbuf);
+             "(host=%s, port=%s)\n", infd, hbuf, sbuf);
     }
 
     // Make the incoming socket non-blocking and add it to the
@@ -158,7 +164,7 @@ static void accept_connection(int SocketFD, int EPollFD, struct epoll_event &E) 
   }
 }
 
-static void process_event(int SocketFD, struct epoll_event &E) {
+void SocketSyncServer::ProcessEvent(struct epoll_event &E) {
   /* We have data on the fd waiting to be read. Read and
      display it. We must read whatever data is available
      completely, as we are running in edge-triggered mode
@@ -202,16 +208,12 @@ static void process_event(int SocketFD, struct epoll_event &E) {
   }
 }
 
-void SocketSync::Init() {
-  int SocketFD, s;
-  struct epoll_event event;
-  struct epoll_event *events;
-
-  SocketFD = create_and_bind("5555");
+void SocketSyncServer::Init() {
+  SocketFD = create_and_bind(Port.c_str());
   if (SocketFD == -1)
     abort();
 
-  s = make_socket_non_blocking(SocketFD);
+  int s = make_socket_non_blocking(SocketFD);
   if (s == -1)
     abort();
 
@@ -221,12 +223,14 @@ void SocketSync::Init() {
     abort();
   }
 
-  int EPollFD = epoll_create1(0);
+  EPollFD = epoll_create1(0);
   if (EPollFD == -1) {
     perror("epoll_create");
     abort();
   }
 
+  struct epoll_event event;
+  struct epoll_event *events;
   event.data.fd = SocketFD;
   event.events = EPOLLIN | EPOLLET;
   s = epoll_ctl(EPollFD, EPOLL_CTL_ADD, SocketFD, &event);
@@ -235,15 +239,13 @@ void SocketSync::Init() {
     abort();
   }
 
-  /* Buffer where events are returned */
+  // Buffer where events are returned
   events = (struct epoll_event*)calloc(MAX_EVENTS, sizeof(event));
 
-  /* The event loop */
-  while (1) {
-    int n, i;
-
-    n = epoll_wait(EPollFD, events, MAX_EVENTS, -1);
-    for (i = 0; i < n; i++)
+  // The event loop
+  while (true) {
+    int n = epoll_wait(EPollFD, events, MAX_EVENTS, -1);
+    for (int i = 0; i < n; i++)
     {
       if ((events[i].events & EPOLLERR) ||
           (events[i].events & EPOLLHUP) ||
@@ -253,26 +255,30 @@ void SocketSync::Init() {
         fprintf(stderr, "epoll error\n");
         close(events[i].data.fd);
       } else if (SocketFD == events[i].data.fd)
-        accept_connection(SocketFD, EPollFD, event);
+        AcceptConnection(event);
       else
-        process_event(SocketFD, events[i]);
+        ProcessEvent(events[i]);
     }
   }
 
   free(events);
 
+  close(EPollFD);
+  EPollFD = 0;
+
   close(SocketFD);
+  SocketFD = 0;
 }
 
-void SocketSync::PushModel(GameModel M) {
+void SocketSyncServer::PushModel(GameModel M) {
 
 }
 
-GameModel SocketSync::PullModel() {
+GameModel SocketSyncServer::PullModel() {
   return GameModel();
 }
 
 std::unique_ptr<ModelSync>
-ModelSync::CreateSocket(bool IsMaster, uint16_t Port) {
-  return std::unique_ptr<ModelSync>(new SocketSync(IsMaster, Port));
+ModelSync::CreateSocketServer(const std::string &Port) {
+  return std::unique_ptr<ModelSync>(new SocketSyncServer(Port));
 }

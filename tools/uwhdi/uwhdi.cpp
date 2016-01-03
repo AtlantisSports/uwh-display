@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
 
-  auto BTSync = ModelSync::CreateSocket(true, 5555);
+  auto BTSync = ModelSync::CreateSocketServer("5555");
   BTSync->Init();
 
   while (true) {
