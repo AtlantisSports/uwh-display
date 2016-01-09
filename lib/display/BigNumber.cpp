@@ -466,8 +466,6 @@ void BigNumber::Render(Canvas *Canvas,
                        unsigned Value,
                        const Color &FG,
                        const Color *BG) {
-  assert(Value < 100 && "Value out of range");
-
   if (Value < 10)
     RenderSingle(Canvas, Display, Value, FG, BG);
   else if (Value < 100)
@@ -480,8 +478,6 @@ void BigNumber::RenderHalf(Canvas *Canvas,
                            unsigned X, unsigned Y,
                            const Color &FG,
                            const Color *BG) {
-  assert(Value < 100 && "Value out of range");
-
   if (Value < 10)
     RenderHalfSingle(Canvas, Display, X, Y, Value, FG, BG);
   else if (Value < 100)
@@ -494,8 +490,6 @@ void BigNumber::RenderQuarter(Canvas *Canvas,
                               unsigned X, unsigned Y,
                               const Color &FG,
                               const Color *BG) {
-  assert(Value < 100 && "Value out of range");
-
   if (Value < 10)
     RenderQuarterSingle(Canvas, Display, X, Y, Value, FG, BG);
   else if (Value < 100)
@@ -507,7 +501,9 @@ void BigNumber::RenderSingle(Canvas *Canvas,
                              unsigned Value,
                              const Color &FG,
                              const Color *BG) {
-  assert(Value < 10 && "Value out of range");
+  if (Value >= 10)
+    return;
+
   unsigned xoffs = Display * 32;
   for (unsigned y = 0; y < 16; y++) {
     for (unsigned x = 0; x < 16; x++) {
@@ -544,7 +540,9 @@ void BigNumber::RenderHalfSingle(Canvas *Canvas,
                                  unsigned X, unsigned Y,
                                  const Color &FG,
                                  const Color *BG) {
-  assert(Value < 10 && "Value out of range");
+  if (Value >= 10)
+    return;
+
   unsigned xoffs = Display * 32 + X;
   unsigned yoffs = Y;
   for (unsigned y = 0; y < 16; y++) {
@@ -564,7 +562,9 @@ void BigNumber::RenderQuarterSingle(Canvas *Canvas,
                                     unsigned X, unsigned Y,
                                     const Color &FG,
                                     const Color *BG) {
-  assert(Value < 10 && "Value out of range");
+  if (Value >= 10)
+    return;
+
   unsigned xoffs = Display * 32 + X;
   unsigned yoffs = Y;
   for (unsigned y = 0; y < 8; y++) {
@@ -584,7 +584,8 @@ void BigNumber::RenderDouble(Canvas *Canvas,
                              unsigned Value,
                              const Color &FG,
                              const Color *BG) {
-  assert(Value < 100 && "Value out of range");
+  if (Value >= 100)
+    return;
 
   unsigned Tens = Value / 10;
   unsigned Ones = Value % 10;
@@ -655,7 +656,8 @@ void BigNumber::RenderHalfDouble(Canvas *Canvas,
                                  unsigned X, unsigned Y,
                                  const Color &FG,
                                  const Color *BG) {
-  assert(Value < 100 && "Value out of range");
+  if (Value >= 100)
+    return;
 
   unsigned Tens = Value / 10;
   unsigned Ones = Value % 10;
@@ -691,7 +693,8 @@ void BigNumber::RenderQuarterDouble(Canvas *Canvas,
                                     unsigned X, unsigned Y,
                                     const Color &FG,
                                     const Color *BG) {
-  assert(Value < 100 && "Value out of range");
+  if (Value >= 100)
+    return;
 
   unsigned Tens = Value / 10;
   unsigned Ones = Value % 10;
