@@ -38,9 +38,9 @@ bool Console::ParseLine(std::string I) {
   case 'b': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = *D.getMgr().getModel();
+    GameModel Cur = *M.getModel();
     SS >> Cur.BlackScore;
-    D.getMgr().setModel(Cur);
+    M.setModel(Cur);
     return false;
   }
 
@@ -48,9 +48,9 @@ bool Console::ParseLine(std::string I) {
   case 'w': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = *D.getMgr().getModel();
+    GameModel Cur = *M.getModel();
     SS >> Cur.WhiteScore;
-    D.getMgr().setModel(Cur);
+    M.setModel(Cur);
     return false;
   }
 
@@ -58,9 +58,9 @@ bool Console::ParseLine(std::string I) {
   case 't': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = *D.getMgr().getModel();
+    GameModel Cur = *M.getModel();
     SS >> Cur.GameClockSecs;
-    D.getMgr().setModel(Cur);
+    M.setModel(Cur);
     return false;
   }
 
@@ -79,7 +79,7 @@ bool Console::ParseLine(std::string I) {
     GameModel New;
     if (!GameModel::deSerialize(I, New)) {
       std::cout << New.dump() << "\n";
-      D.getMgr().setModel(New);
+      M.setModel(New);
       return false;
     }
   }

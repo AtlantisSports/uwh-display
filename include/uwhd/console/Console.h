@@ -13,17 +13,17 @@
 #include <string>
 
 namespace uwhtimer {
-class GameDisplay;
+class GameModelManager;
 
 class Console {
 public:
-  Console(GameDisplay &D) : D(D) {}
+  Console(GameModelManager &M) : M(M) {}
 
   bool ParseLine(std::string I);
   void Loop();
 
 private:
-  GameDisplay &D;
+  GameModelManager &M;
 };
 
 } // namespace uwtimer

@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
 
-  Console C(*Display);
+  Console C(Display->getMgr());
   C.Loop();
 
   return 0;
