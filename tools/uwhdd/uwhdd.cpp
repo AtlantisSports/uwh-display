@@ -22,6 +22,7 @@
 #include <syslog.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <string.h>
 
 using namespace rgb_matrix;
 using namespace uwhtimer;
@@ -37,47 +38,51 @@ public:
 };
 
 int main(int argc, char *argv[]) {
-  // Check whether we have root privelege
-  uid_t uid  = getuid();
-  uid_t euid = geteuid();
-  if (uid<0 || uid!=euid) {
-    std::cerr << "Error: must be run as root." << std::endl;
-    exit(-1);
+  if (argc >= 2 && strcmp(argv[1], "--daemon") == 0) {
+    // Check whether we have root privelege
+    uid_t uid  = getuid();
+    uid_t euid = geteuid();
+    if (uid<0 || uid!=euid) {
+      std::cerr << "Error: must be run as root." << std::endl;
+      exit(-1);
+    }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+      std::cerr << "Error: could not fork." << std::endl;
+      exit(-1);
+    } else if (pid > 0) {
+      // We got a good pid. Kill the parent process,
+      // creating an orphaned process.
+      exit(0);
+    }
+
+    // Start the syslog
+    static SysLog Log;
+
+    // Change the file node mask
+    umask(0);
+
+    // Create a new SID for the child process
+    pid_t sid = setsid();
+    if (sid < 0) {
+      syslog(LOG_ERR, "uwhdd: Could not create SID for child process.");
+      exit(-1);
+    }
+
+    // Change the working directory
+    if (chdir("/") < 0) {
+      syslog(LOG_ERR, "uwhdd: Could not chdir to '/'.");
+      exit(-1);
+    }
+
+    // Close the standard file descriptors: we can't use them anyway.
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+  } else {
+    printf("non-daemon mode\n");
   }
-
-  pid_t pid = fork();
-  if (pid < 0) {
-    std::cerr << "Error: could not fork." << std::endl;
-    exit(-1);
-  } else if (pid > 0) {
-    // We got a good pid. Kill the parent process,
-    // creating an orphaned process.
-    exit(0);
-  }
-
-  // Start the syslog
-  static SysLog Log;
-
-  // Change the file node mask
-  umask(0);
-
-  // Create a new SID for the child process
-  pid_t sid = setsid();
-  if (sid < 0) {
-    syslog(LOG_ERR, "uwhdd: Could not create SID for child process.");
-    exit(-1);
-  }
-
-  // Change the working directory
-  if (chdir("/") < 0) {
-    syslog(LOG_ERR, "uwhdd: Could not chdir to '/'.");
-    exit(-1);
-  }
-
-  // Close the standard file descriptors: we can't use them anyway.
-  close(STDIN_FILENO);
-  close(STDOUT_FILENO);
-  close(STDERR_FILENO);
 
   GPIO IO;
   if (!IO.Init()) {
