@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include <syslog.h>
 
 static const int MAX_EVENTS = 16;
 
@@ -74,7 +75,7 @@ create_and_bind(const char *port)
 
   int s = getaddrinfo(NULL, port, &hints, &result);
   if (s != 0) {
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+    syslog(LOG_ERR, "uwhd: getaddrinfo: %s", gai_strerror(s));
     return -1;
   }
 
@@ -96,7 +97,7 @@ create_and_bind(const char *port)
 
   if (rp == NULL)
   {
-    fprintf(stderr, "Could not bind\n");
+    syslog(LOG_ERR, "Could not bind");
     return -1;
   }
 
@@ -150,8 +151,8 @@ void SocketSyncServer::AcceptConnection(struct epoll_event &E) {
         sbuf, sizeof sbuf,
         NI_NUMERICHOST | NI_NUMERICSERV);
     if (s == 0) {
-      printf("Accepted connection on descriptor %d "
-             "(host=%s, port=%s)\n", infd, hbuf, sbuf);
+      syslog(LOG_INFO, "Accepted connection on descriptor %d "
+             "(host=%s, port=%s)", infd, hbuf, sbuf);
     }
 
     // Make the incoming socket non-blocking and add it to the
@@ -198,6 +199,8 @@ void SocketSyncServer::ProcessEvent(struct epoll_event &E) {
       break;
     }
 
+    syslog(LOG_INFO, "uwhdd: Recieved message '%s'", buf);
+
     GameModel NewM;
     if (GameModel::deSerialize(buf, NewM)) {
       // Failed to read message
@@ -207,7 +210,7 @@ void SocketSyncServer::ProcessEvent(struct epoll_event &E) {
   }
 
   if (done) {
-    printf("Closed connection on descriptor %d\n", E.data.fd);
+    syslog(LOG_INFO, "uwhdd: Closed connection on descriptor %d", E.data.fd);
 
     /* Closing the descriptor will make epoll remove it
        from the set of descriptors which are monitored. */
@@ -259,7 +262,7 @@ void SocketSyncServer::Init() {
           !(events[i].events & EPOLLIN)) {
         // An error has occured on this fd, or the socket is not
         // ready for reading (why were we notified then?)
-        fprintf(stderr, "epoll error\n");
+        syslog(LOG_ERR, "uwhd: epoll error");
         close(events[i].data.fd);
       } else if (SocketFD == events[i].data.fd)
         AcceptConnection(event);
