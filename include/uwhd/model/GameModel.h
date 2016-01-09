@@ -25,6 +25,7 @@ public:
   static bool deSerialize(std::string S, GameModel &M);
 
   bool operator==(const GameModel &Other);
+  bool operator!=(const GameModel &Other) { return !(*this == Other); }
 };
 
 class GameModelManager {
