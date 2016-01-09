@@ -199,7 +199,7 @@ void SocketSyncServer::ProcessEvent(struct epoll_event &E) {
       break;
     }
 
-    syslog(LOG_INFO, "uwhdd: Recieved message '%s'", buf);
+    syslog(LOG_INFO, "Recieved message '%s'", buf);
 
     GameModel NewM;
     if (GameModel::deSerialize(buf, NewM)) {
@@ -210,7 +210,7 @@ void SocketSyncServer::ProcessEvent(struct epoll_event &E) {
   }
 
   if (done) {
-    syslog(LOG_INFO, "uwhdd: Closed connection on descriptor %d", E.data.fd);
+    syslog(LOG_INFO, "Closed connection on descriptor %d", E.data.fd);
 
     /* Closing the descriptor will make epoll remove it
        from the set of descriptors which are monitored. */
