@@ -180,6 +180,7 @@ void SocketSyncServer::ProcessEvent(struct epoll_event &E) {
 
   while (1) {
     char buf[512];
+    bzero(buf, sizeof(buf));
 
     ssize_t count = read(E.data.fd, buf, sizeof(buf));
     if (count == -1) {
