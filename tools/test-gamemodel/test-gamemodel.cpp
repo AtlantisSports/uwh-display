@@ -92,11 +92,11 @@ int main(int argc, char *argv[]) {
   for (unsigned B = 0; B < 10; B++)
     for (unsigned W = 0; W < 10; W++)
       for (unsigned T = 0; T < 10; T++)
-        Failed != CheckRoundTripSerialize(B, W, T);
+        Failed |= CheckRoundTripSerialize(B, W, T);
 
-  Failed != CheckRoundTripSerialize(99, 99, 9999);
-  Failed != CheckRoundTripSerialize(99, 99, 999999);
-  Failed != CheckRoundTripSerialize(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+  Failed |= CheckRoundTripSerialize(99, 99, 9999);
+  Failed |= CheckRoundTripSerialize(99, 99, 999999);
+  Failed |= CheckRoundTripSerialize(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 
   GameModel M1;
   M1.BlackScore = 1;
@@ -104,10 +104,10 @@ int main(int argc, char *argv[]) {
   M1.GameClockSecs = 15;
 
   GameModel M2 = M1;
-  Failed != CheckEquals(M1, M2);
+  Failed |= CheckEquals(M1, M2);
 
   M1.BlackScore = 2;
-  Failed != CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M1, M2);
 
   return Failed ? 1 : 0;
 }
