@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <memory>
 #include <cassert>
+#include <iostream>
 
 static const int MAX_EVENTS = 16;
 
@@ -75,9 +76,6 @@ void SocketSyncClient::Init() {
     perror("ERROR connecting");
     exit(1);
   }
-
-  const char *test = "SB2W1T13E";
-  write(SockFD, test, strlen(test));
 }
 
 void SocketSyncClient::PushModel(GameModel M) {
@@ -90,6 +88,7 @@ GameModel SocketSyncClient::PullModel() {
 
 void SocketSyncClient::setModel(GameModel Model) {
   std::string Ser = Model.serialize();
+  std::cout << "Sending: '" << Ser << "'\n";
   write(SockFD, Ser.c_str(), Ser.size());
 }
 
