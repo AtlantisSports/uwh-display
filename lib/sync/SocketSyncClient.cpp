@@ -11,6 +11,7 @@
 
 #include "uwhd/model/GameModel.h"
 
+#include <cstring>
 #include <string>
 #include <netdb.h>
 #include <netinet/in.h>
