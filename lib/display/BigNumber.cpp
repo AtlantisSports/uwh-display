@@ -478,6 +478,8 @@ void BigNumber::Render(Canvas *Canvas,
     RenderSingle(Canvas, Display, Value, FG, BG);
   else if (Value < 100)
     RenderDouble(Canvas, Display, Value, FG, BG);
+  else
+    PrintError(Canvas, Display);
 }
 
 void BigNumber::RenderHalf(Canvas *Canvas,
@@ -490,6 +492,8 @@ void BigNumber::RenderHalf(Canvas *Canvas,
     RenderHalfSingle(Canvas, Display, X, Y, Value, FG, BG);
   else if (Value < 100)
     RenderHalfDouble(Canvas, Display, X, Y, Value, FG, BG);
+  else
+    PrintError(Canvas, Display);
 }
 
 void BigNumber::RenderQuarter(Canvas *Canvas,
@@ -502,6 +506,8 @@ void BigNumber::RenderQuarter(Canvas *Canvas,
     RenderQuarterSingle(Canvas, Display, X, Y, Value, FG, BG);
   else if (Value < 100)
     RenderQuarterDouble(Canvas, Display, X, Y, Value, FG, BG);
+  else
+    PrintError(Canvas, Display);
 }
 
 void BigNumber::RenderSingle(Canvas *Canvas,
