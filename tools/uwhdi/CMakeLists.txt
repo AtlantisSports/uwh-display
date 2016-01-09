@@ -1,7 +1,7 @@
 add_executable(uwhdi uwhdi.cpp)
 add_dependencies(uwhdi rgbmatrix)
 target_link_libraries(uwhdi
-    uwhdsync
+    uwhdconsole
     uwhddisplay
     uwhdmodel
     ${LIBRGBMATRIX}

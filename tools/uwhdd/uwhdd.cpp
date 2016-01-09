@@ -9,6 +9,8 @@
 
 #include "uwhd/display/GameDisplay.h"
 
+#include "uwhd/sync/ModelSync.h"
+
 #include <led-matrix.h>
 #include <gpio.h>
 
@@ -62,13 +64,13 @@ int main(int argc, char *argv[]) {
   // Create a new SID for the child process
   pid_t sid = setsid();
   if (sid < 0) {
-    syslog(LOG_ERR, "Could not create SID for child process.");
+    syslog(LOG_ERR, "uwhdd: Could not create SID for child process.");
     exit(-1);
   }
 
   // Change the working directory
   if (chdir("/") < 0) {
-    syslog(LOG_ERR, "Could not chdir to '/'.");
+    syslog(LOG_ERR, "uwhdd: Could not chdir to '/'.");
     exit(-1);
   }
 
@@ -79,7 +81,7 @@ int main(int argc, char *argv[]) {
 
   GPIO IO;
   if (!IO.Init()) {
-    syslog(LOG_ERR, "Could not init GPIO.");
+    syslog(LOG_ERR, "uwhdd: Could not init GPIO.");
     exit(-1);
   }
 
@@ -91,7 +93,10 @@ int main(int argc, char *argv[]) {
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
 
-  syslog(LOG_INFO, "Display started.");
+  syslog(LOG_INFO, "uwhdd: Display started.");
+
+  auto SyncServer = ModelSync::CreateSocketServer("5555");
+  SyncServer->Init();
 
   // Enter the daemon loop
   while (true) {
