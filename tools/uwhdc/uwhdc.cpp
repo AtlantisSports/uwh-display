@@ -13,11 +13,13 @@
 using namespace uwhtimer;
 
 int main(int argc, char *argv[]) {
-  GameModelManager M;
-  Console C(M);
+  if (argc != 3)
+    return 1;
 
-  auto SyncClient = ModelSync::CreateSocketClient("127.0.0.1", "5555");
+  auto SyncClient = ModelSync::CreateSocketClient(argv[1], argv[2]);
   SyncClient->Init();
+
+  Console C(SyncClient->getMgr());
 
   C.Loop();
 

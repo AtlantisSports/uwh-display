@@ -9,8 +9,11 @@
 
 #include "uwhd/sync/ModelSync.h"
 
+#include "uwhd/model/GameModel.h"
+
 #include <string>
 
+#include <cassert>
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -40,8 +43,13 @@ public:
 
   virtual GameModel PullModel() override;
 
+  virtual void setMgr(GameModelManager *M) override { assert(false); }
+
+  virtual GameModelManager &getMgr() override { return M; }
+
 private:
   std::string Port;
+  GameModelManager M;
 };
 
 SocketSyncClient::SocketSyncClient(const std::string &Host,

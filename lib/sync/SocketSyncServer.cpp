@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include <cassert>
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -40,6 +41,10 @@ public:
 
   virtual GameModel PullModel() override;
 
+  virtual void setMgr(GameModelManager *NewM) { M = NewM; }
+
+  virtual GameModelManager &getMgr() override { return *M; }
+
 private:
   void ProcessEvent(struct epoll_event &E);
   void AcceptConnection(struct epoll_event &E);
@@ -47,6 +52,7 @@ private:
   std::string Port;
   int SocketFD;
   int EPollFD;
+  GameModelManager *M;
 };
 
 SocketSyncServer::SocketSyncServer(const std::string &Port)
@@ -191,12 +197,12 @@ void SocketSyncServer::ProcessEvent(struct epoll_event &E) {
       break;
     }
 
-    /* Write the buffer to standard output */
-    int s = write(STDOUT_FILENO, buf, count);
-    if (s == -1) {
-      perror("write");
-      abort();
+    GameModel NewM;
+    if (GameModel::deSerialize(buf, NewM)) {
+      // Failed to read message
+      continue;
     }
+    M->setModel(NewM);
   }
 
   if (done) {
@@ -271,7 +277,7 @@ void SocketSyncServer::Init() {
 }
 
 void SocketSyncServer::PushModel(GameModel M) {
-
+  assert(false);
 }
 
 GameModel SocketSyncServer::PullModel() {
