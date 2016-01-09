@@ -461,6 +461,14 @@ static char *Numbers16x32[] = {
 
 #undef _
 
+static void PrintError(Canvas *C, unsigned D) {
+  C->SetPixel(D * 32 + 0, 0, 255, 0, 0);
+  C->SetPixel(D * 32 + 0, 2, 255, 0, 0);
+  C->SetPixel(D * 32 + 1, 1, 255, 0, 0);
+  C->SetPixel(D * 32 + 2, 0, 255, 0, 0);
+  C->SetPixel(D * 32 + 2, 2, 255, 0, 0);
+}
+
 void BigNumber::Render(Canvas *Canvas,
                        unsigned Display,
                        unsigned Value,
@@ -501,8 +509,10 @@ void BigNumber::RenderSingle(Canvas *Canvas,
                              unsigned Value,
                              const Color &FG,
                              const Color *BG) {
-  if (Value >= 10)
+  if (Value >= 10) {
+    PrintError(Canvas, Display);
     return;
+  }
 
   unsigned xoffs = Display * 32;
   for (unsigned y = 0; y < 16; y++) {
@@ -540,8 +550,10 @@ void BigNumber::RenderHalfSingle(Canvas *Canvas,
                                  unsigned X, unsigned Y,
                                  const Color &FG,
                                  const Color *BG) {
-  if (Value >= 10)
+  if (Value >= 10) {
+    PrintError(Canvas, Display);
     return;
+  }
 
   unsigned xoffs = Display * 32 + X;
   unsigned yoffs = Y;
@@ -562,8 +574,10 @@ void BigNumber::RenderQuarterSingle(Canvas *Canvas,
                                     unsigned X, unsigned Y,
                                     const Color &FG,
                                     const Color *BG) {
-  if (Value >= 10)
+  if (Value >= 10) {
+    PrintError(Canvas, Display);
     return;
+  }
 
   unsigned xoffs = Display * 32 + X;
   unsigned yoffs = Y;
@@ -584,8 +598,10 @@ void BigNumber::RenderDouble(Canvas *Canvas,
                              unsigned Value,
                              const Color &FG,
                              const Color *BG) {
-  if (Value >= 100)
+  if (Value >= 100) {
+    PrintError(Canvas, Display);
     return;
+  }
 
   unsigned Tens = Value / 10;
   unsigned Ones = Value % 10;
@@ -656,8 +672,10 @@ void BigNumber::RenderHalfDouble(Canvas *Canvas,
                                  unsigned X, unsigned Y,
                                  const Color &FG,
                                  const Color *BG) {
-  if (Value >= 100)
+  if (Value >= 100) {
+    PrintError(Canvas, Display);
     return;
+  }
 
   unsigned Tens = Value / 10;
   unsigned Ones = Value % 10;
@@ -693,8 +711,10 @@ void BigNumber::RenderQuarterDouble(Canvas *Canvas,
                                     unsigned X, unsigned Y,
                                     const Color &FG,
                                     const Color *BG) {
-  if (Value >= 100)
+  if (Value >= 100) {
+    PrintError(Canvas, Display);
     return;
+  }
 
   unsigned Tens = Value / 10;
   unsigned Ones = Value % 10;
