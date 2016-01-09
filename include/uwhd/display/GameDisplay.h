@@ -35,6 +35,8 @@ public:
 
   void Run() override;
 
+  GameModelManager &getMgr() { return Mgr; }
+
 private:
   rgb_matrix::RGBMatrix *Mtx;
   GameModelManager Mgr;

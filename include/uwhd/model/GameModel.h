@@ -21,6 +21,7 @@ public:
   unsigned WhiteScore;
   unsigned GameClockSecs;
 
+  std::string dump();
   std::string serialize();
   static bool deSerialize(std::string S, GameModel &M);
 
@@ -33,6 +34,8 @@ public:
   GameModelManager() {}
 
   GameModel *getModel();
+
+  void setModel(GameModel M) { Model = M; }
 
 private:
   GameModel Model;

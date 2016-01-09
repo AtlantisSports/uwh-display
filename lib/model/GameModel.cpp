@@ -23,10 +23,17 @@ bool GameModel::operator==(const GameModel &Other) {
 }
 
 GameModel *GameModelManager::getModel() {
-  Model.BlackScore = 1;
-  Model.WhiteScore = 3;
-  Model.GameClockSecs = 60 * 12 - (time(nullptr) % (60 * 12));
   return &Model;
+}
+
+std::string GameModel::dump() {
+  std::stringstream SS;
+
+  SS << "Black: " << BlackScore << "\n"
+     << "White: " << WhiteScore << "\n"
+     << "GameClockSecs: " << GameClockSecs << "\n";
+
+  return SS.str();
 }
 
 std::string GameModel::serialize() {
