@@ -35,7 +35,7 @@ public:
 
   GameModel *getModel();
 
-  void setModel(GameModel M) { Model = M; }
+  virtual void setModel(GameModel M) { Model = M; }
 
 private:
   GameModel Model;
