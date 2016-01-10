@@ -10,11 +10,15 @@
 #include "uwhd/console/Console.h"
 #include "uwhd/sync/ModelSync.h"
 
+#include <iostream>
+
 using namespace uwhtimer;
 
 int main(int argc, char *argv[]) {
-  if (argc != 3)
+  if (argc != 3) {
+    std::cerr << "Usage: " << argv[0] << " [host] [port]\n";
     return 1;
+  }
 
   auto SyncClient = CreateSocketClient(argv[1], argv[2]);
   SyncClient->Init();
