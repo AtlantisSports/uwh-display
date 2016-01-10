@@ -83,7 +83,6 @@ bool Console::ParseLine(std::string I) {
   case 'S': {
     GameModel New;
     if (!GameModel::deSerialize(I, New)) {
-      std::cout << New.dump() << "\n";
       M.setModel(New);
       return false;
     }
