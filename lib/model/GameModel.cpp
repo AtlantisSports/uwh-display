@@ -29,9 +29,9 @@ GameModel *GameModelManager::getModel() {
 std::string GameModel::dump() {
   std::stringstream SS;
 
-  SS << "Black: " << BlackScore << "\n"
-     << "White: " << WhiteScore << "\n"
-     << "GameClockSecs: " << GameClockSecs << "\n";
+  SS << "Black: " << int(BlackScore) << "\n"
+     << "White: " << int(WhiteScore) << "\n"
+     << "GameClockSecs: " << int(GameClockSecs) << "\n";
 
   return SS.str();
 }
