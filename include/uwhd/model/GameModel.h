@@ -17,9 +17,13 @@ namespace uwhtimer {
 
 class GameModel {
 public:
-  unsigned BlackScore;
-  unsigned WhiteScore;
-  unsigned GameClockSecs;
+  GameModel()
+    : BlackScore(0)
+    , WhiteScore(0)
+    , GameClockSecs(0) {}
+  unsigned char BlackScore;
+  unsigned char WhiteScore;
+  unsigned short GameClockSecs;
 
   std::string dump();
   std::string serialize();
