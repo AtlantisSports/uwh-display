@@ -43,7 +43,6 @@ public:
 private:
   std::string Host;
   std::string Port;
-  int SockFD;
 };
 
 SocketSyncClient::SocketSyncClient(const std::string &Host,
@@ -52,7 +51,18 @@ SocketSyncClient::SocketSyncClient(const std::string &Host,
 }
 
 void SocketSyncClient::Init() {
-  SockFD = socket(AF_INET, SOCK_STREAM, 0);
+}
+
+void SocketSyncClient::PushModel(GameModel M) {
+
+}
+
+GameModel SocketSyncClient::PullModel() {
+  return GameModel();
+}
+
+void SocketSyncClient::setModel(GameModel Model) {
+  int SockFD = socket(AF_INET, SOCK_STREAM, 0);
 
   if (SockFD < 0) {
     perror("Error opening socket");
@@ -76,21 +86,13 @@ void SocketSyncClient::Init() {
     perror("ERROR connecting");
     exit(1);
   }
-}
 
-void SocketSyncClient::PushModel(GameModel M) {
-
-}
-
-GameModel SocketSyncClient::PullModel() {
-  return GameModel();
-}
-
-void SocketSyncClient::setModel(GameModel Model) {
   std::string Ser = Model.serialize();
   std::cout << "Sending: '" << Ser << "'\n";
   write(SockFD, Ser.c_str(), Ser.size());
   GameModelManager::setModel(Model);
+
+  close(SockFD);
 }
 
 std::unique_ptr<ModelSync>
