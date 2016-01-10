@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
+
+option(UWHD_BUILD_CLIENT "Build the client" ON)
+option(UWHD_BUILD_SERVER "Build the server" ON)
+option(UWHD_BUILD_DISPLAY "Build the display driver" ON)
 
 # -----------------------------------------------------------------------------
 # Verify that the compiler supports c++11
@@ -21,6 +25,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # -----------------------------------------------------------------------------
 # Teach CMake how to build librgbmatrix
 # -----------------------------------------------------------------------------
+if(UWHD_BUILD_DISPLAY)
 set(LIBRGBMATRIX "${CMAKE_SOURCE_DIR}/matrix/lib/librgbmatrix.a")
 add_custom_command(
     OUTPUT "${LIBRGBMATRIX}"
@@ -29,6 +34,7 @@ add_custom_target(rgbmatrix
     DEPENDS "${LIBRGBMATRIX}")
 include_directories("${CMAKE_SOURCE_DIR}/matrix/include")
 link_directories("${CMAKE_SOURCE_DIR}/matrix/lib")
+endif()
 
 # -----------------------------------------------------------------------------
 # Build libraries, and tools

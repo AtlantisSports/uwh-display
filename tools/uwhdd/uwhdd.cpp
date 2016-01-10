@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 
   syslog(LOG_INFO, "uwhdd: Display started.");
 
-  auto SyncServer = ModelSync::CreateSocketServer("5555");
+  auto SyncServer = CreateSocketServer("5555");
   SyncServer->setMgr(&Display->getMgr());
   SyncServer->Init();
 

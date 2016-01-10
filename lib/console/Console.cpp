@@ -10,7 +10,6 @@
 #include "uwhd/console/Console.h"
 
 #include "uwhd/model/GameModel.h"
-#include "uwhd/display/GameDisplay.h"
 
 #include <iostream>
 #include <sstream>

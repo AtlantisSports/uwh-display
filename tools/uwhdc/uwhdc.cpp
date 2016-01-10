@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
   if (argc != 3)
     return 1;
 
-  auto SyncClient = ModelSync::CreateSocketClient(argv[1], argv[2]);
+  auto SyncClient = CreateSocketClient(argv[1], argv[2]);
   SyncClient->Init();
 
   Console C(SyncClient->getMgr());

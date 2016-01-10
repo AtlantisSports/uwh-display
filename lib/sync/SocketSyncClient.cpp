@@ -13,21 +13,8 @@
 
 #include <string>
 
+#include <memory>
 #include <cassert>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <time.h>
-#include <unistd.h>
 
 static const int MAX_EVENTS = 16;
 
@@ -70,7 +57,7 @@ GameModel SocketSyncClient::PullModel() {
 }
 
 std::unique_ptr<ModelSync>
-ModelSync::CreateSocketClient(const std::string &Host,
+uwhtimer::CreateSocketClient(const std::string &Host,
                               const std::string &Port) {
   return std::unique_ptr<ModelSync>(new SocketSyncClient(Host, Port));
 }

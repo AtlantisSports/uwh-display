@@ -1,4 +1,6 @@
 add_subdirectory(console)
-add_subdirectory(display)
 add_subdirectory(model)
 add_subdirectory(sync)
+if(UWHD_BUILD_DISPLAY)
+  add_subdirectory(display)
+endif()

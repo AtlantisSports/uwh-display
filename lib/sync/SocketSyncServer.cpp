@@ -285,6 +285,6 @@ GameModel SocketSyncServer::PullModel() {
 }
 
 std::unique_ptr<ModelSync>
-ModelSync::CreateSocketServer(const std::string &Port) {
+uwhtimer::CreateSocketServer(const std::string &Port) {
   return std::unique_ptr<ModelSync>(new SocketSyncServer(Port));
 }
