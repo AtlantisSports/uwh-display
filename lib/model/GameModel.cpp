@@ -40,9 +40,9 @@ std::string GameModel::serialize() {
   std::stringstream SS;
 
   SS << "S"
-     << "B" << std::setfill('0') << std::setw(2) << BlackScore
-     << "W" << std::setfill('0') << std::setw(2) << WhiteScore
-     << "T" << std::setfill('0') << std::setw(5) << GameClockSecs
+     << "B" << int(BlackScore)
+     << "W" << int(WhiteScore)
+     << "T" << int(GameClockSecs)
      << "E";
 
   return SS.str();
@@ -65,17 +65,29 @@ bool GameModel::deSerialize(std::string S, GameModel &M) {
   if (check(SS, 'B'))
     return true;
 
-  SS >> NewM.BlackScore;
+  {
+    int B;
+    SS >> B;
+    NewM.BlackScore = B;
+  }
 
   if (check(SS, 'W'))
     return true;
 
-  SS >> NewM.WhiteScore;
+  {
+    int W;
+    SS >> W;
+    NewM.WhiteScore = W;
+  }
 
   if (check(SS, 'T'))
     return true;
 
-  SS >> NewM.GameClockSecs;
+  {
+    int T;
+    SS >> T;
+    NewM.GameClockSecs = T;
+  }
 
   if (check(SS, 'E'))
     return true;
