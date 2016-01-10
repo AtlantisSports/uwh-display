@@ -38,7 +38,9 @@ bool Console::ParseLine(std::string I) {
     std::stringstream SS;
     SS << I.substr(1);
     GameModel Cur = *M.getModel();
-    SS >> Cur.BlackScore;
+    int Score;
+    SS >> Score;
+    Cur.BlackScore = Score;
     M.setModel(Cur);
     return false;
   }
@@ -48,7 +50,9 @@ bool Console::ParseLine(std::string I) {
     std::stringstream SS;
     SS << I.substr(1);
     GameModel Cur = *M.getModel();
-    SS >> Cur.WhiteScore;
+    int Score;
+    SS >> Score;
+    Cur.WhiteScore = Score;
     M.setModel(Cur);
     return false;
   }
@@ -58,7 +62,9 @@ bool Console::ParseLine(std::string I) {
     std::stringstream SS;
     SS << I.substr(1);
     GameModel Cur = *M.getModel();
-    SS >> Cur.GameClockSecs;
+    int Time;
+    SS >> Time;
+    Cur.GameClockSecs = Time;
     M.setModel(Cur);
     return false;
   }
