@@ -3,4 +3,5 @@ add_dependencies(uwhdc rgbmatrix)
 target_link_libraries(uwhdc
     uwhdsync
     uwhdconsole
-    uwhdmodel)
+    uwhdmodel
+    pthread)
