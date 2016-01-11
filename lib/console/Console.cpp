@@ -86,13 +86,16 @@ bool Console::ParseLine(std::string I) {
       M.setModel(New);
       return false;
     }
+
+    goto ParseError;
   }
-  default: { /* Fall Through */
-    std::cerr << "Parse error on: '" << I << "'\n";
-    return false;
+  default: {
+    goto ParseError;
   }
   }
 
+ParseError:
+  std::cerr << "Parse error on: '" << I << "'\n";
   return true;
 }
 
