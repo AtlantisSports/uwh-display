@@ -26,54 +26,47 @@ using namespace uwhtimer;
 
 bool Console::ParseLine(std::string I) {
   if (I.size() == 0)
-    return false;
+    goto Success;
 
   switch (I[0]) {
   case 'Q':
   case 'q':
-    return true;
+    goto ExitLoop;
 
   case 'B':
   case 'b': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = M.getModel();
     int Score;
     SS >> Score;
-    Cur.BlackScore = Score;
-    M.setModel(Cur);
-    return false;
+    M.setBlackScore(Score);
+    goto Success;
   }
 
   case 'W':
   case 'w': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = M.getModel();
     int Score;
     SS >> Score;
-    Cur.WhiteScore = Score;
-    M.setModel(Cur);
-    return false;
+    M.setWhiteScore(Score);
+    goto Success;
   }
 
   case 'T':
   case 't': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = M.getModel();
     int Time;
     SS >> Time;
-    Cur.GameClockSecs = Time;
-    M.setModel(Cur);
-    return false;
+    M.setGameClockSecs(Time);
+    goto Success;
   }
 
   case 'P':
   case 'p': {
     bool Running = M.toggleClockRunning();
-    std::cout << "Clock is " << (Running ? "running" : "stopped") << "\n";
-    return false;
+    goto Success;
   }
 
   case 'H':
@@ -84,14 +77,14 @@ bool Console::ParseLine(std::string I) {
               << "  T[0-9]+ - Set the Game Clock\n"
               << "  H       - This menu\n"
               << "  Q       - Quit\n";
-    return false;
+    goto Success;
   }
 
   case 'S': {
     GameModel New;
     if (!GameModel::deSerialize(I, New)) {
       M.setModel(New);
-      return false;
+      goto Success;
     }
     goto ParseError;
   }
@@ -103,10 +96,17 @@ bool Console::ParseLine(std::string I) {
 ParseError:
   std::cerr << "Parse error on: '" << I << "'\n";
   return true;
+
+Success:
+  return false;
+
+ExitLoop:
+  return true;
 }
 
 void Console::Loop() {
   while (true) {
+    std::cout << M.getModel().dump();
     std::cout << ANSI_CYAN << "[uwhdi] " << ANSI_RESET;
 
     std::string I;

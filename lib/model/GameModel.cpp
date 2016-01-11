@@ -16,21 +16,24 @@
 #include <future>
 #include <cstdio>
 #include <thread>
+#include <iostream>
 
 using namespace uwhtimer;
 
 bool GameModel::operator==(const GameModel &Other) {
   return BlackScore == Other.BlackScore &&
          WhiteScore == Other.WhiteScore &&
-         GameClockSecs == Other.GameClockSecs;
+         GameClockSecs == Other.GameClockSecs &&
+         ClockRunning == Other.ClockRunning;
 }
 
 std::string GameModel::dump() {
   std::stringstream SS;
 
-  SS << "Black: " << int(BlackScore) << "\n"
-     << "White: " << int(WhiteScore) << "\n"
-     << "GameClockSecs: " << int(GameClockSecs) << "\n";
+  SS << "        Black: " << int(BlackScore) << "\n"
+     << "        White: " << int(WhiteScore) << "\n"
+     << "GameClockSecs: " << int(GameClockSecs) << "\n"
+     << " ClockRunning: " << (ClockRunning ? "YES" : "NO") << "\n";
 
   return SS.str();
 }
@@ -117,6 +120,16 @@ GameModelManager::GameModelManager()
   }).detach();
 }
 
+void GameModelManager::setModel(GameModel M) {
+  std::lock_guard<std::mutex> Lock(ModelMutex);
+  Model = M;
+}
+
+GameModel GameModelManager::getModel() {
+  std::lock_guard<std::mutex> Lock(ModelMutex);
+  return Model;
+}
+
 unsigned char GameModelManager::BlackScore() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
   return Model.BlackScore;
@@ -137,49 +150,56 @@ bool GameModelManager::ClockRunning() {
   return Model.ClockRunning;
 }
 
-GameModel GameModelManager::getModel() {
-  std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model;
-}
-
 void GameModelManager::setBlackScore(unsigned char S) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
   Model.BlackScore = S;
+  modelChanged(Model);
 }
 
 void GameModelManager::setWhiteScore(unsigned char S) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
   Model.WhiteScore = S;
+  modelChanged(Model);
 }
 
-void GameModelManager::setGameClock(unsigned short T) {
+void GameModelManager::setGameClockSecs(unsigned short T) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
   Model.GameClockSecs = T;
+  modelChanged(Model);
 }
 
 void GameModelManager::setClockRunning(bool B) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
   Model.ClockRunning = B;
+  modelChanged(Model);
 }
 
 unsigned char GameModelManager::incBlackScore(signed char Delta) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.BlackScore += Delta;
+  unsigned char S = Model.BlackScore += Delta;
+  modelChanged(Model);
+  return S;
 }
 
 unsigned char GameModelManager::incWhiteScore(signed char Delta) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.WhiteScore += Delta;
+  unsigned char S = Model.WhiteScore += Delta;
+  modelChanged(Model);
+  return S;
 }
 
 unsigned short GameModelManager::incGameClock(signed short Delta) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.GameClockSecs += Delta;
+  unsigned short T = Model.GameClockSecs += Delta;
+  modelChanged(Model);
+  return T;
 }
 
 bool GameModelManager::toggleClockRunning() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.ClockRunning = !Model.ClockRunning;
+  bool R = Model.ClockRunning = !Model.ClockRunning;
+  modelChanged(Model);
+  return R;
 }
 
 void GameModelManager::Heartbeat() {

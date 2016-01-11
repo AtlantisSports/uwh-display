@@ -38,7 +38,7 @@ public:
 
   virtual GameModelManager &getMgr() override { return *this; }
 
-  virtual void setModel(GameModel Model) override;
+  virtual void modelChanged(GameModel Model) override;
 
 private:
   std::string Host;
@@ -61,7 +61,7 @@ GameModel SocketSyncClient::PullModel() {
   return GameModel();
 }
 
-void SocketSyncClient::setModel(GameModel Model) {
+void SocketSyncClient::modelChanged(GameModel Model) {
   int SockFD = socket(AF_INET, SOCK_STREAM, 0);
 
   if (SockFD < 0) {
@@ -89,7 +89,6 @@ void SocketSyncClient::setModel(GameModel Model) {
 
   std::string Ser = Model.serialize();
   write(SockFD, Ser.c_str(), Ser.size());
-  GameModelManager::setModel(Model);
 
   close(SockFD);
 }

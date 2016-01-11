@@ -40,8 +40,8 @@ public:
   GameModelManager();
 
   GameModel getModel();
-
-  virtual void setModel(GameModel M) { Model = M; }
+  void setModel(GameModel M);
+  virtual void modelChanged(GameModel M) {}
 
   unsigned char BlackScore();
   unsigned char WhiteScore();
@@ -50,7 +50,7 @@ public:
 
   void setBlackScore(unsigned char S);
   void setWhiteScore(unsigned char S);
-  void setGameClock(unsigned short T);
+  void setGameClockSecs(unsigned short T);
   void setClockRunning(bool B);
 
   unsigned char incBlackScore(signed char Delta);
