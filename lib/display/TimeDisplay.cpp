@@ -21,8 +21,8 @@ using namespace rgb_matrix;
 using namespace uwhtimer;
 
 void TimeDisplay::Render(Canvas *C) {
-  GameModel *Model = Mgr.getModel();
-  unsigned Now = Model->GameClockSecs;
+  GameModel M = Mgr.getModel();
+  unsigned Now = M.GameClockSecs;
 
   // Note that we show 1h30m as 90m here:
   unsigned Mins = (Now / 60) % 100;

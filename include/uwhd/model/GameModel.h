@@ -12,6 +12,7 @@
 #define GAMEMODEL_H
 
 #include <string>
+#include <atomic>
 
 namespace uwhtimer {
 
@@ -35,14 +36,20 @@ public:
 
 class GameModelManager {
 public:
-  GameModelManager() {}
+  GameModelManager();
 
-  GameModel *getModel();
+  GameModel getModel();
 
   virtual void setModel(GameModel M) { Model = M; }
 
+  bool toggleGameClock();
+
+  void Heartbeat();
+
 private:
-  GameModel Model;
+  std::atomic<GameModel> Model;
+  std::atomic<bool> ClockRunning;
+  static const int HeartbeatDelayMs;
 };
 
 }

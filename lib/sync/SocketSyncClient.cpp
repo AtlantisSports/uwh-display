@@ -88,7 +88,6 @@ void SocketSyncClient::setModel(GameModel Model) {
   }
 
   std::string Ser = Model.serialize();
-  std::cout << "Sending: '" << Ser << "'\n";
   write(SockFD, Ser.c_str(), Ser.size());
   GameModelManager::setModel(Model);
 

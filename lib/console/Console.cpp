@@ -37,7 +37,7 @@ bool Console::ParseLine(std::string I) {
   case 'b': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = *M.getModel();
+    GameModel Cur = M.getModel();
     int Score;
     SS >> Score;
     Cur.BlackScore = Score;
@@ -49,7 +49,7 @@ bool Console::ParseLine(std::string I) {
   case 'w': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = *M.getModel();
+    GameModel Cur = M.getModel();
     int Score;
     SS >> Score;
     Cur.WhiteScore = Score;
@@ -61,11 +61,18 @@ bool Console::ParseLine(std::string I) {
   case 't': {
     std::stringstream SS;
     SS << I.substr(1);
-    GameModel Cur = *M.getModel();
+    GameModel Cur = M.getModel();
     int Time;
     SS >> Time;
     Cur.GameClockSecs = Time;
     M.setModel(Cur);
+    return false;
+  }
+
+  case 'P':
+  case 'p': {
+    bool Running = M.toggleGameClock();
+    std::cout << "Clock is " << (Running ? "running" : "stopped") << "\n";
     return false;
   }
 
@@ -86,12 +93,11 @@ bool Console::ParseLine(std::string I) {
       M.setModel(New);
       return false;
     }
+    goto ParseError;
+  }
 
+  default:
     goto ParseError;
-  }
-  default: {
-    goto ParseError;
-  }
   }
 
 ParseError:
