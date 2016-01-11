@@ -462,11 +462,11 @@ static char *Numbers16x32[] = {
 #undef _
 
 static void PrintError(Canvas *C, unsigned D) {
-  C->SetPixel(D * 32 + 0, 0, 255, 0, 0);
-  C->SetPixel(D * 32 + 0, 2, 255, 0, 0);
-  C->SetPixel(D * 32 + 1, 1, 255, 0, 0);
-  C->SetPixel(D * 32 + 2, 0, 255, 0, 0);
-  C->SetPixel(D * 32 + 2, 2, 255, 0, 0);
+  unsigned xoffs = D * 32;
+  for (unsigned i = 0; i < 32; i++) {
+    C->SetPixel(xoffs + i, i, 255, 0, 0);
+    C->SetPixel(xoffs + i, 32 - i, 255, 0, 0);
+  }
 }
 
 void BigNumber::Render(Canvas *Canvas,
