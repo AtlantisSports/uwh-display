@@ -190,7 +190,11 @@ unsigned char GameModelManager::incWhiteScore(signed char Delta) {
 
 unsigned short GameModelManager::incGameClock(signed short Delta) {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  unsigned short T = Model.GameClockSecs += Delta;
+  unsigned short T;
+  if (Delta < 0 && Model.GameClockSecs < -Delta)
+    T = Model.GameClockSecs = 0;
+  else
+    T = Model.GameClockSecs += Delta;
   modelChanged(Model);
   return T;
 }
