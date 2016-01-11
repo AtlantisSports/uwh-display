@@ -71,7 +71,7 @@ bool Console::ParseLine(std::string I) {
 
   case 'P':
   case 'p': {
-    bool Running = M.toggleGameClock();
+    bool Running = M.toggleClockRunning();
     std::cout << "Clock is " << (Running ? "running" : "stopped") << "\n";
     return false;
   }

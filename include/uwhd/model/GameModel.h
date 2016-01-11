@@ -12,7 +12,7 @@
 #define GAMEMODEL_H
 
 #include <string>
-#include <atomic>
+#include <mutex>
 
 namespace uwhtimer {
 
@@ -25,6 +25,7 @@ public:
   unsigned char BlackScore;
   unsigned char WhiteScore;
   unsigned short GameClockSecs;
+  bool ClockRunning;
 
   std::string dump();
   std::string serialize();
@@ -42,13 +43,26 @@ public:
 
   virtual void setModel(GameModel M) { Model = M; }
 
-  bool toggleGameClock();
+  unsigned char BlackScore();
+  unsigned char WhiteScore();
+  unsigned short GameClockSecs();
+  bool ClockRunning();
+
+  void setBlackScore(unsigned char S);
+  void setWhiteScore(unsigned char S);
+  void setGameClock(unsigned short T);
+  void setClockRunning(bool B);
+
+  unsigned char incBlackScore(signed char Delta);
+  unsigned char incWhiteScore(signed char Delta);
+  unsigned short incGameClock(signed short Delta);
+  bool toggleClockRunning();
 
   void Heartbeat();
 
 private:
-  std::atomic<GameModel> Model;
-  std::atomic<bool> ClockRunning;
+  std::mutex ModelMutex;
+  GameModel Model;
   static const int HeartbeatDelayMs;
 };
 
