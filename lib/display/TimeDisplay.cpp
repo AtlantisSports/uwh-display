@@ -94,8 +94,6 @@ void TimeDisplay::Render(Canvas *C) {
     C->SetPixel(xoffs + 7, 25, ColonColor.r, ColonColor.g, ColonColor.b);
     C->SetPixel(xoffs + 6, 26, ColonColor.r, ColonColor.g, ColonColor.b);
     C->SetPixel(xoffs + 7, 26, ColonColor.r, ColonColor.g, ColonColor.b);
-
-    SecondsRing::Render(C, DisplayNum, 120 - (Now % 120), RingColor, &Background);
   } else {
     Color StopColor(255, 0, 0);
     for (unsigned y = 0; y < 16; y++) {
@@ -118,5 +116,7 @@ void TimeDisplay::Render(Canvas *C) {
       }
     }
   }
+
+  SecondsRing::Render(C, DisplayNum, 120 - (Now % 120), RingColor, &Background);
 
 }
