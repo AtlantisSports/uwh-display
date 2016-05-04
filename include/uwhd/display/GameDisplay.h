@@ -22,8 +22,6 @@ namespace rgb_matrix {
   class RGBMatrix;
 }
 
-namespace uwhtimer {
-
 class GameDisplay : public rgb_matrix::ThreadedCanvasManipulator {
 public:
   GameDisplay(rgb_matrix::RGBMatrix *Mtx)
@@ -33,7 +31,7 @@ public:
     , TD(1, Mgr)
   {}
 
-  void Run() override;
+  void Run();
 
   GameModelManager &getMgr() { return Mgr; }
 
@@ -49,7 +47,5 @@ public:
   static const rgb_matrix::Color BlackTeamBG;
   static const rgb_matrix::Color Background;
 };
-
-}
 
 #endif

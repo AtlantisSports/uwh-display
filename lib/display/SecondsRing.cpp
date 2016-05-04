@@ -17,7 +17,6 @@
 #include <cassert>
 #include <stdio.h>
 
-using namespace uwhtimer;
 using namespace rgb_matrix;
 
 void SecondsRing::WriteSegment(Canvas *Canvas,

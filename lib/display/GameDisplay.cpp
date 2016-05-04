@@ -17,7 +17,6 @@
 #include <iostream>
 
 using namespace rgb_matrix;
-using namespace uwhtimer;
 
 void GameDisplay::Run() {
   FrameCanvas *Frame = Mtx->CreateFrameCanvas();

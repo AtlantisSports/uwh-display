@@ -14,8 +14,6 @@
 #include <string>
 #include <mutex>
 
-namespace uwhtimer {
-
 class GameModel {
 public:
   GameModel()
@@ -65,7 +63,5 @@ private:
   GameModel Model;
   static const int HeartbeatDelayMs;
 };
-
-}
 
 #endif

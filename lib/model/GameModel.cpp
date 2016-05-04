@@ -18,8 +18,6 @@
 #include <thread>
 #include <iostream>
 
-using namespace uwhtimer;
-
 bool GameModel::operator==(const GameModel &Other) {
   return BlackScore == Other.BlackScore &&
          WhiteScore == Other.WhiteScore &&

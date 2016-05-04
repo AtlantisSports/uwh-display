@@ -22,7 +22,6 @@
 #include <unistd.h>
 
 using namespace rgb_matrix;
-using namespace uwhtimer;
 
 int main(int argc, char *argv[]) {
   GPIO IO;

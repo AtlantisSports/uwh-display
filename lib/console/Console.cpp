@@ -14,8 +14,6 @@
 #include <iostream>
 #include <sstream>
 
-using namespace uwhtimer;
-
 #define ANSI_RED     "\x1b[31m"
 #define ANSI_GREEN   "\x1b[32m"
 #define ANSI_YELLOW  "\x1b[33m"

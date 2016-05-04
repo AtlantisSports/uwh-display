@@ -25,7 +25,6 @@
 #include <string.h>
 
 using namespace rgb_matrix;
-using namespace uwhtimer;
 
 class SysLog {
 public:

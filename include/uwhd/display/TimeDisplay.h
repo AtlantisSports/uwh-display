@@ -19,7 +19,6 @@ namespace rgb_matrix {
 class Canvas;
 }
 
-namespace uwhtimer {
 class GameModel;
 class GameModelManager;
 
@@ -29,7 +28,7 @@ public:
       : DisplayNum(DisplayNum)
       , Mgr(Mgr) {}
 
-    void Render(rgb_matrix::Canvas *C) override;
+    void Render(rgb_matrix::Canvas *C);
 private:
     unsigned DisplayNum;
     GameModelManager &Mgr;
@@ -41,8 +40,6 @@ public:
     static const rgb_matrix::Color RingColor;
     static const rgb_matrix::Color Background;
 };
-
-}
 
 #endif
 

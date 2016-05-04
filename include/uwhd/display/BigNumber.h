@@ -16,8 +16,6 @@ namespace rgb_matrix {
     class Color;
 }
 
-namespace uwhtimer {
-
 class BigNumber {
 public:
   static void RenderQuarter(rgb_matrix::Canvas *Canvas,
@@ -80,7 +78,5 @@ public:
                      const rgb_matrix::Color &FG,
                      const rgb_matrix::Color *BG = nullptr);
 };
-
-}
 
 #endif

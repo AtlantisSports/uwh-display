@@ -22,8 +22,6 @@
 
 static const int MAX_EVENTS = 16;
 
-using namespace uwhtimer;
-
 class SocketSyncClient : public ModelSync, GameModelManager {
 public:
   SocketSyncClient(const std::string &Host, const std::string &Port);
@@ -93,8 +91,6 @@ void SocketSyncClient::modelChanged(GameModel Model) {
   close(SockFD);
 }
 
-std::unique_ptr<ModelSync>
-uwhtimer::CreateSocketClient(const std::string &Host,
-                             const std::string &Port) {
-  return std::unique_ptr<ModelSync>(new SocketSyncClient(Host, Port));
+ModelSync *CreateSocketClient(const std::string &Host, const std::string &Port) {
+  return new SocketSyncClient(Host, Port);
 }

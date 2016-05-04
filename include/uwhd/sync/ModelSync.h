@@ -13,10 +13,7 @@
 
 #include "uwhd/model/GameModel.h"
 
-#include <memory>
 #include <string>
-
-namespace uwhtimer {
 
 class ModelSync {
 public:
@@ -31,10 +28,7 @@ public:
 
 };
 
-std::unique_ptr<ModelSync> CreateSocketServer(const std::string &Port);
-std::unique_ptr<ModelSync> CreateSocketClient(const std::string &Host,
-                                              const std::string &Port);
-
-}
+ModelSync *CreateSocketServer(const std::string &Port);
+ModelSync *CreateSocketClient(const std::string &Host, const std::string &Port);
 
 #endif

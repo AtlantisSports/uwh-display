@@ -18,7 +18,6 @@
 #include <ctime>
 
 using namespace rgb_matrix;
-using namespace uwhtimer;
 
 #define _ 0
 #define NW 0x1

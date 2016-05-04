@@ -11,8 +11,6 @@
 
 #include <iostream>
 
-using namespace uwhtimer;
-
 bool CheckRoundTripSerialize(unsigned B, unsigned W, unsigned T) {
   GameModel Src;
   Src.BlackScore = B;

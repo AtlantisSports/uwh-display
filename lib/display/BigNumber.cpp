@@ -15,7 +15,6 @@
 
 #include <cassert>
 
-using namespace uwhtimer;
 using namespace rgb_matrix;
 
 #define _ 0

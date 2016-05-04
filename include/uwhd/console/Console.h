@@ -12,7 +12,6 @@
 
 #include <string>
 
-namespace uwhtimer {
 class GameModelManager;
 
 class Console {
@@ -26,5 +25,4 @@ private:
   GameModelManager &M;
 };
 
-} // namespace uwtimer
 #endif

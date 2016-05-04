@@ -16,8 +16,6 @@ namespace rgb_matrix {
     class Color;
 }
 
-namespace uwhtimer {
-
 class SecondsRing {
 public:
   static void Render(rgb_matrix::Canvas *Canvas,
@@ -36,7 +34,5 @@ private:
                            bool IsTail);
 
 };
-
-}
 
 #endif

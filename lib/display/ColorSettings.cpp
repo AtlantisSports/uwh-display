@@ -13,7 +13,6 @@
 #include <graphics.h>
 
 using namespace rgb_matrix;
-using namespace uwhtimer;
 
 const Color GameDisplay::Background   = Color(  0,   0,   0);
 const Color GameDisplay::WhiteTeamFG  = Color(200, 200, 200);
