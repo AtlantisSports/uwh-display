@@ -33,7 +33,17 @@ public:
 
   void Run();
 
+  /// For the SWIG bindings, which can't tell the overloads apart:
+  virtual void Start0() { Start(); }
+  virtual void Start2(int RealtimePriority, uint32_t CPUAffinityMask) {
+    Start(RealtimePriority, CPUAffinityMask);
+  }
+
   GameModelManager &getMgr() { return Mgr; }
+
+  /// For SWIG, which doesn't do the right thing for references
+  /// FIXME: replace uses of the other getter with this one.
+  GameModelManager *getMgr2() { return &Mgr; }
 
 private:
   rgb_matrix::RGBMatrix *Mtx;

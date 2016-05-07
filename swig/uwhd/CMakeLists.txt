@@ -45,3 +45,18 @@ SWIG_LINK_LIBRARIES(sync
                     uwhdsync
                     uwhdmodel)
 
+SET_SOURCE_FILES_PROPERTIES(uwhd.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(uwhd.i PROPERTIES SWIG_FLAGS "")
+SWIG_ADD_MODULE(uwhd python uwhd.i)
+SWIG_LINK_LIBRARIES(uwhd
+                    ${PYTHON_LIBRARIES}
+                    uwhdsync
+                    uwhdmodel
+                    uwhdconsole
+                    uwhddisplay
+                    ${LIBRGBMATRIX}
+                    uwhdmodel
+                    rt
+                    m
+                    pthread)
+
