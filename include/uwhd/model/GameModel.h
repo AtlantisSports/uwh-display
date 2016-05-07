@@ -13,6 +13,7 @@
 
 #include <string>
 #include <mutex>
+#include <vector>
 
 class GameModel {
 public:
@@ -25,42 +26,46 @@ public:
   unsigned short GameClockSecs;
   bool ClockRunning;
 
-  std::string dump();
-  std::string serialize();
+  std::string dump() const;
+  std::string serialize() const;
   static bool deSerialize(std::string S, GameModel &M);
 
-  bool operator==(const GameModel &Other);
-  bool operator!=(const GameModel &Other) { return !(*this == Other); }
+  bool operator==(const GameModel &Other) const;
+  bool operator!=(const GameModel &Other) const { return !(*this == Other); }
 };
 
-class GameModelManager {
+struct GameModelListener {
+  virtual void modelChanged(GameModel M) {}
+  virtual ~GameModelListener() {}
+};
+
+class GameModelManager : public GameModelListener {
 public:
   GameModelManager();
+  virtual ~GameModelManager() {}
+
+  void registerListener(GameModelListener *L);
 
   GameModel getModel();
   void setModel(GameModel M);
-  virtual void modelChanged(GameModel M) {}
+  virtual void modelChanged(GameModel M);
 
-  unsigned char BlackScore();
-  unsigned char WhiteScore();
-  unsigned short GameClockSecs();
-  bool ClockRunning();
+  unsigned char blackScore();
+  unsigned char whiteScore();
+  unsigned short gameClock();
+  bool gameClockRunning();
 
   void setBlackScore(unsigned char S);
   void setWhiteScore(unsigned char S);
-  void setGameClockSecs(unsigned short T);
-  void setClockRunning(bool B);
+  void setGameClock(unsigned short T);
+  void setGameClockRunning(bool B);
 
-  unsigned char incBlackScore(signed char Delta);
-  unsigned char incWhiteScore(signed char Delta);
-  unsigned short incGameClock(signed short Delta);
-  bool toggleClockRunning();
-
-  void Heartbeat();
+  void heartbeat();
 
 private:
   std::mutex ModelMutex;
   GameModel Model;
+  std::vector<GameModelListener*> Listeners;
   static const int HeartbeatDelayMs;
 };
 

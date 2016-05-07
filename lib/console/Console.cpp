@@ -57,13 +57,14 @@ bool Console::ParseLine(std::string I) {
     SS << I.substr(1);
     int Time;
     SS >> Time;
-    M.setGameClockSecs(Time);
+    M.setGameClock(Time);
     goto Success;
   }
 
   case 'P':
   case 'p': {
-    bool Running = M.toggleClockRunning();
+    bool Running = M.gameClockRunning();
+    M.setGameClockRunning(!Running);
     goto Success;
   }
 

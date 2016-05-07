@@ -33,19 +33,19 @@ def instruct_and_wait(instructions):
 
 def display_checks(mgr, is_front):
   s = True
-  mgr.setClockRunning(False)
+  mgr.setGameClockRunning(False)
   mgr.setBlackScore(1)
   mgr.setWhiteScore(4)
-  mgr.setGameClockSecs(135)
+  mgr.setGameClock(135)
   s = ask_user_yes_no('Are all three displays on?') and s
 
   # Quit early, there's no point in asking more questions'
   if not s:
     return False
 
-  mgr.setClockRunning(True)
+  mgr.setGameClockRunning(True)
   time.sleep(2)
-  mgr.setClockRunning(False)
+  mgr.setGameClockRunning(False)
   s = ask_user_yes_no('Did the clock count down, and then stop?') and s
 
   for i in range(0, 100):
@@ -54,7 +54,7 @@ def display_checks(mgr, is_front):
     time.sleep(0.3)
   s = ask_user_yes_no('Did the scores cycle through every number 0-99?') and s
 
-  mgr.setGameClockSecs(102)
+  mgr.setGameClock(102)
   s = ask_user_yes_no('Does the time show 1:42?') and s
 
   return s
@@ -71,10 +71,10 @@ if __name__ == '__main__':
   gd = uwhd.GameDisplay(matrix)
   gd.Start0()
   mgr = gd.getMgr2()
-  mgr.setClockRunning(False)
+  mgr.setGameClockRunning(False)
   mgr.setBlackScore(0)
   mgr.setWhiteScore(0)
-  mgr.setGameClockSecs(1)
+  mgr.setGameClock(1)
 
   s = True
 

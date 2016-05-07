@@ -32,6 +32,7 @@ matrix = uwhd.RGBMatrix(io, rows, chained_displays, parallel_rows)
 
 print "Built RGBMatrix"
 
+print "Make it purple with twinkles!"
 matrix.Fill(128, 0, 255)
 for i in range(0, 10000):
   x = random.randint(0, 96)
@@ -40,7 +41,6 @@ for i in range(0, 10000):
     matrix.SetPixel(x, y, 255,255,255)
   else:
     matrix.SetPixel(x, y, 0,0,0)
-print "Make it purple with twinkles!"
 
 # Create the Game Display object, which maintains its own version of the
 # game state, and renders it onto the external 32x32 panels on the front
@@ -58,14 +58,19 @@ print "Started GameDisplay"
 
 # Fetch the GameManager so we can edit the game state
 mgr = gd.getMgr2()
-mgr.setClockRunning(0)
+mgr.setGameClockRunning(0)
 mgr.setBlackScore(1)
 mgr.setWhiteScore(4)
-mgr.setGameClockSecs(135)
+mgr.setGameClock(135)
 
 print "Set up GameModel"
 
-time.sleep(5)
+mgr.setGameClockRunning(1)
+
+for i in range(0, 10):
+  mod = mgr.getModel()
+  print mod.dump()
+  time.sleep(1)
 
 
 print "Quitting"

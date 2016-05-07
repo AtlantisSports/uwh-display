@@ -4,3 +4,8 @@
 %}
 
 %include "uwhd/sync/ModelSync.h"
+
+%newobject CreateSocketServer;
+%newobject CreateSocketClient;
+
+
