@@ -19,14 +19,16 @@ def ask_user_yes_no(question):
   }
 
   while True:
-    response = raw_input(question + ' [Y/N] ')
+    response = raw_input(question.rjust(60, ' ') + ' [Y/N] ')
     if response in valid_responses:
       return valid_responses[response]
 
     print 'Invalid input'
 
 def instruct_and_wait(instructions):
-  bar = colored('*************************************************', 'magenta')
+  bar = colored('**********************************'
+                '**********************************',
+                'magenta')
   raw_input(bar + '\n' + instructions + '\n' + bar)
 
 def display_checks(mgr, is_front):
