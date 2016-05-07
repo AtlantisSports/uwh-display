@@ -3,11 +3,14 @@
 import sys
 import uwhd
 import time
+import random
 
 # Start up the GPIO for talking to the 32x32 panels
 io = uwhd.GPIO()
 if not io.Init():
-  print "Did you run with sudo priveleges? Because you should have."
+  print 'Try running this as:'
+  print ''
+  print '$ sudo PYTHONPATH=path/to/build/lib python uwhd-demo.py'
   sys.exit(-1)
 
 print "GPIO inited"
@@ -28,6 +31,16 @@ parallel_rows = 1
 matrix = uwhd.RGBMatrix(io, rows, chained_displays, parallel_rows)
 
 print "Built RGBMatrix"
+
+matrix.Fill(128, 0, 255)
+for i in range(0, 10000):
+  x = random.randint(0, 96)
+  y = random.randint(0, 96)
+  if random.getrandbits(1):
+    matrix.SetPixel(x, y, 255,255,255)
+  else:
+    matrix.SetPixel(x, y, 0,0,0)
+print "Make it purple with twinkles!"
 
 # Create the Game Display object, which maintains its own version of the
 # game state, and renders it onto the external 32x32 panels on the front
@@ -53,5 +66,6 @@ mgr.setGameClockSecs(135)
 print "Set up GameModel"
 
 time.sleep(5)
+
 
 print "Quitting"

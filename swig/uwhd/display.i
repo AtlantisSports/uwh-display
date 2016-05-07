@@ -13,6 +13,7 @@
 #include "uwhd/display/TimeDisplay.h"
 %}
 
+%include "stdint.i"
 %include <gpio.h>
 %include <canvas.h>
 %include <thread.h>
