@@ -48,15 +48,11 @@ def display_checks(mgr, is_front):
   mgr.setClockRunning(False)
   s = ask_user_yes_no('Did the clock count down, and then stop?') and s
 
-  mgr.setBlackScore(99)
-  s = ask_user_yes_no('Is the black score 99?') and s
-
-  mgr.setWhiteScore(99)
-  s = ask_user_yes_no('Is the white score 99?') and s
-
-  mgr.setWhiteScore(0)
-  mgr.setBlackScore(0)
-  s = ask_user_yes_no('Are both scores 0?') and s
+  for i in range(0, 100):
+    mgr.setWhiteScore(i)
+    mgr.setBlackScore(i)
+    time.sleep(0.3)
+  s = ask_user_yes_no('Did the scores cycle through every number 0-99?') and s
 
   mgr.setGameClockSecs(102)
   s = ask_user_yes_no('Does the time show 1:42?') and s
