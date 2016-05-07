@@ -13,22 +13,35 @@ set(SWIG_CXX_EXTENSION "cpp")
 SET_SOURCE_FILES_PROPERTIES(console.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(console.i PROPERTIES SWIG_FLAGS "")
 SWIG_ADD_MODULE(console python console.i)
-SWIG_LINK_LIBRARIES(console ${PYTHON_LIBRARIES} uwhdconsole)
+SWIG_LINK_LIBRARIES(console ${PYTHON_LIBRARIES} uwhdconsole uwhdmodel)
 
 if(UWHD_BUILD_DISPLAY)
   SET_SOURCE_FILES_PROPERTIES(display.i PROPERTIES CPLUSPLUS ON)
   SET_SOURCE_FILES_PROPERTIES(display.i PROPERTIES SWIG_FLAGS "")
   SWIG_ADD_MODULE(display python display.i)
-  SWIG_LINK_LIBRARIES(display ${PYTHON_LIBRARIES} uwhddisplay)
+  SWIG_LINK_LIBRARIES(display
+                      ${PYTHON_LIBRARIES}
+                      uwhddisplay
+                      ${LIBRGBMATRIX}
+                      uwhdmodel
+                      rt
+                      m
+                      pthread)
+  add_dependencies(${SWIG_MODULE_display_REAL_NAME} rgbmatrix)
 endif()
 
 SET_SOURCE_FILES_PROPERTIES(model.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(model.i PROPERTIES SWIG_FLAGS "")
 SWIG_ADD_MODULE(model python model.i)
-SWIG_LINK_LIBRARIES(model ${PYTHON_LIBRARIES} uwhdmodel)
+SWIG_LINK_LIBRARIES(model
+                    ${PYTHON_LIBRARIES}
+                    uwhdmodel)
 
 SET_SOURCE_FILES_PROPERTIES(sync.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(sync.i PROPERTIES SWIG_FLAGS "")
 SWIG_ADD_MODULE(sync python sync.i)
-SWIG_LINK_LIBRARIES(sync ${PYTHON_LIBRARIES} uwhdsync)
+SWIG_LINK_LIBRARIES(sync
+                    ${PYTHON_LIBRARIES}
+                    uwhdsync
+                    uwhdmodel)
 
