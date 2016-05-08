@@ -11,24 +11,29 @@
 
 #include <iostream>
 
-bool CheckRoundTripSerialize(unsigned B, unsigned W, unsigned T) {
+bool CheckRoundTripSerialize(unsigned B, unsigned W, unsigned T,
+                             bool ClockRunning) {
   GameModel Src;
   Src.BlackScore = B;
   Src.WhiteScore = W;
   Src.GameClockSecs = T;
+  Src.ClockRunning = ClockRunning;
 
   std::string Ser = Src.serialize();
   GameModel Dst;
 
   if (GameModel::deSerialize(Ser, Dst)) {
-    std::cerr << "FAIL: (B:" << B << ", W:" << ", T:" << T << ") "
-              << __PRETTY_FUNCTION__ << " Can't deserialize";
+    std::cerr << "FAIL: (B:" << B << ", W:" << ", T:" << T
+                             << ", R:" << (ClockRunning?"Y":"N") << ")\n"
+              << __PRETTY_FUNCTION__ << " Can't deserialize\n";
     return true;
   }
 
   if (Dst != Src) {
-    std::cerr << "FAIL: (B:" << B << ", W:" << ", T:" << T << ") "
-              << __PRETTY_FUNCTION__ << " Doesn't match";
+    std::cerr << "FAIL: (B:" << B << ", W:" << W << ", T:" << T << ")\n"
+              << Dst.dump() << "\n"
+              << Src.dump() << "\n"
+              << "      " << __PRETTY_FUNCTION__ << " Doesn't match\n";
     return true;
   }
 
@@ -50,7 +55,8 @@ bool CheckNotEquals(GameModel M1, GameModel M2) {
 
   if (M1.BlackScore == M2.BlackScore &&
       M1.WhiteScore == M2.WhiteScore &&
-      M1.GameClockSecs == M2.GameClockSecs) {
+      M1.GameClockSecs == M2.GameClockSecs &&
+      M1.ClockRunning == M2.ClockRunning) {
     std::cerr << "FAIL: " << M1.serialize() << " == " << M2.serialize() << " "
               << __PRETTY_FUNCTION__ << " equality\n";
     return true;
@@ -74,7 +80,8 @@ bool CheckEquals(GameModel M1, GameModel M2) {
 
   if (M1.BlackScore != M2.BlackScore ||
       M1.WhiteScore != M2.WhiteScore ||
-      M1.GameClockSecs != M2.GameClockSecs) {
+      M1.GameClockSecs != M2.GameClockSecs ||
+      M1.ClockRunning != M2.ClockRunning) {
     std::cerr << "FAIL: " << M1.serialize() << " != " << M2.serialize() << " "
               << __PRETTY_FUNCTION__ << " inequality\n";
     return true;
@@ -89,23 +96,64 @@ int main(int argc, char *argv[]) {
 
   for (unsigned B = 0; B < 10; B++)
     for (unsigned W = 0; W < 10; W++)
-      for (unsigned T = 0; T < 10; T++)
-        Failed |= CheckRoundTripSerialize(B, W, T);
+      for (unsigned T = 0; T < 10; T++) {
+        Failed |= CheckRoundTripSerialize(B, W, T, false);
+        Failed |= CheckRoundTripSerialize(B, W, T, true);
+      }
 
-  Failed |= CheckRoundTripSerialize(99, 99, 9999);
-  Failed |= CheckRoundTripSerialize(99, 99, 999999);
-  Failed |= CheckRoundTripSerialize(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+  Failed |= CheckRoundTripSerialize(99, 99, 9999, true);
+  Failed |= CheckRoundTripSerialize(99, 99, 999999, false);
+  Failed |= CheckRoundTripSerialize(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, true);
 
   GameModel M1;
   M1.BlackScore = 1;
   M1.WhiteScore = 2;
   M1.GameClockSecs = 15;
+  M1.ClockRunning = true;
 
   GameModel M2 = M1;
   Failed |= CheckEquals(M1, M2);
+  Failed |= CheckEquals(M2, M1);
 
-  M1.BlackScore = 2;
+  M2 = M1;
+  M2.WhiteScore = 4;
   Failed |= CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M2, M1);
+
+  M2 = M1;
+  M2.BlackScore = 4;
+  Failed |= CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M2, M1);
+
+  M2 = M1;
+  M2.ClockRunning = false;
+  Failed |= CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M2, M1);
+
+  M2 = M1;
+  M2.ClockRunning = false;
+  M2.WhiteScore = 4;
+  Failed |= CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M2, M1);
+
+  M2 = M1;
+  M2.ClockRunning = false;
+  M2.BlackScore = 4;
+  Failed |= CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M2, M1);
+
+  M2 = M1;
+  M2.WhiteScore = 5;
+  M2.BlackScore = 4;
+  Failed |= CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M2, M1);
+
+  M2 = M1;
+  M2.ClockRunning = false;
+  M2.WhiteScore = 5;
+  M2.BlackScore = 4;
+  Failed |= CheckNotEquals(M1, M2);
+  Failed |= CheckNotEquals(M2, M1);
 
   return Failed ? 1 : 0;
 }
