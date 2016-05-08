@@ -36,10 +36,6 @@ public:
 
   virtual void Init() override;
 
-  virtual void PushModel(GameModel M) override;
-
-  virtual GameModel PullModel() override;
-
   virtual void setMgr(GameModelManager *NewM) { M = NewM; }
 
   virtual GameModelManager &getMgr() override { return *M; }
@@ -276,14 +272,6 @@ void SocketSyncServer::Init() {
 
   close(SocketFD);
   SocketFD = 0;
-}
-
-void SocketSyncServer::PushModel(GameModel M) {
-  assert(false);
-}
-
-GameModel SocketSyncServer::PullModel() {
-  return GameModel();
 }
 
 ModelSync *CreateSocketServer(const std::string &Port) {

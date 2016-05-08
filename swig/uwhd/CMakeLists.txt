@@ -51,7 +51,8 @@ SWIG_ADD_MODULE(sync python sync.i)
 SWIG_LINK_LIBRARIES(sync
                     ${PYTHON_LIBRARIES}
                     uwhdsync
-                    uwhdmodel)
+                    uwhdmodel
+                    ${LIBXBEE3})
 
 SET(SWIG_MODULE_uwhd_EXTRA_DEPS
     ${CMAKE_CURRENT_SOURCE_DIR}/console.i
@@ -68,8 +69,9 @@ SWIG_LINK_LIBRARIES(uwhd
                     uwhdmodel
                     uwhdconsole
                     uwhddisplay
-                    ${LIBRGBMATRIX}
                     uwhdmodel
+                    ${LIBRGBMATRIX}
+                    ${LIBXBEE3}
                     rt
                     m
                     pthread)

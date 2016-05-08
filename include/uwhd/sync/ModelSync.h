@@ -15,20 +15,14 @@
 
 #include <string>
 
-class ModelSync {
-public:
+struct ModelSync {
   virtual void Init() = 0;
-
-  virtual void PushModel(GameModel M) = 0;
-
-  virtual GameModel PullModel() = 0;
-
   virtual void setMgr(GameModelManager *M) = 0;
   virtual GameModelManager &getMgr() = 0;
-
 };
 
 ModelSync *CreateSocketServer(const std::string &Port);
 ModelSync *CreateSocketClient(const std::string &Host, const std::string &Port);
+ModelSync *CreateXBeeSync(bool ThisIsCoordinator);
 
 #endif

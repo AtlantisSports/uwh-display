@@ -28,10 +28,6 @@ public:
 
   virtual void Init() override;
 
-  virtual void PushModel(GameModel M) override;
-
-  virtual GameModel PullModel() override;
-
   virtual void setMgr(GameModelManager *M) override { assert(false); }
 
   virtual GameModelManager &getMgr() override { return *this; }
@@ -49,14 +45,6 @@ SocketSyncClient::SocketSyncClient(const std::string &Host,
 }
 
 void SocketSyncClient::Init() {
-}
-
-void SocketSyncClient::PushModel(GameModel M) {
-
-}
-
-GameModel SocketSyncClient::PullModel() {
-  return GameModel();
 }
 
 void SocketSyncClient::modelChanged(GameModel Model) {

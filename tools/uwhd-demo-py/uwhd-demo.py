@@ -65,6 +65,18 @@ mgr.setGameClock(135)
 
 print "Set up GameModel"
 
+xbee = uwhd.CreateXBeeSync(False)
+
+print "created xbee sync"
+
+xbee.Init()
+
+print "inited xbee sync"
+
+xbee.setMgr(mgr)
+
+print "added the mgr"
+
 mgr.setGameClockRunning(1)
 
 for i in range(0, 10):

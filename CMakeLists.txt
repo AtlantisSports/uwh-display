@@ -36,6 +36,13 @@ include_directories("${CMAKE_SOURCE_DIR}/matrix/include")
 link_directories("${CMAKE_SOURCE_DIR}/matrix/lib")
 endif()
 
+
+# -----------------------------------------------------------------------------
+# libxbee3
+# -----------------------------------------------------------------------------
+set(LIBXBEE3  "/usr/lib/libxbee.so")
+set(LIBXBEE3P "/usr/lib/libxbeep.so")
+
 # -----------------------------------------------------------------------------
 # Build libraries, and tools
 # -----------------------------------------------------------------------------
