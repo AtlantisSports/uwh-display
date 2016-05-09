@@ -32,15 +32,16 @@ matrix = uwhd.RGBMatrix(io, rows, chained_displays, parallel_rows)
 
 print "Built RGBMatrix"
 
-print "Make it purple with twinkles!"
-matrix.Fill(128, 0, 255)
-for i in range(0, 10000):
-  x = random.randint(0, 96)
-  y = random.randint(0, 96)
-  if random.getrandbits(1):
-    matrix.SetPixel(x, y, 255,255,255)
-  else:
-    matrix.SetPixel(x, y, 0,0,0)
+if False:
+  print "Make it purple with twinkles!"
+  matrix.Fill(128, 0, 255)
+  for i in range(0, 10000):
+    x = random.randint(0, 96)
+    y = random.randint(0, 96)
+    if random.getrandbits(1):
+      matrix.SetPixel(x, y, 255,255,255)
+    else:
+      matrix.SetPixel(x, y, 0,0,0)
 
 # Create the Game Display object, which maintains its own version of the
 # game state, and renders it onto the external 32x32 panels on the front
@@ -77,7 +78,18 @@ xbee.setMgr(mgr)
 
 print "added the mgr"
 
+print "doing node discovery:"
+peers = xbee.peers()
+
+print "peers are:"
+for p in peers:
+  print " %-20s - %s" % (p.name(), p.addr())
+
+print "starting the game clock:"
+
 mgr.setGameClockRunning(1)
+
+print "probe the mgr for model updates:"
 
 for i in range(0, 10):
   mod = mgr.getModel()

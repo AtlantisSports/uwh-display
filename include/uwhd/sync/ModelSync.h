@@ -14,6 +14,7 @@
 #include "uwhd/model/GameModel.h"
 
 #include <string>
+#include <vector>
 
 struct ModelSync {
   virtual void Init() = 0;
@@ -21,8 +22,21 @@ struct ModelSync {
   virtual GameModelManager &getMgr() = 0;
 };
 
+struct ModelSyncPeer {
+  virtual std::string name() const = 0;
+  virtual std::string addr() const = 0;
+};
+
+struct ModelSyncServer : public ModelSync {
+  virtual std::vector<ModelSyncPeer*> peers() = 0;
+  //virtual void claimPeer(const ModelSyncPeer *P) = 0;
+  //virtual void getPeerWallClock(const ModelSyncPeer *P) = 0;
+  //virtual void setPeerWallClock(const ModelSyncPeer *P) = 0;
+  //virtual void adjustPeerWallClock(const ModelSyncPeer *P, int Delta) = 0;
+};
+
 ModelSync *CreateSocketServer(const std::string &Port);
 ModelSync *CreateSocketClient(const std::string &Host, const std::string &Port);
-ModelSync *CreateXBeeSync(bool ThisIsCoordinator);
+ModelSyncServer *CreateXBeeSync(bool Coordinator);
 
 #endif
