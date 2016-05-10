@@ -92,9 +92,11 @@ mgr.setGameClockRunning(1)
 print "probe the mgr for model updates:"
 
 for i in range(0, 10):
-  mod = mgr.getModel()
-  print mod.dump()
+  print ""
+  print "  BlackScore:   %d" %(mgr.blackScore(),)
+  print "  WhiteScore:   %d" %(mgr.whiteScore(),)
+  print "  Time:         %ds" %(mgr.gameClock(),)
+  print "  ClockRunning: %s" %("YES" if mgr.gameClockRunning() else "NO",)
   time.sleep(1)
-
 
 print "Quitting"
