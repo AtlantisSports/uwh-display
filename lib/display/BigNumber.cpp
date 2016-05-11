@@ -119,6 +119,66 @@ _,_,_,_,1,
 _,1,1,1,_,
 };
 
+static const char AlphaUpper5x7_A[5*7] = {
+_,1,1,1,_,
+1,_,_,_,1,
+1,_,_,_,1,
+1,1,1,1,1,
+1,_,_,_,1,
+1,_,_,_,1,
+1,_,_,_,1,
+};
+
+static const char AlphaUpper5x7_B[5*7] = {
+1,1,1,1,_,
+1,_,_,_,1,
+1,_,_,_,1,
+1,1,1,1,1,
+1,_,_,_,1,
+1,_,_,_,1,
+1,1,1,1,_,
+};
+
+static const char AlphaUpper5x7_C[5*7] = {
+_,1,1,1,1,
+1,_,_,_,_,
+1,_,_,_,_,
+1,_,_,_,_,
+1,_,_,_,_,
+1,_,_,_,_,
+_,1,1,1,1,
+};
+
+static const char AlphaUpper5x7_D[5*7] = {
+1,1,1,1,_,
+1,_,_,_,1,
+1,_,_,_,1,
+1,_,_,_,1,
+1,_,_,_,1,
+1,_,_,_,1,
+1,1,1,1,_,
+};
+
+static const char AlphaUpper5x7_E[5*7] = {
+1,1,1,1,1,
+1,_,_,_,_,
+1,_,_,_,_,
+1,1,1,1,1,
+1,_,_,_,_,
+1,_,_,_,_,
+1,1,1,1,1,
+};
+
+static const char AlphaUpper5x7_F[5*7] = {
+1,1,1,1,1,
+1,_,_,_,_,
+1,_,_,_,_,
+1,1,1,1,1,
+1,_,_,_,_,
+1,_,_,_,_,
+1,_,_,_,_,
+};
+
 static const char Number11x20_0[11*20] = {
 _,_,1,1,1,1,1,1,1,_,_,
 _,1,1,1,1,1,1,1,1,1,_,
@@ -670,6 +730,25 @@ _,_,_,1,1,1,1,1,1,1,1,1,_,_,_,
 };
 #undef _
 
+static const char *HexUpper5x7[] = {
+   Number5x7_0,
+   Number5x7_1,
+   Number5x7_2,
+   Number5x7_3,
+   Number5x7_4,
+   Number5x7_5,
+   Number5x7_6,
+   Number5x7_7,
+   Number5x7_8,
+   Number5x7_9,
+   AlphaUpper5x7_A,
+   AlphaUpper5x7_B,
+   AlphaUpper5x7_C,
+   AlphaUpper5x7_D,
+   AlphaUpper5x7_E,
+   AlphaUpper5x7_F,
+};
+
 static const char *Numbers5x7[] = {
    Number5x7_0,
    Number5x7_1,
@@ -712,6 +791,7 @@ static const char *Numbers15x29[] = {
 
 static unsigned width(enum BigNumber::Font F) {
   switch (F) {
+  case BigNumber::Font::HexUpper5x7: return 5;
   case BigNumber::Font::Digit5x7:    return 5;
   case BigNumber::Font::Digit11x20:  return 11;
   case BigNumber::Font::Digit15x29:  return 15;
@@ -721,6 +801,7 @@ static unsigned width(enum BigNumber::Font F) {
 
 static unsigned height(enum BigNumber::Font F) {
   switch (F) {
+  case BigNumber::Font::HexUpper5x7: return 7;
   case BigNumber::Font::Digit5x7:    return 7;
   case BigNumber::Font::Digit11x20:  return 20;
   case BigNumber::Font::Digit15x29:  return 29;
@@ -729,11 +810,19 @@ static unsigned height(enum BigNumber::Font F) {
 }
 
 static const char *character(enum BigNumber::Font F, unsigned char Digit) {
-  assert(Digit < 10);
   switch (F) {
-  case BigNumber::Font::Digit5x7:    return Numbers5x7[Digit];
-  case BigNumber::Font::Digit11x20:  return Numbers11x20[Digit];
-  case BigNumber::Font::Digit15x29:  return Numbers15x29[Digit];
+  case BigNumber::Font::HexUpper5x7:
+    assert(Digit < 16);
+    return HexUpper5x7[Digit];
+  case BigNumber::Font::Digit5x7:
+    assert(Digit < 10);
+    return Numbers5x7[Digit];
+  case BigNumber::Font::Digit11x20:
+    assert(Digit < 10);
+    return Numbers11x20[Digit];
+  case BigNumber::Font::Digit15x29:
+    assert(Digit < 10);
+    return Numbers15x29[Digit];
   }
   return nullptr;
 }
@@ -745,8 +834,6 @@ void BigNumber::Render(Canvas *Canvas,
                        enum BigNumber::Font F,
                        const Color &FG,
                        const Color *BG) {
-  assert(Digit < 10);
-
   unsigned H = height(F);
   unsigned W = width(F);
   const char *Character = character(F, Digit);

@@ -19,6 +19,7 @@ namespace rgb_matrix {
 class BigNumber {
 public:
   enum Font {
+  HexUpper5x7,
   Digit5x7,
   Digit11x20,
   Digit15x29
