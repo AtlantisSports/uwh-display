@@ -21,13 +21,42 @@ using namespace rgb_matrix;
 void GameDisplay::Run() {
   FrameCanvas *Frame = Mtx->CreateFrameCanvas();
   while (running()) {
-    GameModel M = Mgr.getModel();
     for (unsigned y = 0; y < 32 * 3; y++)
       for (unsigned x = 0; x < 32 * 3; x++)
         Frame->SetPixel(x, y, Background.r, Background.g, Background.b);
-    BigNumber::Render(Frame, 0, M.BlackScore, BlackTeamFG, &BlackTeamBG);
+
+    GameModel M = Mgr.getModel();
+
     TD.Render(Frame);
-    BigNumber::Render(Frame, 2, M.WhiteScore, WhiteTeamFG, &WhiteTeamBG);
+
+    if (M.BlackScore < 10)
+      // One's
+      BigNumber::Render(Frame, 0, M.BlackScore % 10, /*xo=*/10, /*yo=*/1,
+                        BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
+    else if (10 <= M.BlackScore && M.BlackScore < 100) {
+      // Ten's
+      BigNumber::Render(Frame, 0, (M.BlackScore / 10) % 10, /*xo=*/0, /*yo=*/1,
+                        BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
+
+      // One's
+      BigNumber::Render(Frame, 0, M.BlackScore % 10, /*xo=*/17, /*yo=*/1,
+                        BigNumber::Font::Digit15x29, BlackTeamFG, &BlackTeamBG);
+    }
+
+    if (M.WhiteScore < 10)
+      // One's
+      BigNumber::Render(Frame, 2, M.WhiteScore % 10, /*xo=*/10, /*yo=*/1,
+                        BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
+    else if (10 <= M.WhiteScore && M.WhiteScore < 100) {
+      // Ten's
+      BigNumber::Render(Frame, 2, (M.WhiteScore / 10) % 10, /*xo=*/0, /*yo=*/1,
+                        BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
+
+      // One's
+      BigNumber::Render(Frame, 2, M.WhiteScore % 10, /*xo=*/17, /*yo=*/1,
+                        BigNumber::Font::Digit15x29, WhiteTeamFG, &WhiteTeamBG);
+    }
+
     Frame = Mtx->SwapOnVSync(Frame);
   }
 }

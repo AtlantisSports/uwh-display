@@ -18,63 +18,17 @@ namespace rgb_matrix {
 
 class BigNumber {
 public:
-  static void RenderQuarter(rgb_matrix::Canvas *Canvas,
-                         unsigned Display,
-                         unsigned Value,
-                         unsigned X, unsigned Y,
-                         const rgb_matrix::Color &FG,
-                         const rgb_matrix::Color *BG = nullptr);
-
-  static void RenderQuarterSingle(rgb_matrix::Canvas *Canvas,
-                               unsigned Display,
-                               unsigned Value,
-                               unsigned X, unsigned Y,
-                               const rgb_matrix::Color &FG,
-                               const rgb_matrix::Color *BG = nullptr);
-
-  static void RenderQuarterDouble(rgb_matrix::Canvas *Canvas,
-                               unsigned Display,
-                               unsigned Value,
-                               unsigned X, unsigned Y,
-                               const rgb_matrix::Color &FG,
-                               const rgb_matrix::Color *BG = nullptr);
-
-  static void RenderHalf(rgb_matrix::Canvas *Canvas,
-                         unsigned Display,
-                         unsigned Value,
-                         unsigned X, unsigned Y,
-                         const rgb_matrix::Color &FG,
-                         const rgb_matrix::Color *BG = nullptr);
-
-  static void RenderHalfSingle(rgb_matrix::Canvas *Canvas,
-                               unsigned Display,
-                               unsigned Value,
-                               unsigned X, unsigned Y,
-                               const rgb_matrix::Color &FG,
-                               const rgb_matrix::Color *BG = nullptr);
-
-  static void RenderHalfDouble(rgb_matrix::Canvas *Canvas,
-                               unsigned Display,
-                               unsigned Value,
-                               unsigned X, unsigned Y,
-                               const rgb_matrix::Color &FG,
-                               const rgb_matrix::Color *BG = nullptr);
+  enum Font {
+  Digit5x7,
+  Digit11x20,
+  Digit15x29
+  };
 
   static void Render(rgb_matrix::Canvas *Canvas,
                      unsigned Display,
-                     unsigned Value,
-                     const rgb_matrix::Color &FG,
-                     const rgb_matrix::Color *BG = nullptr);
-
-  static void RenderSingle(rgb_matrix::Canvas *Canvas,
-                     unsigned Display,
-                     unsigned Value,
-                     const rgb_matrix::Color &FG,
-                     const rgb_matrix::Color *BG = nullptr);
-
-  static void RenderDouble(rgb_matrix::Canvas *Canvas,
-                     unsigned Display,
-                     unsigned Value,
+                     unsigned char Digit,
+                     unsigned XOffs, unsigned YOffs,
+                     enum BigNumber::Font F,
                      const rgb_matrix::Color &FG,
                      const rgb_matrix::Color *BG = nullptr);
 };
