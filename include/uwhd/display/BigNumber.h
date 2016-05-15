@@ -19,6 +19,7 @@ namespace rgb_matrix {
 class BigNumber {
 public:
   enum Font {
+  Ascii5x7,
   HexUpper5x7,
   Digit5x7,
   Digit11x20,
@@ -32,6 +33,12 @@ public:
                      enum BigNumber::Font F,
                      const rgb_matrix::Color &FG,
                      const rgb_matrix::Color *BG = nullptr);
+
+  static void printf(rgb_matrix::Canvas *Canvas,
+                     unsigned X, unsigned Y,
+                     const rgb_matrix::Color &FG,
+                     const rgb_matrix::Color *BG,
+                     const char *Fmt, ...);
 };
 
 #endif
