@@ -4,6 +4,7 @@ from Tkinter import *
 from multiprocessing import Process, Queue
 from datetime import datetime
 import time
+import sys
 
 def sized_frame(master, height, width):
    F = Frame(master, height=height, width=width)
@@ -23,11 +24,42 @@ def SizedButton(root, callback, text, bg, fg, font, height, width):
   b.pack(fill=BOTH, expand=1)
   return sf
 
+class ConfirmManualEditScore(object):
+  def __init__(self, master, cancel_continuation, manual_continuation):
+    self.root = Toplevel(master)
+    self.root.resizable(width=FALSE, height=FALSE)
+    self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
+
+    self.root.overrideredirect(1)
+
+    manual_edit_button = SizedButton(self.root, lambda : self.manual_edit_clicked(),
+                                     "MANUALLY EDIT SCORE", "orange", "black", ("Consolas", 36),
+                                     180, 800)
+    manual_edit_button.grid(row=0, column=0)
+
+    cancel_button = SizedButton(self.root, lambda : self.cancel_clicked(),
+                                "CANCEL", "red", "black", ("Consolas", 36),
+                                80, 800)
+    cancel_button.grid(row=1, column=0)
+
+    self.manual_continuation = manual_continuation
+    self.cancel_continuation = cancel_continuation
+
+    self.root.mainloop()
+
+  def manual_edit_clicked(self):
+    self.manual_continuation()
+    self.root.destroy()
+
+  def cancel_clicked(self):
+    self.cancel_continuation()
+    self.root.destroy()
+
 class NormalView(object):
   def __init__(self):
     self.root = Tk()
     self.root.resizable(width=FALSE, height=FALSE)
-    self.root.geometry('{}x{}'.format(800, 480))
+    self.root.geometry('{}x{}+{}+{}'.format(800, 480, 0, 0))
 
     score_font = ("Consolas", 72)
     label_font = ("Consolas", 36)
@@ -154,16 +186,22 @@ class NormalView(object):
 
   def black_clicked(self):
     print "black clicked"
+    def manual_continuation():
+      print "manual"
+    ConfirmManualEditScore(self.root,
+                           lambda : None,
+                           manual_continuation)
 
   def gong_clicked(self):
     print "gong clicked"
 
   def white_clicked(self):
     print "white clicked"
-
-
-
-
+    def manual_continuation():
+      print "manual"
+    ConfirmManualEditScore(self.root,
+                           lambda : None,
+                           manual_continuation)
 
 def main():
   nv = NormalView()
