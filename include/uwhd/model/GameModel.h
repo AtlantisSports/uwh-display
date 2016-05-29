@@ -20,11 +20,22 @@ public:
   GameModel()
     : BlackScore(0)
     , WhiteScore(0)
-    , GameClockSecs(0) {}
+    , GameClockSecs(0)
+    , State(GameModel::WallClock) {}
   unsigned char BlackScore;
   unsigned char WhiteScore;
   unsigned short GameClockSecs;
   bool ClockRunning;
+
+  enum GameState {
+    WallClock,
+    NormalPlay,
+    HalfTime,
+    RefTimeOut,
+    TeamTimeOut,
+    GameOver,
+  };
+  GameState State;
 
   std::string dump() const;
   std::string serialize() const;
@@ -54,11 +65,26 @@ public:
   unsigned char whiteScore();
   unsigned short gameClock();
   bool gameClockRunning();
+  GameModel::GameState gameState();
+  bool gameStateWallClock();
+  bool gameStateNormalPlay();
+  bool gameStateHalfTime();
+  bool gameStateRefTimeOut();
+  bool gameStateTeamTimeOut();
+  bool gameStateGameOver();
 
   void setBlackScore(unsigned char S);
   void setWhiteScore(unsigned char S);
   void setGameClock(unsigned short T);
   void setGameClockRunning(bool B);
+
+  void setGameState(GameModel::GameState S);
+  void setGameStateWallClock();
+  void setGameStateNormalPlay();
+  void setGameStateHalfTime();
+  void setGameStateRefTimeOut();
+  void setGameStateTeamTimeOut();
+  void setGameStateGameOver();
 
   void heartbeat();
 

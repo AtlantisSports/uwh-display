@@ -71,6 +71,7 @@ if __name__ == '__main__':
   gd = uwhd.GameDisplay(matrix)
   gd.Start0()
   mgr = gd.getMgr2()
+  mgr.setGameStateNormalPlay()
   mgr.setGameClockRunning(False)
   mgr.setBlackScore(0)
   mgr.setWhiteScore(0)

@@ -71,12 +71,28 @@ bool Console::ParseLine(std::string I) {
   case 'H':
   case 'h': {
     std::cout << "Usage:\n"
-              << "  B[0-9]+ - Set the Black Score\n"
-              << "  W[0-9]+ - Set the White Score\n"
-              << "  T[0-9]+ - Set the Game Clock\n"
-              << "  H       - This menu\n"
-              << "  Q       - Quit\n";
+              << "  B[0-9]+  - Set the Black Score\n"
+              << "  W[0-9]+  - Set the White Score\n"
+              << "  T[0-9]+  - Set the Game Clock\n"
+              << "  G[WNRTO] - Set the Game State\n"
+              << "  H        - This menu\n"
+              << "  Q        - Quit\n";
     goto Success;
+  }
+
+  case 'G': {
+    if (I.size() != 2)
+      goto ParseError;
+
+    switch (I[1]) {
+    case 'W': M.setGameState(GameModel::WallClock); goto Success;
+    case 'N': M.setGameState(GameModel::NormalPlay); goto Success;
+    case 'R': M.setGameState(GameModel::RefTimeOut); goto Success;
+    case 'T': M.setGameState(GameModel::TeamTimeOut); goto Success;
+    case 'O': M.setGameState(GameModel::GameOver); goto Success;
+    default:
+      goto ParseError;
+    }
   }
 
   case 'S': {

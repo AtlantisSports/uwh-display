@@ -22,7 +22,8 @@ bool GameModel::operator==(const GameModel &Other) const {
   return BlackScore == Other.BlackScore &&
          WhiteScore == Other.WhiteScore &&
          GameClockSecs == Other.GameClockSecs &&
-         ClockRunning == Other.ClockRunning;
+         ClockRunning == Other.ClockRunning &&
+         State == Other.State;
 }
 
 std::string GameModel::dump() const {
@@ -31,7 +32,20 @@ std::string GameModel::dump() const {
   SS << "        Black: " << int(BlackScore) << "\n"
      << "        White: " << int(WhiteScore) << "\n"
      << "GameClockSecs: " << int(GameClockSecs) << "\n"
-     << " ClockRunning: " << (ClockRunning ? "YES" : "NO") << "\n";
+     << " ClockRunning: " << (ClockRunning ? "YES" : "NO") << "\n"
+     << "        State: ";
+
+  switch (State) {
+  case GameModel::WallClock:   SS << "Wall Clock"; break;
+  case GameModel::NormalPlay:  SS << "Normal Play"; break;
+  case GameModel::HalfTime:    SS << "Half Time"; break;
+  case GameModel::RefTimeOut:  SS << "Ref Timeout"; break;
+  case GameModel::TeamTimeOut: SS << "Team Timeout"; break;
+  case GameModel::GameOver:    SS << "Game Over"; break;
+  default:                     SS << "???"; break;
+  }
+
+  SS << "\n";
 
   return SS.str();
 }
@@ -44,7 +58,19 @@ std::string GameModel::serialize() const {
      << "W" << int(WhiteScore)
      << "T" << int(GameClockSecs)
      << "R" << (ClockRunning ? 1 : 0)
-     << "E";
+     << 'G';
+
+  switch (State) {
+  case GameModel::WallClock:   SS << 'W'; break;
+  case GameModel::NormalPlay:  SS << 'N'; break;
+  case GameModel::HalfTime:    SS << 'H'; break;
+  case GameModel::RefTimeOut:  SS << 'R'; break;
+  case GameModel::TeamTimeOut: SS << 'T'; break;
+  case GameModel::GameOver:    SS << 'O'; break;
+  default:                     SS << '?'; break;
+  }
+
+  SS << "E";
 
   return SS.str();
 }
@@ -97,6 +123,21 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
     int R;
     SS >> R;
     NewM.ClockRunning = (R == 1);
+  }
+
+  if (check(SS, 'G'))
+    return true;
+
+  char GS;
+  SS.get(GS);
+  switch (GS) {
+  case 'W': NewM.State = GameModel::WallClock; break;
+  case 'N': NewM.State = GameModel::NormalPlay; break;
+  case 'H': NewM.State = GameModel::HalfTime; break;
+  case 'R': NewM.State = GameModel::RefTimeOut; break;
+  case 'T': NewM.State = GameModel::TeamTimeOut; break;
+  case 'O': NewM.State = GameModel::GameOver; break;
+  default: return true;
   }
 
   if (check(SS, 'E'))
@@ -195,6 +236,69 @@ void GameModelManager::setGameClockRunning(bool B) {
     M = Model;
   }
   modelChanged(M);
+}
+
+GameModel::GameState GameModelManager::gameState() {
+  std::lock_guard<std::mutex> Lock(ModelMutex);
+  return Model.State;
+}
+
+bool GameModelManager::gameStateWallClock() {
+  return gameState() == GameModel::NormalPlay;
+}
+
+bool GameModelManager::gameStateNormalPlay() {
+  return gameState() == GameModel::NormalPlay;
+}
+
+bool GameModelManager::gameStateHalfTime() {
+  return gameState() == GameModel::HalfTime;
+}
+
+bool GameModelManager::gameStateRefTimeOut() {
+  return gameState() == GameModel::RefTimeOut;
+}
+
+bool GameModelManager::gameStateTeamTimeOut() {
+  return gameState() == GameModel::TeamTimeOut;
+}
+
+bool GameModelManager::gameStateGameOver() {
+  return gameState() == GameModel::GameOver;
+}
+
+void GameModelManager::setGameState(GameModel::GameState S) {
+  GameModel M;
+  {
+    std::lock_guard<std::mutex> Lock(ModelMutex);
+    Model.State = S;
+    M = Model;
+  }
+  modelChanged(M);
+}
+
+void GameModelManager::setGameStateWallClock() {
+  setGameState(GameModel::WallClock);
+}
+
+void GameModelManager::setGameStateNormalPlay() {
+  setGameState(GameModel::NormalPlay);
+}
+
+void GameModelManager::setGameStateHalfTime() {
+  setGameState(GameModel::HalfTime);
+}
+
+void GameModelManager::setGameStateRefTimeOut() {
+  setGameState(GameModel::RefTimeOut);
+}
+
+void GameModelManager::setGameStateTeamTimeOut() {
+  setGameState(GameModel::TeamTimeOut);
+}
+
+void GameModelManager::setGameStateGameOver() {
+  setGameState(GameModel::GameOver);
 }
 
 void GameModelManager::heartbeat() {
