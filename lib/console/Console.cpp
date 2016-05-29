@@ -110,7 +110,7 @@ bool Console::ParseLine(std::string I) {
 
 ParseError:
   std::cerr << "Parse error on: '" << I << "'\n";
-  return true;
+  return false;
 
 Success:
   return false;
