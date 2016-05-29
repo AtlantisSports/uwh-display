@@ -75,20 +75,22 @@ void TimeDisplay::Render(Canvas *C) {
   unsigned xoffs = DisplayNum * 32;
 
   if (M.State == GameModel::WallClock) {
-    BigNumber::Render(C, 0, HH / 10, /*xo=*/ 2,  /*yo=*/ 6, BigNumber::Font::Digit11x20, SecondsColor, &Background);
-    BigNumber::Render(C, 0, HH % 10, /*xo=*/ 19, /*yo=*/ 6, BigNumber::Font::Digit11x20, SecondsColor, &Background);
+    BigNumber::Render(C, 0, HH / 10, /*xo=*/ 3,  /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
+    BigNumber::Render(C, 0, HH % 10, /*xo=*/ 18, /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
 
-    renderColon(*this, C, 31, 11);
-    renderColon(*this, C, 31, 19);
+    renderColon(*this, C, 31, 7);
+    renderColon(*this, C, 31, 15);
 
-    BigNumber::Render(C, 1, MM / 10, /*xo=*/ 2,  /*yo=*/ 6, BigNumber::Font::Digit11x20, SecondsColor, &Background);
-    BigNumber::Render(C, 1, MM % 10, /*xo=*/ 19, /*yo=*/ 6, BigNumber::Font::Digit11x20, SecondsColor, &Background);
+    BigNumber::Render(C, 1, MM / 10, /*xo=*/ 3,  /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
+    BigNumber::Render(C, 1, MM % 10, /*xo=*/ 18, /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
 
-    renderColon(*this, C, 63, 11);
-    renderColon(*this, C, 63, 19);
+    renderColon(*this, C, 63, 7);
+    renderColon(*this, C, 63, 15);
 
-    BigNumber::Render(C, 2, SS / 10, /*xo=*/ 2,  /*yo=*/ 6, BigNumber::Font::Digit11x20, SecondsColor, &Background);
-    BigNumber::Render(C, 2, SS % 10, /*xo=*/ 19, /*yo=*/ 6, BigNumber::Font::Digit11x20, SecondsColor, &Background);
+    BigNumber::Render(C, 2, SS / 10, /*xo=*/ 3,  /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
+    BigNumber::Render(C, 2, SS % 10, /*xo=*/ 18, /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
+
+    BigNumber::printf(C, 21, 24, LogoColor, nullptr, "TIMESHARK");
   } else {
     if (M.GameClockSecs != 0) {
       // We can't yet display larger times than 99:59
