@@ -39,7 +39,8 @@ public:
     static const rgb_matrix::Color ColonColor;
     static const rgb_matrix::Color RingColor;
     static const rgb_matrix::Color Background;
-    static const rgb_matrix::Color LogoColor;
+    static const rgb_matrix::Color LogoColor1;
+    static const rgb_matrix::Color LogoColor2;
 };
 
 #endif

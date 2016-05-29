@@ -90,7 +90,10 @@ void TimeDisplay::Render(Canvas *C) {
     BigNumber::Render(C, 2, SS / 10, /*xo=*/ 3,  /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
     BigNumber::Render(C, 2, SS % 10, /*xo=*/ 18, /*yo=*/ 2, BigNumber::Font::Digit11x20, SecondsColor, &Background);
 
-    BigNumber::printf(C, 21, 24, LogoColor, nullptr, "TIMESHARK");
+    if ((SS / 10) % 2 == 0)
+      BigNumber::printf(C, 24, 24, LogoColor2, nullptr, "NAVISJON");
+    else
+      BigNumber::printf(C, 21, 24, LogoColor1, nullptr, "TIMESHARK");
   } else {
     if (M.GameClockSecs != 0) {
       // We can't yet display larger times than 99:59
