@@ -223,6 +223,8 @@ void GameModelManager::setGameClock(unsigned short T) {
   {
     std::lock_guard<std::mutex> Lock(ModelMutex);
     Model.GameClockSecs = T;
+    if (T == 0)
+      Model.ClockRunning = false;
     M = Model;
   }
   modelChanged(M);
