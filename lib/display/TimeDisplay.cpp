@@ -52,6 +52,68 @@ static char TimeUp[256] =
     _,   _,   _,   _,   _, 0xF,   _, 0xF,   _, 0xF,   _,   _,   _,   _,   _,   _,
     _,   _,   _,   _,   _, 0xF, 0xF, 0xF,   _, 0xF,   _,   _,   _,   _,   _,   _,
     _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _ };
+
+static char HalfTime[32*32] = {
+_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, _, 1, 1, 1, 1, _, _, 1, 1, _, _, _, _, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, _,
+_, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+_, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, _, _,
+_, 1, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, 1, _,
+1, 1, 1, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+_, 1, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, 1, _,
+_, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, _, _,
+_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+_, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, _, _, 1, 1, _, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, _, _, _,
+_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+};
+
+static char Ref[32*10] = {
+_, _, _, _, _, _, 1, 1, 1, 1, 1, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, 1, 1, 1, 1, _, 1, 1, 1, 1, _, _, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, 1, 1, 1, _, _, 1, 1, 1, 1, _, _, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, _, 1, 1, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, _, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, _, _, 1, 1, _, 1, 1, 1, 1, 1, 1, _, 1, 1, _, _, _, _, _, _, _, _, _, _,
+};
+
+static char Timeout[32*10] = {
+_, _, _, _, _, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _, _, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, 1, 1, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, _, _, _, 1, 1, _, _, 1, 1, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, _, _, _, 1, 1, _, _, 1, 1, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, _, 1, 1, _, _, _, _, 1, 1, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, _, 1, 1, _, _, _, _, 1, 1, _, _, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, 1, 1, _, _, _, _, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+_, _, _, _, _, _, _, _, 1, 1, _, _, _, _, _, _, _, _, _, _, 1, 1, 1, 1, 1, 1, _, _, _, _, _, _,
+};
+
 #undef _
 
 static void renderColon(TimeDisplay &T, Canvas *C, unsigned X, unsigned Y) {
@@ -94,6 +156,67 @@ void TimeDisplay::Render(Canvas *C) {
       BigNumber::printf(C, 24, 24, LogoColor2, nullptr, "NAVISJON");
     else
       BigNumber::printf(C, 21, 24, LogoColor1, nullptr, "TIMESHARK");
+  } else if (M.State == GameModel::HalfTime) {
+    for (int y = 0; y < 32; y++)
+      for (int x = 0; x < 32; x++)
+        if (HalfTime[x + y * 32])
+          C->SetPixel(xoffs + x, y, HalfTimeColor.r, HalfTimeColor.g, HalfTimeColor.b);
+  } else if (M.State == GameModel::RefTimeOut) {
+    // Ref Timeouts aren't timed, so no need to display a time here
+
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (Ref[x + y * 32])
+          C->SetPixel(xoffs + x, y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (Timeout[x + y * 32])
+          C->SetPixel(xoffs + x, 22 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+  } else if (M.State == GameModel::WhiteTimeOut ||
+             M.State == GameModel::BlackTimeOut) {
+    // We can't yet display larger times than 99:59
+    if (99 * 60 + 59 < Now)
+      Now = 99 * 60 + 59;
+
+    // Note that we show 1h30m as 90m here:
+    unsigned Mins = (Now / 60) % 100;
+    unsigned MTens = Mins / 10;
+    unsigned MOnes = Mins % 10;
+
+    unsigned Secs = Now % 60;
+    unsigned STens = Secs / 10;
+    unsigned SOnes = Secs % 10;
+
+    // TimeOuts should be 1 min long
+
+    /// Seconds Ten's
+    BigNumber::Render(C, 1, STens, /*xo=*/6, /*yo=*/0,
+                      BigNumber::Font::Digit11x20, TimeOutColor, &Background);
+
+    // TimeOutColor One's
+    BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/0,
+                      BigNumber::Font::Digit11x20, TimeOutColor, &Background);
+
+    // Top Colon
+    C->SetPixel(xoffs + 2, 13, ColonColor.r, ColonColor.g, ColonColor.b);
+    C->SetPixel(xoffs + 3, 13, ColonColor.r, ColonColor.g, ColonColor.b);
+    C->SetPixel(xoffs + 2, 14, ColonColor.r, ColonColor.g, ColonColor.b);
+    C->SetPixel(xoffs + 3, 14, ColonColor.r, ColonColor.g, ColonColor.b);
+
+    // Bottom Colon
+    C->SetPixel(xoffs + 2, 19, ColonColor.r, ColonColor.g, ColonColor.b);
+    C->SetPixel(xoffs + 3, 19, ColonColor.r, ColonColor.g, ColonColor.b);
+    C->SetPixel(xoffs + 2, 20, ColonColor.r, ColonColor.g, ColonColor.b);
+    C->SetPixel(xoffs + 3, 20, ColonColor.r, ColonColor.g, ColonColor.b);
+
+    rgb_matrix::Color TeamColor = M.State == GameModel::WhiteTimeOut
+                                    ? WhiteTimeOutColor
+                                    : BlackTimeOutColor;
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (Timeout[x + y * 32])
+          C->SetPixel(xoffs + x, 22 + y, TeamColor.r, TeamColor.g, TeamColor.b);
   } else {
     if (M.GameClockSecs != 0) {
       // We can't yet display larger times than 99:59
@@ -166,29 +289,6 @@ void TimeDisplay::Render(Canvas *C) {
         C->SetPixel(xoffs + 2, 20, ColonColor.r, ColonColor.g, ColonColor.b);
         C->SetPixel(xoffs + 3, 20, ColonColor.r, ColonColor.g, ColonColor.b);
       }
-    } else {
-      Color StopColor(255, 0, 0);
-      for (unsigned y = 0; y < 16; y++) {
-        for (unsigned x = 0; x < 16; x++) {
-          if (TimeUp[x + y * 16] & NW) {
-            C->SetPixel(xoffs + x * 2 + 0, y * 2 + 0, StopColor.r, StopColor.g, StopColor.b);
-          }
-
-          if (TimeUp[x + y * 16] & SW) {
-            C->SetPixel(xoffs + x * 2 + 0, y * 2 + 1, StopColor.r, StopColor.g, StopColor.b);
-          }
-
-          if (TimeUp[x + y * 16] & NE) {
-            C->SetPixel(xoffs + x * 2 + 1, y * 2 + 0, StopColor.r, StopColor.g, StopColor.b);
-          }
-
-          if (TimeUp[x + y * 16] & SE) {
-            C->SetPixel(xoffs + x * 2 + 1, y * 2 + 1, StopColor.r, StopColor.g, StopColor.b);
-          }
-        }
-      }
     }
-
-    SecondsRing::Render(C, DisplayNum, 120 - (Now % 120), RingColor, &Background);
   }
 }

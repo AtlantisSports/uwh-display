@@ -101,7 +101,8 @@ int main(int argc, char *argv[]) {
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::NormalPlay);
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::HalfTime);
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::RefTimeOut);
-  Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::TeamTimeOut);
+  Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::WhiteTimeOut);
+  Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::BlackTimeOut);
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::GameOver);
 
   for (unsigned B = 0; B < 10; B++)

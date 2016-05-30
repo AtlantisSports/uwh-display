@@ -36,13 +36,14 @@ std::string GameModel::dump() const {
      << "        State: ";
 
   switch (State) {
-  case GameModel::WallClock:   SS << "Wall Clock"; break;
-  case GameModel::NormalPlay:  SS << "Normal Play"; break;
-  case GameModel::HalfTime:    SS << "Half Time"; break;
-  case GameModel::RefTimeOut:  SS << "Ref Timeout"; break;
-  case GameModel::TeamTimeOut: SS << "Team Timeout"; break;
-  case GameModel::GameOver:    SS << "Game Over"; break;
-  default:                     SS << "???"; break;
+  case GameModel::WallClock:    SS << "Wall Clock"; break;
+  case GameModel::NormalPlay:   SS << "Normal Play"; break;
+  case GameModel::HalfTime:     SS << "Half Time"; break;
+  case GameModel::RefTimeOut:   SS << "Ref Timeout"; break;
+  case GameModel::WhiteTimeOut: SS << "White Timeout"; break;
+  case GameModel::BlackTimeOut: SS << "Black Timeout"; break;
+  case GameModel::GameOver:     SS << "Game Over"; break;
+  default:                      SS << "???"; break;
   }
 
   SS << "\n";
@@ -61,13 +62,14 @@ std::string GameModel::serialize() const {
      << 'G';
 
   switch (State) {
-  case GameModel::WallClock:   SS << 'W'; break;
-  case GameModel::NormalPlay:  SS << 'N'; break;
-  case GameModel::HalfTime:    SS << 'H'; break;
-  case GameModel::RefTimeOut:  SS << 'R'; break;
-  case GameModel::TeamTimeOut: SS << 'T'; break;
-  case GameModel::GameOver:    SS << 'O'; break;
-  default:                     SS << '?'; break;
+  case GameModel::WallClock:    SS << 'C'; break;
+  case GameModel::NormalPlay:   SS << 'N'; break;
+  case GameModel::HalfTime:     SS << 'H'; break;
+  case GameModel::RefTimeOut:   SS << 'R'; break;
+  case GameModel::WhiteTimeOut: SS << 'W'; break;
+  case GameModel::BlackTimeOut: SS << 'B'; break;
+  case GameModel::GameOver:     SS << 'O'; break;
+  default:                      SS << '?'; break;
   }
 
   SS << "E";
@@ -131,11 +133,12 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   char GS;
   SS.get(GS);
   switch (GS) {
-  case 'W': NewM.State = GameModel::WallClock; break;
+  case 'C': NewM.State = GameModel::WallClock; break;
   case 'N': NewM.State = GameModel::NormalPlay; break;
   case 'H': NewM.State = GameModel::HalfTime; break;
   case 'R': NewM.State = GameModel::RefTimeOut; break;
-  case 'T': NewM.State = GameModel::TeamTimeOut; break;
+  case 'W': NewM.State = GameModel::WhiteTimeOut; break;
+  case 'B': NewM.State = GameModel::BlackTimeOut; break;
   case 'O': NewM.State = GameModel::GameOver; break;
   default: return true;
   }
@@ -261,8 +264,12 @@ bool GameModelManager::gameStateRefTimeOut() {
   return gameState() == GameModel::RefTimeOut;
 }
 
-bool GameModelManager::gameStateTeamTimeOut() {
-  return gameState() == GameModel::TeamTimeOut;
+bool GameModelManager::gameStateWhiteTimeOut() {
+  return gameState() == GameModel::WhiteTimeOut;
+}
+
+bool GameModelManager::gameStateBlackTimeOut() {
+  return gameState() == GameModel::BlackTimeOut;
 }
 
 bool GameModelManager::gameStateGameOver() {
@@ -295,8 +302,12 @@ void GameModelManager::setGameStateRefTimeOut() {
   setGameState(GameModel::RefTimeOut);
 }
 
-void GameModelManager::setGameStateTeamTimeOut() {
-  setGameState(GameModel::TeamTimeOut);
+void GameModelManager::setGameStateWhiteTimeOut() {
+  setGameState(GameModel::WhiteTimeOut);
+}
+
+void GameModelManager::setGameStateBlackTimeOut() {
+  setGameState(GameModel::BlackTimeOut);
 }
 
 void GameModelManager::setGameStateGameOver() {

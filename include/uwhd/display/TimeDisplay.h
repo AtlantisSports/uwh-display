@@ -41,6 +41,10 @@ public:
     static const rgb_matrix::Color Background;
     static const rgb_matrix::Color LogoColor1;
     static const rgb_matrix::Color LogoColor2;
+    static const rgb_matrix::Color WhiteTimeOutColor;
+    static const rgb_matrix::Color BlackTimeOutColor;
+    static const rgb_matrix::Color TimeOutColor;
+    static const rgb_matrix::Color HalfTimeColor;
 };
 
 #endif

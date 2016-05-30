@@ -32,7 +32,8 @@ public:
     NormalPlay,
     HalfTime,
     RefTimeOut,
-    TeamTimeOut,
+    WhiteTimeOut,
+    BlackTimeOut,
     GameOver,
   };
   GameState State;
@@ -70,7 +71,8 @@ public:
   bool gameStateNormalPlay();
   bool gameStateHalfTime();
   bool gameStateRefTimeOut();
-  bool gameStateTeamTimeOut();
+  bool gameStateWhiteTimeOut();
+  bool gameStateBlackTimeOut();
   bool gameStateGameOver();
 
   void setBlackScore(unsigned char S);
@@ -83,7 +85,8 @@ public:
   void setGameStateNormalPlay();
   void setGameStateHalfTime();
   void setGameStateRefTimeOut();
-  void setGameStateTeamTimeOut();
+  void setGameStateBlackTimeOut();
+  void setGameStateWhiteTimeOut();
   void setGameStateGameOver();
 
   void heartbeat();

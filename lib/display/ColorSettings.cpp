@@ -27,4 +27,8 @@ const Color TimeDisplay::RingColor    = Color(  0,   0,   0);
 const Color TimeDisplay::Background   = GameDisplay::Background;
 const Color TimeDisplay::LogoColor1   = Color(160,   0, 255);
 const Color TimeDisplay::LogoColor2   = Color( 80,   0, 255);
+const Color TimeDisplay::WhiteTimeOutColor = Color(255, 255, 255);
+const Color TimeDisplay::BlackTimeOutColor = Color(  0,   0, 255);
+const Color TimeDisplay::TimeOutColor      = Color(255, 255,   0);
+const Color TimeDisplay::HalfTimeColor     = Color(255, 160,   0);
 
