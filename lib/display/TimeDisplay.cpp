@@ -123,6 +123,83 @@ static void renderColon(TimeDisplay &T, Canvas *C, unsigned X, unsigned Y) {
   C->SetPixel(1 + X, 1 + Y, T.ColonColor.r, T.ColonColor.g, T.ColonColor.b);
 }
 
+static void renderCondensedTime(TimeDisplay &T, Canvas *C, unsigned DisplayNum,
+                                unsigned Now, const rgb_matrix::Color &FG,
+                                const rgb_matrix::Color *BG) {
+  // We can't yet display larger times than 99:59
+  if (99 * 60 + 59 < Now)
+    Now = 99 * 60 + 59;
+
+  // Note that we show 1h30m as 90m here:
+  unsigned Mins = (Now / 60) % 100;
+  unsigned MTens = Mins / 10;
+  unsigned MOnes = Mins % 10;
+
+  unsigned Secs = Now % 60;
+  unsigned STens = Secs / 10;
+  unsigned SOnes = Secs % 10;
+
+  unsigned xoffs = DisplayNum * 32;
+
+  if (10 <= Mins) {
+    // Minutes Ten's
+    BigNumber::Render(C, 1, MTens, /*xo=*/5, /*yo=*/3,
+                      BigNumber::Font::Digit11x20, FG, BG);
+
+    // Minutes One's
+    BigNumber::Render(C, 1, MOnes, /*xo=*/18, /*yo=*/3,
+                      BigNumber::Font::Digit11x20, FG, BG);
+
+    // Seconds Ten's
+    BigNumber::Render(C, 1, STens, /*xo=*/12, /*yo=*/24,
+                      BigNumber::Font::Digit5x7, FG, BG);
+
+    // Seconds One's
+    BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/24,
+                      BigNumber::Font::Digit5x7, FG, BG);
+
+    // Colons
+    C->SetPixel(xoffs + 10, 26, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 10, 28, FG.r, FG.g, FG.b);
+  } else if (1 <= Mins && Mins < 10) {
+    // Minutes One's
+    BigNumber::Render(C, 1, MOnes, /*xo=*/12, /*yo=*/1,
+                      BigNumber::Font::Digit11x20, FG, BG);
+
+    // Seconds Ten's
+    BigNumber::Render(C, 1, STens, /*xo=*/12, /*yo=*/24,
+                      BigNumber::Font::Digit5x7, FG, BG);
+
+    // Seconds One's
+    BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/24,
+                      BigNumber::Font::Digit5x7, FG, BG);
+
+    // Colons
+    C->SetPixel(xoffs + 10, 26, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 10, 28, FG.r, FG.g, FG.b);
+  } else {
+    // Seconds Ten's
+    BigNumber::Render(C, 1, STens, /*xo=*/6, /*yo=*/7,
+                      BigNumber::Font::Digit11x20, FG, BG);
+
+    // Seconds One's
+    BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/7,
+                      BigNumber::Font::Digit11x20, FG, BG);
+
+    // Top Colon
+    C->SetPixel(xoffs + 2, 13, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 3, 13, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 2, 14, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 3, 14, FG.r, FG.g, FG.b);
+
+    // Bottom Colon
+    C->SetPixel(xoffs + 2, 19, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 3, 19, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 2, 20, FG.r, FG.g, FG.b);
+    C->SetPixel(xoffs + 3, 20, FG.r, FG.g, FG.b);
+  }
+}
+
 void TimeDisplay::Render(Canvas *C) {
   GameModel M = Mgr.getModel();
 
@@ -133,6 +210,19 @@ void TimeDisplay::Render(Canvas *C) {
   unsigned HH = LocalClock->tm_hour;
   unsigned MM = LocalClock->tm_min;
   unsigned SS = LocalClock->tm_sec;
+
+  // We can't yet display larger times than 99:59
+  if (99 * 60 + 59 < Now)
+    Now = 99 * 60 + 59;
+
+  // Note that we show 1h30m as 90m here:
+  unsigned Mins = (Now / 60) % 100;
+  unsigned MTens = Mins / 10;
+  unsigned MOnes = Mins % 10;
+
+  unsigned Secs = Now % 60;
+  unsigned STens = Secs / 10;
+  unsigned SOnes = Secs % 10;
 
   unsigned xoffs = DisplayNum * 32;
 
@@ -157,138 +247,46 @@ void TimeDisplay::Render(Canvas *C) {
     else
       BigNumber::printf(C, 21, 24, LogoColor1, nullptr, "TIMESHARK");
   } else if (M.State == GameModel::HalfTime) {
-    for (int y = 0; y < 32; y++)
-      for (int x = 0; x < 32; x++)
-        if (HalfTime[x + y * 32])
-          C->SetPixel(xoffs + x, y, HalfTimeColor.r, HalfTimeColor.g, HalfTimeColor.b);
+    if (time(nullptr) % 4) {
+      renderCondensedTime(*this, C, 1, Now, HalfTimeColor, &Background);
+    } else {
+      for (int y = 0; y < 32; y++)
+        for (int x = 0; x < 32; x++)
+          if (HalfTime[x + y * 32])
+            C->SetPixel(xoffs + x, y, HalfTimeColor.r, HalfTimeColor.g, HalfTimeColor.b);
+    }
   } else if (M.State == GameModel::RefTimeOut) {
-    // Ref Timeouts aren't timed, so no need to display a time here
+    // Alternate this based on wall clock time instead, because the game
+    // clock could be stopped:
+    if (time(nullptr) % 4) {
+      renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
+    } else {
+      for (int y = 0; y < 10; y++)
+        for (int x = 0; x < 32; x++)
+          if (Ref[x + y * 32])
+            C->SetPixel(xoffs + x, 2 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
 
-    for (int y = 0; y < 10; y++)
-      for (int x = 0; x < 32; x++)
-        if (Ref[x + y * 32])
-          C->SetPixel(xoffs + x, y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
-
-    for (int y = 0; y < 10; y++)
-      for (int x = 0; x < 32; x++)
-        if (Timeout[x + y * 32])
-          C->SetPixel(xoffs + x, 22 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+      for (int y = 0; y < 10; y++)
+        for (int x = 0; x < 32; x++)
+          if (Timeout[x + y * 32])
+            C->SetPixel(xoffs + x, 20 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+    }
   } else if (M.State == GameModel::WhiteTimeOut ||
              M.State == GameModel::BlackTimeOut) {
-    // We can't yet display larger times than 99:59
-    if (99 * 60 + 59 < Now)
-      Now = 99 * 60 + 59;
-
-    // Note that we show 1h30m as 90m here:
-    unsigned Mins = (Now / 60) % 100;
-    unsigned MTens = Mins / 10;
-    unsigned MOnes = Mins % 10;
-
-    unsigned Secs = Now % 60;
-    unsigned STens = Secs / 10;
-    unsigned SOnes = Secs % 10;
-
-    // TimeOuts should be 1 min long
-
-    /// Seconds Ten's
-    BigNumber::Render(C, 1, STens, /*xo=*/6, /*yo=*/0,
-                      BigNumber::Font::Digit11x20, TimeOutColor, &Background);
-
-    // TimeOutColor One's
-    BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/0,
-                      BigNumber::Font::Digit11x20, TimeOutColor, &Background);
-
-    // Top Colon
-    C->SetPixel(xoffs + 2, 13, ColonColor.r, ColonColor.g, ColonColor.b);
-    C->SetPixel(xoffs + 3, 13, ColonColor.r, ColonColor.g, ColonColor.b);
-    C->SetPixel(xoffs + 2, 14, ColonColor.r, ColonColor.g, ColonColor.b);
-    C->SetPixel(xoffs + 3, 14, ColonColor.r, ColonColor.g, ColonColor.b);
-
-    // Bottom Colon
-    C->SetPixel(xoffs + 2, 19, ColonColor.r, ColonColor.g, ColonColor.b);
-    C->SetPixel(xoffs + 3, 19, ColonColor.r, ColonColor.g, ColonColor.b);
-    C->SetPixel(xoffs + 2, 20, ColonColor.r, ColonColor.g, ColonColor.b);
-    C->SetPixel(xoffs + 3, 20, ColonColor.r, ColonColor.g, ColonColor.b);
-
-    rgb_matrix::Color TeamColor = M.State == GameModel::WhiteTimeOut
-                                    ? WhiteTimeOutColor
-                                    : BlackTimeOutColor;
-    for (int y = 0; y < 10; y++)
-      for (int x = 0; x < 32; x++)
-        if (Timeout[x + y * 32])
-          C->SetPixel(xoffs + x, 22 + y, TeamColor.r, TeamColor.g, TeamColor.b);
+    if (time(nullptr) % 4) {
+      renderCondensedTime(*this, C, 1, Now, TimeOutColor, &Background);
+    } else {
+      rgb_matrix::Color TeamColor = M.State == GameModel::WhiteTimeOut
+                                      ? WhiteTimeOutColor
+                                      : BlackTimeOutColor;
+      for (int y = 0; y < 10; y++)
+        for (int x = 0; x < 32; x++)
+          if (Timeout[x + y * 32])
+            C->SetPixel(xoffs + x, 12 + y, TeamColor.r, TeamColor.g, TeamColor.b);
+    }
   } else {
     if (M.GameClockSecs != 0) {
-      // We can't yet display larger times than 99:59
-      if (99 * 60 + 59 < Now)
-        Now = 99 * 60 + 59;
-
-      // Note that we show 1h30m as 90m here:
-      unsigned Mins = (Now / 60) % 100;
-      unsigned MTens = Mins / 10;
-      unsigned MOnes = Mins % 10;
-
-      unsigned Secs = Now % 60;
-      unsigned STens = Secs / 10;
-      unsigned SOnes = Secs % 10;
-
-      if (10 <= Mins) {
-        // Minutes Ten's
-        BigNumber::Render(C, 1, MTens, /*xo=*/5, /*yo=*/3,
-                          BigNumber::Font::Digit11x20, MinutesColor, &Background);
-
-        // Minutes One's
-        BigNumber::Render(C, 1, MOnes, /*xo=*/18, /*yo=*/3,
-                          BigNumber::Font::Digit11x20, MinutesColor, &Background);
-
-        // Seconds Ten's
-        BigNumber::Render(C, 1, STens, /*xo=*/12, /*yo=*/24,
-                          BigNumber::Font::Digit5x7, SecondsColor, &Background);
-
-        // Seconds One's
-        BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/24,
-                          BigNumber::Font::Digit5x7, SecondsColor, &Background);
-
-        // Colons
-        C->SetPixel(xoffs + 10, 26, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 10, 28, ColonColor.r, ColonColor.g, ColonColor.b);
-      } else if (1 <= Mins && Mins < 10) {
-        // Minutes One's
-        BigNumber::Render(C, 1, MOnes, /*xo=*/12, /*yo=*/1,
-                          BigNumber::Font::Digit11x20, MinutesColor, &Background);
-
-        // Seconds Ten's
-        BigNumber::Render(C, 1, STens, /*xo=*/12, /*yo=*/24,
-                          BigNumber::Font::Digit5x7, SecondsColor, &Background);
-
-        // Seconds One's
-        BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/24,
-                          BigNumber::Font::Digit5x7, SecondsColor, &Background);
-
-        // Colons
-        C->SetPixel(xoffs + 10, 26, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 10, 28, ColonColor.r, ColonColor.g, ColonColor.b);
-      } else {
-        // Seconds Ten's
-        BigNumber::Render(C, 1, STens, /*xo=*/6, /*yo=*/7,
-                          BigNumber::Font::Digit11x20, SecondsColor, &Background);
-
-        // Seconds One's
-        BigNumber::Render(C, 1, SOnes, /*xo=*/19, /*yo=*/7,
-                          BigNumber::Font::Digit11x20, SecondsColor, &Background);
-
-        // Top Colon
-        C->SetPixel(xoffs + 2, 13, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 3, 13, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 2, 14, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 3, 14, ColonColor.r, ColonColor.g, ColonColor.b);
-
-        // Bottom Colon
-        C->SetPixel(xoffs + 2, 19, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 3, 19, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 2, 20, ColonColor.r, ColonColor.g, ColonColor.b);
-        C->SetPixel(xoffs + 3, 20, ColonColor.r, ColonColor.g, ColonColor.b);
-      }
+      renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
     }
   }
 }
