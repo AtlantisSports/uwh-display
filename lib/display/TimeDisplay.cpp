@@ -285,8 +285,6 @@ void TimeDisplay::Render(Canvas *C) {
             C->SetPixel(xoffs + x, 12 + y, TeamColor.r, TeamColor.g, TeamColor.b);
     }
   } else {
-    if (M.GameClockSecs != 0) {
-      renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
-    }
+    renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
   }
 }
