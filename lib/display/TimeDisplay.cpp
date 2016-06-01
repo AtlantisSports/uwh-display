@@ -255,34 +255,48 @@ void TimeDisplay::Render(Canvas *C) {
           if (HalfTime[x + y * 32])
             C->SetPixel(xoffs + x, y, HalfTimeColor.r, HalfTimeColor.g, HalfTimeColor.b);
     }
-  } else if (M.State == GameModel::RefTimeOut) {
-    // Alternate this based on wall clock time instead, because the game
-    // clock could be stopped:
-    if (time(nullptr) % 4) {
-      renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
-    } else {
-      for (int y = 0; y < 10; y++)
-        for (int x = 0; x < 32; x++)
-          if (Ref[x + y * 32])
-            C->SetPixel(xoffs + x, 2 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
-
-      for (int y = 0; y < 10; y++)
-        for (int x = 0; x < 32; x++)
-          if (Timeout[x + y * 32])
-            C->SetPixel(xoffs + x, 20 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
-    }
-  } else if (M.State == GameModel::WhiteTimeOut ||
+  } else if (M.State == GameModel::RefTimeOut ||
+             M.State == GameModel::WhiteTimeOut ||
              M.State == GameModel::BlackTimeOut) {
-    if (time(nullptr) % 4) {
-      renderCondensedTime(*this, C, 1, Now, TimeOutColor, &Background);
-    } else {
-      rgb_matrix::Color TeamColor = M.State == GameModel::WhiteTimeOut
-                                      ? WhiteTimeOutColor
-                                      : BlackTimeOutColor;
-      for (int y = 0; y < 10; y++)
-        for (int x = 0; x < 32; x++)
-          if (Timeout[x + y * 32])
-            C->SetPixel(xoffs + x, 12 + y, TeamColor.r, TeamColor.g, TeamColor.b);
+    if (M.State == GameModel::RefTimeOut) {
+      // Alternate this based on wall clock time instead, because the game
+      // clock could be stopped:
+      if (time(nullptr) % 4) {
+        renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
+      } else {
+        for (int y = 0; y < 10; y++)
+          for (int x = 0; x < 32; x++)
+            if (Ref[x + y * 32])
+              C->SetPixel(xoffs + x, 2 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+
+        for (int y = 0; y < 10; y++)
+          for (int x = 0; x < 32; x++)
+            if (Timeout[x + y * 32])
+              C->SetPixel(xoffs + x, 20 + y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+      }
+    } else if (M.State == GameModel::WhiteTimeOut ||
+               M.State == GameModel::BlackTimeOut) {
+      if (time(nullptr) % 4) {
+        renderCondensedTime(*this, C, 1, Now, TimeOutColor, &Background);
+      } else {
+        rgb_matrix::Color TeamColor = M.State == GameModel::WhiteTimeOut
+                                        ? WhiteTimeOutColor
+                                        : BlackTimeOutColor;
+        for (int y = 0; y < 10; y++)
+          for (int x = 0; x < 32; x++)
+            if (Timeout[x + y * 32])
+              C->SetPixel(xoffs + x, 12 + y, TeamColor.r, TeamColor.g, TeamColor.b);
+      }
+    }
+
+    // Draw a ring around the center display for emphasis that this is a time out:
+    for (int x = 0; x < 32; x++) {
+      C->SetPixel(xoffs + x, 0, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+      C->SetPixel(xoffs + x, 31, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+    }
+    for (int y = 1; y < 31; ++y) {
+      C->SetPixel(xoffs,      y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
+      C->SetPixel(xoffs  +31, y, TimeOutColor.r, TimeOutColor.g, TimeOutColor.b);
     }
   } else {
     renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
