@@ -130,7 +130,7 @@ class NormalView(object):
 
     # Center Column
     ###########################################################################
-    game_clock_label = SizedLabel(self.root, self.game_clock_var, "black", "light green",
+    game_clock_label = SizedLabel(self.root, self.game_clock_var, "black", "#000fff000",
                                   score_font, clock_height, clock_width)
     game_clock_label.grid(row=0, column=1)
     def refresh_time(self):
@@ -143,7 +143,7 @@ class NormalView(object):
 
     status = StringVar()
     status.set("GAME TIME")
-    status_label = SizedLabel(self.root, status, "black", "light green", status_font,
+    status_label = SizedLabel(self.root, status, "black", "#000fff000", status_font,
                               status_height, status_width)
     status_label.grid(row=1, column=1)
 
