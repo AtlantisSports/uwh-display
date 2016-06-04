@@ -46,6 +46,7 @@ def display_checks(mgr, is_front):
   mgr.setGameStateWallClock()
   s = ask_user_yes_no('Is the displayed wall-clock time correct?') and s
 
+  mgr.setGameStateNormalPlay()
   mgr.setGameClockRunning(True)
   time.sleep(6)
   mgr.setGameClockRunning(False)
