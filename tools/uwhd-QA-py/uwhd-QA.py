@@ -84,11 +84,6 @@ if __name__ == '__main__':
                     'Press \'return\' to continue.')
   s = display_checks(mgr, is_front=True) and s
 
-  instruct_and_wait('The following checks will ask about the alphanumeric\n'
-                    'displays on the back of the clock.\n'
-                    'Press \'return\' to continue.')
-  s = display_checks(mgr, is_front=False) and s
-
   if s:
     status = colored('[PASSED]', 'green')
   else:
