@@ -44,7 +44,7 @@ def display_checks(mgr, is_front):
     return False
 
   mgr.setGameClockRunning(True)
-  time.sleep(2)
+  time.sleep(6)
   mgr.setGameClockRunning(False)
   s = ask_user_yes_no('Did the clock count down, and then stop?') and s
 
