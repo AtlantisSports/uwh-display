@@ -43,6 +43,9 @@ def display_checks(mgr, is_front):
   if not s:
     return False
 
+  mgr.setGameStateWallClock()
+  s = ask_user_yes_no('Is the displayed wall-clock time correct?') and s
+
   mgr.setGameClockRunning(True)
   time.sleep(6)
   mgr.setGameClockRunning(False)
@@ -106,11 +109,6 @@ if __name__ == '__main__':
   gd = uwhd.GameDisplay(matrix)
   gd.Start0()
   mgr = gd.getMgr2()
-  mgr.setGameStateNormalPlay()
-  mgr.setGameClockRunning(False)
-  mgr.setBlackScore(0)
-  mgr.setWhiteScore(0)
-  mgr.setGameClock(1)
 
   s = True
 
