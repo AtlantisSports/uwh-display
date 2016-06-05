@@ -20,7 +20,8 @@ def SizedLabel(root, var, bg, fg, font, height, width):
 def SizedButton(root, callback, text, bg, fg, font, height, width):
   sf = sized_frame(root, height, width)
   b = Button(sf, text=text, command=callback, bg=bg, fg=fg, font=font,
-             highlightbackground="dark grey", highlightthickness=4, relief='flat')
+             highlightbackground="dark grey", highlightthickness=4, relief='flat',
+             activebackground=bg)
   b.pack(fill=BOTH, expand=1)
   return sf
 
