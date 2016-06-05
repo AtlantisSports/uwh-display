@@ -37,6 +37,7 @@ struct ModelSyncServer : public ModelSync {
 
 ModelSync *CreateSocketServer(const std::string &Port);
 ModelSync *CreateSocketClient(const std::string &Host, const std::string &Port);
-ModelSyncServer *CreateXBeeSync(bool Coordinator);
+ModelSyncServer *CreateXBeeSyncServer();
+ModelSync *CreateXBeeSyncClient();
 
 #endif

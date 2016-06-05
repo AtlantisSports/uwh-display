@@ -66,7 +66,7 @@ mgr.setGameClock(135)
 
 print "Set up GameModel"
 
-xbee = uwhd.CreateXBeeSync(False)
+xbee = uwhd.CreateXBeeSyncServer()
 
 print "created xbee sync"
 
