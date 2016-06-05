@@ -33,7 +33,7 @@ class ConfirmManualEditScore(object):
     self.root.overrideredirect(1)
 
     manual_edit_button = SizedButton(self.root, lambda : self.manual_edit_clicked(),
-                                     "MANUALLY EDIT SCORE", "orange", "black", ("Consolas", 36),
+                                     "MANUALLY EDIT SCORE", "orange", "black", ("Consolas", 50),
                                      180, 800)
     manual_edit_button.grid(row=0, column=0)
 
@@ -55,6 +55,94 @@ class ConfirmManualEditScore(object):
     self.cancel_continuation()
     self.root.destroy()
 
+class ManualEditScore(object):
+  def __init__(self, master, white_score, black_score,
+               cancel_continuation, submit_continuation):
+    self.cancel_continuation = cancel_continuation
+    self.submit_continuation = submit_continuation
+
+    self.root = Toplevel(master)
+    self.root.resizable(width=FALSE, height=FALSE)
+    self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
+
+    self.root.overrideredirect(1)
+
+    self.white_score = white_score
+    self.black_score = black_score
+    self.white_new_var = StringVar()
+    self.black_new_var = StringVar()
+    self.redraw()
+
+    button_font = ("Consolas", 36)
+    label_font  = ("Consolas", 96)
+
+    cancel_button = SizedButton(self.root, lambda : self.cancel_clicked(),
+                                "CANCEL", "red", "black", button_font,
+                                80, 400)
+    cancel_button.grid(row=2, column=0, columnspan=2)
+
+    submit_button = SizedButton(self.root, lambda : self.submit_clicked(),
+                                "SUBMIT", "green", "black", button_font,
+                                80, 400)
+    submit_button.grid(row=2, column=2, columnspan=2)
+
+    white_new = SizedLabel(self.root, self.white_new_var, "black", "white", label_font,
+                           160, 300)
+    white_new.grid(row=0, rowspan=2, column=1)
+
+    black_new = SizedLabel(self.root, self.black_new_var, "black", "blue", label_font,
+                           160, 300)
+    black_new.grid(row=0, rowspan=2, column=2)
+
+    white_up_button = SizedButton(self.root, lambda : self.white_up(),
+                                  "+", "light blue", "black", button_font,
+                                  80, 100)
+    white_up_button.grid(row=0, column=0)
+
+    white_dn_button = SizedButton(self.root, lambda : self.white_dn(),
+                                  "-", "grey", "black", button_font,
+                                  80, 100)
+    white_dn_button.grid(row=1, column=0)
+
+    black_up_button = SizedButton(self.root, lambda : self.black_up(),
+                                  "+", "light blue", "black", button_font,
+                                  80, 100)
+    black_up_button.grid(row=0, column=3)
+
+    black_dn_button = SizedButton(self.root, lambda : self.black_dn(),
+                                  "-", "grey", "black", button_font,
+                                  80, 100)
+    black_dn_button.grid(row=1, column=3)
+
+  def redraw(self):
+    self.white_new_var.set('%d' % (self.white_score,))
+    self.black_new_var.set('%d' % (self.black_score,))
+
+  def white_up(self):
+    self.white_score = self.white_score + 1
+    self.redraw()
+
+  def white_dn(self):
+    self.white_score = self.white_score - 1
+    self.redraw()
+
+  def black_up(self):
+    self.black_score = self.black_score + 1
+    self.redraw()
+
+  def black_dn(self):
+    self.black_score = self.black_score - 1
+    self.redraw()
+
+  def cancel_clicked(self):
+    self.cancel_continuation()
+    self.root.destroy()
+
+  def submit_clicked(self):
+    self.submit_continuation(self.white_score, self.black_score)
+    self.root.destroy()
+
+
 class NormalView(object):
   def __init__(self):
     self.root = Tk()
@@ -62,7 +150,7 @@ class NormalView(object):
     self.root.geometry('{}x{}+{}+{}'.format(800, 480, 0, 0))
     #self.root.mainloop()
 
-    score_font = ("Consolas", 72)
+    score_font = ("Consolas", 96)
     label_font = ("Consolas", 36)
     status_font = label_font
     button_font = label_font
@@ -108,8 +196,7 @@ class NormalView(object):
                                    score_width)
     white_score_label.grid(row=0, column=0)
     def refresh_white(self):
-      white_score = 11
-      self.white_score_var.set("%d" % (white_score,))
+      self.white_score_var.set("%d" % (self.white_score,))
       white_score_label.after(refresh_ms, lambda : refresh_white(self))
     white_score_label.after(refresh_ms, lambda : refresh_white(self))
 
@@ -119,7 +206,7 @@ class NormalView(object):
                              label_font, label_height, label_width)
     white_label.grid(row=1, column=0)
 
-    white_button = SizedButton(self.root, lambda : self.white_clicked(),
+    white_button = SizedButton(self.root, lambda : self.score_change_clicked(),
                                "WHITE\nSCORE", "dark cyan", "black",
                                button_font, button_height, button_width)
     white_button.grid(row=2, column=0)
@@ -163,8 +250,7 @@ class NormalView(object):
                                    score_width)
     black_score_label.grid(row=0, column=2)
     def refresh_black(self):
-      black_score = 1
-      self.black_score_var.set("%d" % (black_score,))
+      self.black_score_var.set("%d" % (self.black_score,))
       black_score_label.after(refresh_ms, lambda : refresh_black(self))
     black_score_label.after(refresh_ms, lambda : refresh_black(self))
 
@@ -174,7 +260,7 @@ class NormalView(object):
                              label_font, label_height, label_width)
     black_label.grid(row=1, column=2)
 
-    black_button = SizedButton(self.root, lambda: self.black_clicked(),
+    black_button = SizedButton(self.root, lambda: self.score_change_clicked(),
                                "BLACK\nSCORE", "dark cyan", "black",
                                button_font, button_height, button_width)
     black_button.grid(row=2, column=2)
@@ -185,21 +271,18 @@ class NormalView(object):
 
     self.root.mainloop()
 
-  def black_clicked(self):
-    print "black clicked"
-    def manual_continuation():
-      print "manual"
-    ConfirmManualEditScore(self.root,
-                           lambda : None,
-                           manual_continuation)
-
   def gong_clicked(self):
     print "gong clicked"
 
-  def white_clicked(self):
-    print "white clicked"
+  def score_change_clicked(self):
     def manual_continuation():
-      print "manual"
+      def submit_clicked(white_score, black_score):
+        self.white_score = white_score
+        self.black_score = black_score
+
+      ManualEditScore(self.root, self.white_score, self.black_score,
+                      lambda : None, submit_clicked)
+
     ConfirmManualEditScore(self.root,
                            lambda : None,
                            manual_continuation)
