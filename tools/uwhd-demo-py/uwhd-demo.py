@@ -78,13 +78,6 @@ xbee.setMgr(mgr)
 
 print "added the mgr"
 
-print "doing node discovery:"
-peers = xbee.peers()
-
-print "peers are:"
-for p in peers:
-  print " %-20s - %s" % (p.name(), p.addr())
-
 print "starting the game clock:"
 
 mgr.setGameClockRunning(1)
