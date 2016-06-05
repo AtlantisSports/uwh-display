@@ -32,6 +32,7 @@ class ConfirmManualEditScore(object):
     self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
 
     self.root.overrideredirect(1)
+    self.root.transient(master)
 
     manual_edit_button = SizedButton(self.root, lambda : self.manual_edit_clicked(),
                                      "MANUALLY EDIT SCORE", "orange", "black", ("Consolas", 50),
@@ -67,6 +68,7 @@ class ManualEditScore(object):
     self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
 
     self.root.overrideredirect(1)
+    self.root.transient(master)
 
     self.white_score = white_score
     self.black_score = black_score
