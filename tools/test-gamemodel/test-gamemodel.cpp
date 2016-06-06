@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
   bool Failed = false;
 
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::WallClock);
-  Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::NormalPlay);
+  Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::FirstHalf);
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::HalfTime);
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::RefTimeOut);
   Failed |= CheckRoundTripSerialize(42, 37, 104, false, GameModel::WhiteTimeOut);
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
   Failed |= CheckNotEquals(M2, M1);
 
   M2 = M1;
-  M2.State = GameModel::NormalPlay;
+  M2.State = GameModel::SecondHalf;
   Failed |= CheckNotEquals(M1, M2);
   Failed |= CheckNotEquals(M2, M1);
 

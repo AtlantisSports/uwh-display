@@ -29,7 +29,8 @@ public:
 
   enum GameState {
     WallClock,
-    NormalPlay,
+    FirstHalf,
+    SecondHalf,
     HalfTime,
     RefTimeOut,
     WhiteTimeOut,
@@ -68,7 +69,8 @@ public:
   bool gameClockRunning();
   GameModel::GameState gameState();
   bool gameStateWallClock();
-  bool gameStateNormalPlay();
+  bool gameStateFirstHalf();
+  bool gameStateSecondHalf();
   bool gameStateHalfTime();
   bool gameStateRefTimeOut();
   bool gameStateWhiteTimeOut();
@@ -82,7 +84,8 @@ public:
 
   void setGameState(GameModel::GameState S);
   void setGameStateWallClock();
-  void setGameStateNormalPlay();
+  void setGameStateFirstHalf();
+  void setGameStateSecondHalf();
   void setGameStateHalfTime();
   void setGameStateRefTimeOut();
   void setGameStateBlackTimeOut();

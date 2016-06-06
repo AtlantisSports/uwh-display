@@ -37,7 +37,8 @@ std::string GameModel::dump() const {
 
   switch (State) {
   case GameModel::WallClock:    SS << "Wall Clock"; break;
-  case GameModel::NormalPlay:   SS << "Normal Play"; break;
+  case GameModel::FirstHalf:    SS << "First Half"; break;
+  case GameModel::SecondHalf:   SS << "Second Half"; break;
   case GameModel::HalfTime:     SS << "Half Time"; break;
   case GameModel::RefTimeOut:   SS << "Ref Timeout"; break;
   case GameModel::WhiteTimeOut: SS << "White Timeout"; break;
@@ -63,7 +64,8 @@ std::string GameModel::serialize() const {
 
   switch (State) {
   case GameModel::WallClock:    SS << 'C'; break;
-  case GameModel::NormalPlay:   SS << 'N'; break;
+  case GameModel::FirstHalf:    SS << 'F'; break;
+  case GameModel::SecondHalf:   SS << 'S'; break;
   case GameModel::HalfTime:     SS << 'H'; break;
   case GameModel::RefTimeOut:   SS << 'R'; break;
   case GameModel::WhiteTimeOut: SS << 'W'; break;
@@ -134,7 +136,8 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   SS.get(GS);
   switch (GS) {
   case 'C': NewM.State = GameModel::WallClock; break;
-  case 'N': NewM.State = GameModel::NormalPlay; break;
+  case 'F': NewM.State = GameModel::FirstHalf; break;
+  case 'S': NewM.State = GameModel::SecondHalf; break;
   case 'H': NewM.State = GameModel::HalfTime; break;
   case 'R': NewM.State = GameModel::RefTimeOut; break;
   case 'W': NewM.State = GameModel::WhiteTimeOut; break;
@@ -249,11 +252,15 @@ GameModel::GameState GameModelManager::gameState() {
 }
 
 bool GameModelManager::gameStateWallClock() {
-  return gameState() == GameModel::NormalPlay;
+  return gameState() == GameModel::WallClock;
 }
 
-bool GameModelManager::gameStateNormalPlay() {
-  return gameState() == GameModel::NormalPlay;
+bool GameModelManager::gameStateFirstHalf() {
+  return gameState() == GameModel::FirstHalf;
+}
+
+bool GameModelManager::gameStateSecondHalf() {
+  return gameState() == GameModel::SecondHalf;
 }
 
 bool GameModelManager::gameStateHalfTime() {
@@ -290,8 +297,12 @@ void GameModelManager::setGameStateWallClock() {
   setGameState(GameModel::WallClock);
 }
 
-void GameModelManager::setGameStateNormalPlay() {
-  setGameState(GameModel::NormalPlay);
+void GameModelManager::setGameStateFirstHalf() {
+  setGameState(GameModel::FirstHalf);
+}
+
+void GameModelManager::setGameStateSecondHalf() {
+  setGameState(GameModel::SecondHalf);
 }
 
 void GameModelManager::setGameStateHalfTime() {

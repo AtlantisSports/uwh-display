@@ -72,12 +72,20 @@ bool Console::ParseLine(std::string I) {
   case 'H':
   case 'h': {
     std::cout << "Usage:\n"
-              << "  B[0-9]+    - Set the Black Score\n"
-              << "  W[0-9]+    - Set the White Score\n"
-              << "  T[0-9]+    - Set the Game Clock\n"
-              << "  G[CNHRWBO] - Set the Game State\n"
-              << "  H          - This menu\n"
-              << "  Q          - Quit\n";
+              << "  B[0-9]+     - Set the Black Score\n"
+              << "  W[0-9]+     - Set the White Score\n"
+              << "  T[0-9]+     - Set the Game Clock\n"
+              << "  G[CFSHRWBO] - Set the Game State\n"
+              << "    GC        - Wall Clock\n"
+              << "    GF        - First Half\n"
+              << "    GS        - Second Half\n"
+              << "    GH        - Half Time\n"
+              << "    GR        - Ref Time Out\n"
+              << "    GW        - White Time Out\n"
+              << "    GB        - Black Time Out\n"
+              << "    GO        - Game Over\n"
+              << "  H           - This menu\n"
+              << "  Q           - Quit\n";
     goto Success;
   }
 
@@ -88,7 +96,8 @@ bool Console::ParseLine(std::string I) {
 
     switch (toupper(I[1])) {
     case 'C': M.setGameState(GameModel::WallClock); goto Success;
-    case 'N': M.setGameState(GameModel::NormalPlay); goto Success;
+    case 'F': M.setGameState(GameModel::FirstHalf); goto Success;
+    case 'S': M.setGameState(GameModel::SecondHalf); goto Success;
     case 'H': M.setGameState(GameModel::HalfTime); goto Success;
     case 'R': M.setGameState(GameModel::RefTimeOut); goto Success;
     case 'B': M.setGameState(GameModel::BlackTimeOut); goto Success;
