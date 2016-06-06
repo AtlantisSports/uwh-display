@@ -26,6 +26,7 @@ cat << EOF >> /etc/rc.local
 # Automatically added by $this_script
 #
 # Update the system clock on boot:
+echo ds3231 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
 (sudo ntpdate -s 0.north-america.pool.ntp.org &&
  sudo hwclock -w &&
  echo "Time set via ntp") ||

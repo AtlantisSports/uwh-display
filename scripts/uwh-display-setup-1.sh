@@ -15,6 +15,13 @@ cat << EOF >> /boot/config.txt
 # Automatically added by $this_script
 dtparam=i2c_arm=on
 dtoverlay=ds1307-rtc
+# Force display resolution to that of the touchscreen:
+hdmi_force_hotplug=1
+hdmi_group=2
+hdmi_mode=1
+hdmi_mode=87
+hdmi_cvt=800 480 60 6 0 0 0
+max_usb_current=1
 #######################################
 EOF
 
