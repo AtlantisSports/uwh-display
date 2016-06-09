@@ -191,7 +191,7 @@ void XBeeSyncClient::Init() {
     return;
   }
   set_interface_attribs(fd, B9600, 0);  // set speed to 9600 bps, 8n1 (no parity)
-  set_blocking(fd, 0);                  // set no blocking
+  set_blocking(fd, 1);                  // set no blocking
 
   std::thread([this]() {
     std::queue<char> Queue;
