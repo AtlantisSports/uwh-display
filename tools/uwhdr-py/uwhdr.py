@@ -374,12 +374,8 @@ class NormalView(object):
 
 def main():
   mgr = uwhd.GameModelManager()
-  print "created manager"
-
   xbee = uwhd.CreateXBeeSyncServer()
-  print "created xbee"
   xbee.Init()
-  print "inited xbee"
 
   xbee.setMgr(mgr)
 
