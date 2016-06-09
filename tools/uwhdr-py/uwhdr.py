@@ -7,9 +7,9 @@ import time
 import sys
 import uwhdnodisp as uwhd
 
-HALF_PLAY_DURATION = 30
-HALF_TIME_DURATION = 30
-GAME_OVER_DURATION = 30
+HALF_PLAY_DURATION = 5 #30
+HALF_TIME_DURATION = 5 #30
+GAME_OVER_DURATION = 5 #30
 
 def sized_frame(master, height, width):
    F = Frame(master, height=height, width=width)
@@ -234,6 +234,9 @@ class NormalView(object):
     self.black_score_var = StringVar()
     self.black_score_var.set("##")
 
+    self.status_var = StringVar()
+    self.status_var.set("FIRST HALF")
+
     # Left Column
     ###########################################################################
     white_score_label = SizedLabel(self.root, self.white_score_var, "black",
@@ -262,9 +265,14 @@ class NormalView(object):
 
     # Center Column
     ###########################################################################
-    game_clock_label = SizedLabel(self.root, self.game_clock_var, "black", "#000fff000",
-                                  score_font, clock_height, clock_width)
-    game_clock_label.grid(row=0, column=1)
+    self.game_clock_label = SizedLabel(self.root, self.game_clock_var, "black", "#000fff000",
+                                       score_font, clock_height, clock_width)
+    self.game_clock_label.grid(row=0, column=1)
+
+    self.status_label = SizedLabel(self.root, self.status_var, "black", "#000fff000", status_font,
+                                   status_height, status_width)
+    self.status_label.grid(row=1, column=1)
+
     def refresh_time(self):
       game_clock = self.mgr.gameClock()
       game_mins = game_clock // 60
@@ -278,16 +286,22 @@ class NormalView(object):
           self.mgr.setGameClock(HALF_TIME_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
+          self.status_var.set("HALF TIME")
+          self.root.update()
         elif self.mgr.gameStateHalfTime():
           self.mgr.setGameStateSecondHalf()
           self.mgr.setGameClock(HALF_PLAY_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
+          self.status_var.set("SECOND HALF")
+          self.root.update()
         elif self.mgr.gameStateSecondHalf():
           self.mgr.setGameStateGameOver()
           self.mgr.setGameClock(GAME_OVER_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
+          self.status_var.set("GAME OVER")
+          self.root.update()
         elif self.mgr.gameStateGameOver():
           self.mgr.setBlackScore(0)
           self.mgr.setWhiteScore(0)
@@ -295,15 +309,10 @@ class NormalView(object):
           self.mgr.setGameClock(HALF_PLAY_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
-
-      game_clock_label.after(refresh_ms, lambda : refresh_time(self))
-    game_clock_label.after(refresh_ms, lambda : refresh_time(self))
-
-    status = StringVar()
-    status.set("GAME TIME")
-    status_label = SizedLabel(self.root, status, "black", "#000fff000", status_font,
-                              status_height, status_width)
-    status_label.grid(row=1, column=1)
+          self.status_var.set("FIRST HALF")
+          self.root.update()
+      self.game_clock_label.after(refresh_ms, lambda : refresh_time(self))
+    self.game_clock_label.after(refresh_ms, lambda : refresh_time(self))
 
     gong_button = SizedButton(self.root, lambda : self.gong_clicked(), "GONG",
                               "red", "black", gong_font, gong_height,
