@@ -14,27 +14,79 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
-#include <iostream>
+#include <errno.h>
+#include <fcntl.h>
 #include <iomanip>
+#include <iostream>
 #include <memory>
-#include <string>
-#include <sstream>
+#include <queue>
 #include <semaphore.h>
+#include <sstream>
+#include <stdio.h>
+#include <string.h>
+#include <string>
+#include <termios.h>
+#include <thread>
 #include <time.h>
 #include <unistd.h>
-#include <xbee.h>
+
+// Serial comm stuff copied from: http://stackoverflow.com/a/6947758
+int set_interface_attribs(int fd, int speed, int parity) {
+  struct termios tty;
+  memset (&tty, 0, sizeof tty);
+  if (tcgetattr (fd, &tty) != 0)
+  {
+    printf("error %d from tcgetattr", errno);
+    return -1;
+  }
+
+  cfsetospeed (&tty, speed);
+  cfsetispeed (&tty, speed);
+
+  tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+  // disable IGNBRK for mismatched speed tests; otherwise receive break
+  // as \000 chars
+  tty.c_iflag &= ~IGNBRK;         // disable break processing
+  tty.c_lflag = 0;                // no signaling chars, no echo,
+  // no canonical processing
+  tty.c_oflag = 0;                // no remapping, no delays
+  tty.c_cc[VMIN]  = 0;            // read doesn't block
+  tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+  tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+
+  tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
+  // enable reading
+  tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+  tty.c_cflag |= parity;
+  tty.c_cflag &= ~CSTOPB;
+  tty.c_cflag &= ~CRTSCTS;
+
+  if (tcsetattr (fd, TCSANOW, &tty) != 0)
+  {
+    printf("error %d from tcsetattr", errno);
+    return -1;
+  }
+  return 0;
+}
+
+void set_blocking(int fd, int should_block) {
+  struct termios tty;
+  memset(&tty, 0, sizeof tty);
+  if (tcgetattr(fd, &tty) != 0)
+  {
+    printf("error %d from tggetattr", errno);
+    return;
+  }
+
+  tty.c_cc[VMIN]  = should_block ? 1 : 0;
+  tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+  if (tcsetattr(fd, TCSANOW, &tty) != 0)
+    printf("error %d setting term attributes", errno);
+}
 
 namespace {
-
-struct XBeeSyncPeer : public ModelSyncPeer {
-  XBeeSyncPeer(std::string Name, xbee_conAddress Address)
-    : Name(Name), Address(Address) {}
-  ~XBeeSyncPeer() {}
-  virtual std::string name() const override { return Name; }
-  virtual std::string addr() const override;
-  std::string Name;
-  struct xbee_conAddress Address;
-};
 
 class XBeeSyncServer : public ModelSyncServer, GameModelManager {
 public:
@@ -52,27 +104,12 @@ public:
   virtual GameModelManager &getMgr() override { return *M; }
 
   virtual void modelChanged(GameModel Model) override;
-
-  virtual std::vector<ModelSyncPeer*> peers() override {
-    return synchronousNodeDiscovery();
-  }
-
-protected:
-  std::vector<ModelSyncPeer*> synchronousNodeDiscovery();
-
 private:
-  struct xbee *XBee;
+  int fd;
   GameModelManager *M;
 
-  static const char *XBeeKind;
   static const char *XBeeSerialConsole;
   static const int XBeeBaudRate;
-};
-
-class XBeeSyncClient;
-
-struct RXConfig {
-  XBeeSyncClient *Client;
 };
 
 class XBeeSyncClient : public ModelSync {
@@ -95,361 +132,100 @@ public:
 protected:
 
 private:
-  struct xbee *XBee;
+  int fd;
   GameModelManager *M;
 
-  struct xbee_con *Con;
-  struct xbee_conSettings Settings;
-
-  static const char *XBeeKind;
   static const char *XBeeSerialConsole;
   static const int   XBeeBaudRate;
-
-  RXConfig Config;
 };
 
 } // anonymous namespace
 
-std::string XBeeSyncPeer::addr() const {
-  if (Address.addr64_enabled == 1) {
-    std::stringstream SS;
-    SS << "0x"
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[0]
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[1]
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[2]
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[3]
-       << " 0x"
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[4]
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[5]
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[6]
-       << std::setfill('0') << std::setw(2) << std::hex << std::uppercase
-       << (int)Address.addr64[7];
-    return SS.str();
-  }
-
-  return "<nyi>";
-}
-
-const char *XBeeSyncServer::XBeeKind          = "xbee1";
 const char *XBeeSyncServer::XBeeSerialConsole = "/dev/ttyAMA0";
 const int   XBeeSyncServer::XBeeBaudRate      = 9600;
-const char *XBeeSyncClient::XBeeKind          = "xbee1";
 const char *XBeeSyncClient::XBeeSerialConsole = "/dev/ttyAMA0";
 const int   XBeeSyncClient::XBeeBaudRate      = 9600;
 
 XBeeSyncServer::XBeeSyncServer()
-  : XBee(nullptr), M(nullptr) {
+  : fd(0), M(nullptr) {
 }
 
 XBeeSyncServer::~XBeeSyncServer() {
-  if (XBee)
-    xbee_shutdown(XBee);
 }
 
 void XBeeSyncServer::Init() {
-  if (auto Err = xbee_setup(&XBee, XBeeKind, XBeeSerialConsole, XBeeBaudRate)) {
-    std::cerr << "error: could not init xbee: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
+  char *portname = "/dev/ttyAMA0";
+  fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+  if (fd < 0) {
+    printf("error %d opening %s: %s", errno, portname, strerror (errno));
+    return;
   }
+  set_interface_attribs(fd, B9600, 0);  // set speed to 9600 bps, 8n1 (no parity)
+  set_blocking(fd, 0);                  // set no blocking
 }
 
 XBeeSyncClient::XBeeSyncClient()
-  : XBee(nullptr), M(nullptr) {
+  : fd(0), M(nullptr) {
     printf("ctor\n");
 }
 
 XBeeSyncClient::~XBeeSyncClient() {
   printf("dtor\n");
-  if (XBee)
-    xbee_shutdown(XBee);
 }
 
-static XBeeSyncPeer broadcastPeer() {
-  xbee_conAddress addr;
-  memset(&addr, 0, sizeof(addr));
-  addr.addr64_enabled = 1;
-  addr.addr64[0] = 0x00;
-  addr.addr64[1] = 0x00;
-  addr.addr64[2] = 0x00;
-  addr.addr64[3] = 0x00;
-  addr.addr64[4] = 0x00;
-  addr.addr64[5] = 0x00;
-  addr.addr64[6] = 0xff;
-  addr.addr64[7] = 0xff;
-  return XBeeSyncPeer("<bcast>", addr);
-}
-
-static XBeeSyncPeer sniffer() {
-  xbee_conAddress addr;
-  memset(&addr, 0, sizeof(addr));
-  addr.addr64_enabled = 1;
-  addr.addr64[0] = 0x00;
-  addr.addr64[1] = 0x13;
-  addr.addr64[2] = 0xA2;
-  addr.addr64[3] = 0x00;
-  addr.addr64[4] = 0x40;
-  addr.addr64[5] = 0xD9;
-  addr.addr64[6] = 0x70;
-  addr.addr64[7] = 0x4D;
-  return XBeeSyncPeer("sniffer", addr);
-}
-
-static XBeeSyncPeer uwhd_display_01() {
-  xbee_conAddress addr;
-  memset(&addr, 0, sizeof(addr));
-  addr.addr64_enabled = 1;
-  addr.addr64[0] = 0x00;
-  addr.addr64[1] = 0x13;
-  addr.addr64[2] = 0xA2;
-  addr.addr64[3] = 0x00;
-  addr.addr64[4] = 0x40;
-  addr.addr64[5] = 0xDD;
-  addr.addr64[6] = 0xC9;
-  addr.addr64[7] = 0x79;
-  return XBeeSyncPeer("uwh-display-01", addr);
-}
-
-static XBeeSyncPeer uwhd_display_02() {
-  xbee_conAddress addr;
-  memset(&addr, 0, sizeof(addr));
-  addr.addr64_enabled = 1;
-  addr.addr64[0] = 0x00;
-  addr.addr64[1] = 0x13;
-  addr.addr64[2] = 0xA2;
-  addr.addr64[3] = 0x00;
-  addr.addr64[4] = 0x40;
-  addr.addr64[5] = 0xDD;
-  addr.addr64[6] = 0xC9;
-  addr.addr64[7] = 0x72;
-  return XBeeSyncPeer("uwh-display-02", addr);
-}
-
-static XBeeSyncPeer uwhd_display_03() {
-  xbee_conAddress addr;
-  memset(&addr, 0, sizeof(addr));
-  addr.addr64_enabled = 1;
-  addr.addr64[0] = 0x00;
-  addr.addr64[1] = 0x13;
-  addr.addr64[2] = 0xA2;
-  addr.addr64[3] = 0x00;
-  addr.addr64[4] = 0x40;
-  addr.addr64[5] = 0xDD;
-  addr.addr64[6] = 0xC9;
-  addr.addr64[7] = 0x7f;
-  return XBeeSyncPeer("uwh-display-03", addr);
-}
 
 void XBeeSyncServer::modelChanged(GameModel Model) {
-  assert(XBee && "xbee not inited?");
-
-  // Send to the broadcast address, so everyone can hear it
-  XBeeSyncPeer BCast = broadcastPeer();
-
-  struct xbee_con *Con;
-  if (auto Err = xbee_conNew(XBee, &Con, "64-bit Data", &BCast.Address)) {
-    std::cerr << "error: could not open xbee connection: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
-
-  // Ignore the ACK
-  struct xbee_conSettings Settings;
-  xbee_conSettings(Con, nullptr, &Settings);
-  Settings.disableAck = 1;
-  xbee_conSettings(Con, &Settings, nullptr);
-
   std::string Message = Model.serialize();
-  xbee_conTx(Con, nullptr, Message.c_str(), 1);
 
-  if (auto Err = xbee_conEnd(Con)) {
-    std::cerr << "error: could not close the xbee connection: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
+  write(fd, Message.c_str(), Message.size());
 }
 
-static void clientRXCallback(struct xbee *XBee, struct xbee_con *Con,
-                             struct xbee_pkt **Pkt, void **Data) {
-  auto *Config = reinterpret_cast<RXConfig*>(*Data);
-  assert(Config && "callback config was null?");
-
-  printf("in callback\n");
-
-  if ((*Pkt)->dataLen == 0) {
-    printf("too short?");
-    return;
-  }
-
-  printf("received: '%s'\n", (*Pkt)->data);
-
-  GameModel Model;
-  if (GameModel::deSerialize(reinterpret_cast<char*>((*Pkt)->data), Model)) {
-    printf("failed to deserialize\n");
-    return;
-  }
-
-  printf("updating model:\n");
-  Config->Client->receivedModel(Model);
-  printf("updated model:\n");
-}
 
 void XBeeSyncClient::Init() {
-  printf("init\n");
-  if (auto Err = xbee_setup(&XBee, XBeeKind, XBeeSerialConsole, XBeeBaudRate)) {
-    std::cerr << "error: could not init xbee: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
+  char *portname = "/dev/ttyAMA0";
+  fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+  if (fd < 0) {
+    printf("error %d opening %s: %s", errno, portname, strerror (errno));
+    return;
   }
+  set_interface_attribs(fd, B9600, 0);  // set speed to 9600 bps, 8n1 (no parity)
+  set_blocking(fd, 0);                  // set no blocking
 
-  XBeeSyncPeer BCast = broadcastPeer();
+  std::thread([this]() {
+    std::queue<char> Queue;
+    std::stringstream Msg;
+    do {
+      char buf[128];
+      memset(buf, 0, sizeof(buf));
+      int n = read(fd, buf, sizeof(buf));
 
-  printf("conNew\n");
+      for (int i = 0; i < n; ++i)
+        Queue.push(buf[i]);
 
-  if (auto Err = xbee_conNew(XBee, &Con, "64-bit Data", &BCast.Address)) {
-    std::cerr << "error: could not open xbee connection: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
+      while (!Queue.empty()) {
+        char C = Queue.front();
+        Msg << C;
+        Queue.pop();
 
-  printf("con settings\n");
+        if (C == 'E') {
+          GameModel Model;
+          if (GameModel::deSerialize(Msg.str(), Model)) {
+            printf("failed to deserialize\n");
+          } else {
+            printf("updating model:\n");
+            receivedModel(Model);
+          }
 
-  xbee_conSettings(Con, nullptr, &Settings);
-  Settings.disableAck = 1;
-  xbee_conSettings(Con, &Settings, nullptr);
-
-  printf("conDataSet\n");
-  Config.Client = this;
-  if (auto Err = xbee_conDataSet(Con, &Config, nullptr)) {
-    std::cerr << "error: could not set data for callback: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
-
-  printf("conCallbackSet\n");
-
-  if (auto Err = xbee_conCallbackSet(Con, clientRXCallback, nullptr)) {
-    std::cerr << "error: could not register xbee callback: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
-
-  printf("done\n");
+          Msg.str("");
+          Msg.clear();
+        }
+      }
+    } while (true);
+  }).detach();
 }
 
 void XBeeSyncClient::receivedModel(GameModel Model) {
   M->setModel(Model);
-}
-
-struct NDConfig {
-  std::vector<ModelSyncPeer*> Peers;
-  sem_t NDComplete;
-};
-
-static void nodeDiscoveryCallback(struct xbee *XBee, struct xbee_con *Con,
-                                  struct xbee_pkt **Pkt, void **Data) {
-  NDConfig *Config = reinterpret_cast<NDConfig*>(*Data);
-  assert(Config && "callback config was null?");
-  if (strncasecmp(reinterpret_cast<const char*>((*Pkt)->atCommand), "ND", 2))
-    return;
-
-  if ((*Pkt)->dataLen == 0) {
-    // scan complete
-    sem_post(&Config->NDComplete);
-    return;
-  }
-
-  if ((*Pkt)->dataLen < 11) {
-    // received small packet
-    return;
-  }
-
-  struct xbee_conAddress PeerAddr;
-  memset(&PeerAddr, 0, sizeof(PeerAddr));
-  PeerAddr.addr64_enabled = 1;
-  PeerAddr.addr64[0] = (*Pkt)->data[2];
-  PeerAddr.addr64[1] = (*Pkt)->data[3];
-  PeerAddr.addr64[2] = (*Pkt)->data[4];
-  PeerAddr.addr64[3] = (*Pkt)->data[5];
-  PeerAddr.addr64[4] = (*Pkt)->data[6];
-  PeerAddr.addr64[5] = (*Pkt)->data[7];
-  PeerAddr.addr64[6] = (*Pkt)->data[8];
-  PeerAddr.addr64[7] = (*Pkt)->data[9];
-  const char *Name = reinterpret_cast<const char*>(&(*Pkt)->data[11]);
-  XBeeSyncPeer *Peer = new XBeeSyncPeer(Name, PeerAddr);
-  Config->Peers.push_back(Peer);
-}
-
-std::vector<ModelSyncPeer*> XBeeSyncServer::synchronousNodeDiscovery() {
-  NDConfig Config;
-
-  // Init the semaphore
-  if (sem_init(&Config.NDComplete, 0, 0)) {
-    std::cerr << "error: could not init semaphore: "
-              << errno << " " << strerror(errno) << "\n";
-    abort();
-  }
-
-  assert(XBee && "XBee not yet inited?");
-
-  // Open the connection for Local AT
-  struct xbee_con *Con;
-  if (auto Err = xbee_conNew(XBee, &Con, "Local AT", nullptr)) {
-    std::cerr << "error: could not open xbee connection: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
-
-  if (auto Err = xbee_conDataSet(Con, &Config, nullptr)) {
-    std::cerr << "error: could not set data for callback: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
-
-  // Register the node discovery callback
-  if (auto Err = xbee_conCallbackSet(Con, nodeDiscoveryCallback, nullptr)) {
-    std::cerr << "error: could not register xbee callback: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
-
-  // Start the node discovery itself
-  unsigned char TxRet;
-  if (auto Err = xbee_conTx(Con, &TxRet, "ND"))
-    if (Err != XBEE_ETIMEOUT) {
-      std::cerr << "error: could not send 'ND' command: "
-                << Err << " " << xbee_errorToStr(Err) << "\n";
-      abort();
-    }
-
-  // Wait 30 seconds for peer discovery
-  struct timespec T0;
-  clock_gettime(CLOCK_REALTIME, &T0);
-  T0.tv_sec += 30;
-  if (sem_timedwait(&Config.NDComplete, &T0)) {
-    if (errno == ETIMEDOUT)
-      std::cerr << "error: timeout while waiting for ND command to complete\n";
-    else {
-      std::cerr << "error: semaphore failed. Sleeping instead\n";
-      usleep(30000000);
-    }
-  }
-
-  // Close the connection to the XBee
-  if (auto Err = xbee_conEnd(Con)) {
-    std::cerr << "error: could not close the connection with the xbee: "
-              << Err << " " << xbee_errorToStr(Err) << "\n";
-    abort();
-  }
-
-  return Config.Peers;
 }
 
 ModelSyncServer *CreateXBeeSyncServer() {

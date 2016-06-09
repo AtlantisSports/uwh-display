@@ -22,13 +22,13 @@ struct ModelSync {
   virtual GameModelManager &getMgr() = 0;
 };
 
-struct ModelSyncPeer {
-  virtual std::string name() const = 0;
-  virtual std::string addr() const = 0;
-};
+//struct ModelSyncPeer {
+//  virtual std::string name() const = 0;
+//  virtual std::string addr() const = 0;
+//};
 
 struct ModelSyncServer : public ModelSync {
-  virtual std::vector<ModelSyncPeer*> peers() = 0;
+  //virtual std::vector<ModelSyncPeer*> peers() = 0;
   //virtual void claimPeer(const ModelSyncPeer *P) = 0;
   //virtual void getPeerWallClock(const ModelSyncPeer *P) = 0;
   //virtual void setPeerWallClock(const ModelSyncPeer *P) = 0;
