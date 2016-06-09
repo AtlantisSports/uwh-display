@@ -153,7 +153,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   return false;
 }
 
-const int GameModelManager::HeartbeatDelayMs = 10;
+const int GameModelManager::HeartbeatDelayMs = 100;
 
 GameModelManager::GameModelManager()
     : Model() {
