@@ -313,7 +313,7 @@ void XBeeSyncClient::Init() {
 
   printf("conNew\n");
 
-  if (auto Err = xbee_conNew(XBee, &Con, "Data", &BCast.Address)) {
+  if (auto Err = xbee_conNew(XBee, &Con, "64-bit Data", &BCast.Address)) {
     std::cerr << "error: could not open xbee connection: "
               << Err << " " << xbee_errorToStr(Err) << "\n";
     abort();
