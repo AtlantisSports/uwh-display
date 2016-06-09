@@ -7,9 +7,9 @@ import time
 import sys
 import uwhdnodisp as uwhd
 
-HALF_PLAY_DURATION = 2 * 60
-HALF_TIME_DURATION = 1 * 60
-GAME_OVER_DURATION = 1 * 60
+HALF_PLAY_DURATION = 30
+HALF_TIME_DURATION = 30
+GAME_OVER_DURATION = 30
 
 def sized_frame(master, height, width):
    F = Frame(master, height=height, width=width)
