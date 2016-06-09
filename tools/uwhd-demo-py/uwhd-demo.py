@@ -59,6 +59,7 @@ print "Started GameDisplay"
 
 # Fetch the GameManager so we can edit the game state
 mgr = gd.getMgr2()
+mgr.setGameStateFirstHalf()
 mgr.setGameClockRunning(0)
 mgr.setBlackScore(1)
 mgr.setWhiteScore(4)
