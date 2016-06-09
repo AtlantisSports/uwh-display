@@ -224,6 +224,7 @@ void XBeeSyncClient::Init() {
 }
 
 void XBeeSyncClient::receivedModel(GameModel Model) {
+  Model.setPrevStartTime();
   M->setModel(Model);
 }
 

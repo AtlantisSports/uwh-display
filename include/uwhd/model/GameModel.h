@@ -14,6 +14,7 @@
 #include <string>
 #include <mutex>
 #include <vector>
+#include <sys/time.h>
 
 class GameModel {
 public:
@@ -24,7 +25,8 @@ public:
     , State(GameModel::WallClock) {}
   unsigned char BlackScore;
   unsigned char WhiteScore;
-  unsigned short GameClockSecs;
+  unsigned GameClockSecs;         // Amount of time left in the game when wall clock == PrevStartTime
+  struct timeval PrevStartTime;
   bool ClockRunning;
 
   enum GameState {
@@ -42,6 +44,9 @@ public:
   std::string dump() const;
   std::string serialize() const;
   static bool deSerialize(std::string S, GameModel &M);
+
+  void setPrevStartTime();
+  unsigned displayedTimeLeft();
 
   bool operator==(const GameModel &Other) const;
   bool operator!=(const GameModel &Other) const { return !(*this == Other); }
@@ -92,7 +97,7 @@ public:
   void setGameStateWhiteTimeOut();
   void setGameStateGameOver();
 
-  void heartbeat();
+  virtual void heartbeat();
 
 private:
   std::mutex ModelMutex;

@@ -153,6 +153,28 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   return false;
 }
 
+static long timevaldiff(struct timeval *Start,
+                        struct timeval *End) {
+  long msec = (End->tv_sec - Start->tv_sec) * 1000;
+  msec += (End->tv_usec - Start->tv_usec) / 1000;
+  return msec;
+}
+
+void GameModel::setPrevStartTime() {
+  gettimeofday(&PrevStartTime, nullptr);
+}
+
+unsigned GameModel::displayedTimeLeft() {
+  struct timeval Now;
+  gettimeofday(&Now, nullptr);
+
+  if (ClockRunning) {
+    long msec = timevaldiff(&PrevStartTime, &Now);
+    return GameClockSecs - msec / 1000;
+  } else
+    return GameClockSecs;
+}
+
 const int GameModelManager::HeartbeatDelayMs = 100;
 
 GameModelManager::GameModelManager()
@@ -196,7 +218,7 @@ unsigned char GameModelManager::whiteScore() {
 
 unsigned short GameModelManager::gameClock() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.GameClockSecs;
+  return Model.displayedTimeLeft();
 }
 
 bool GameModelManager::gameClockRunning() {
@@ -229,6 +251,7 @@ void GameModelManager::setGameClock(unsigned short T) {
   {
     std::lock_guard<std::mutex> Lock(ModelMutex);
     Model.GameClockSecs = T;
+    gettimeofday(&Model.PrevStartTime, nullptr);
     if (T == 0)
       Model.ClockRunning = false;
     M = Model;
@@ -240,7 +263,12 @@ void GameModelManager::setGameClockRunning(bool B) {
   GameModel M;
   {
     std::lock_guard<std::mutex> Lock(ModelMutex);
+
+    if (!Model.ClockRunning && B)
+      gettimeofday(&Model.PrevStartTime, nullptr);
+
     Model.ClockRunning = B;
+
     M = Model;
   }
   modelChanged(M);
@@ -325,20 +353,7 @@ void GameModelManager::setGameStateGameOver() {
   setGameState(GameModel::GameOver);
 }
 
-void GameModelManager::heartbeat() {
-  static time_t PrevTime = time(nullptr);
-  time_t Now = time(nullptr);
-
-  if (gameClockRunning()) {
-    double Delta = difftime(Now, PrevTime);
-    if (Delta >= 1) {
-      setGameClock(gameClock() - 1);
-    } else
-      return;
-  }
-
-  PrevTime = Now;
-}
+void GameModelManager::heartbeat() { }
 
 void GameModelManager::modelChanged(GameModel M) {
   for (auto *L : Listeners)
