@@ -201,7 +201,7 @@ void XBeeSyncClient::Init() {
       memset(buf, 0, sizeof(buf));
       int n = read(fd, buf, sizeof(buf));
 
-      printf("read: [%s]\n", buf);
+      //printf("read: [%s]\n", buf);
 
       for (int i = 0; i < n; ++i)
         Queue.push(buf[i]);
@@ -214,9 +214,9 @@ void XBeeSyncClient::Init() {
         if (C == 'E') {
           GameModel Model;
           if (GameModel::deSerialize(Msg.str(), Model)) {
-            printf("failed to deserialize\n");
+            printf("failed to deserialize [%s]\n", Msg.str().c_str());
           } else {
-            printf("updating model:\n");
+            //printf("updating model:\n");
             receivedModel(Model);
           }
 
