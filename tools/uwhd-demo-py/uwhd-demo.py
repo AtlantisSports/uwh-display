@@ -85,7 +85,7 @@ mgr.setGameClockRunning(1)
 
 print "probe the mgr for model updates:"
 
-for i in range(0, 10):
+for i in range(0, 100):
   print ""
   print "  BlackScore:   %d" %(mgr.blackScore(),)
   print "  WhiteScore:   %d" %(mgr.whiteScore(),)
