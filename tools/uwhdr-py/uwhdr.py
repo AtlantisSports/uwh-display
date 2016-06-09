@@ -5,6 +5,7 @@ from multiprocessing import Process, Queue
 from datetime import datetime
 import time
 import sys
+import uwhdnodisp as uwhd
 
 def sized_frame(master, height, width):
    F = Frame(master, height=height, width=width)
@@ -147,11 +148,13 @@ class ManualEditScore(object):
 
 
 class NormalView(object):
-  def __init__(self):
+  def __init__(self, mgr):
+    self.mgr = mgr
+
     self.root = Tk()
     self.root.resizable(width=FALSE, height=FALSE)
     self.root.geometry('{}x{}+{}+{}'.format(800, 480, 0, 0))
-    self.root.overrideredirect(1)
+    #self.root.overrideredirect(1)
     #self.root.mainloop()
 
     score_font = ("Consolas", 96)
@@ -181,10 +184,10 @@ class NormalView(object):
 
     # Vars
     ###########################################################################
-    self.black_score  = 4
-    self.white_score = 11
-    self.game_clock_mins = 1
-    self.game_clock_secs = 42
+    self.black_score  = self.mgr.blackScore()
+    self.white_score = self.mgr.whiteScore()
+    self.game_clock_mins = self.mgr.gameClock() // 60
+    self.game_clock_secs = self.mgr.gameClock() % 60
 
     self.white_score_var = StringVar()
     self.white_score_var.set("##")
@@ -225,9 +228,8 @@ class NormalView(object):
                                   score_font, clock_height, clock_width)
     game_clock_label.grid(row=0, column=1)
     def refresh_time(self):
-      now = datetime.now()
-      game_mins = now.minute
-      game_secs = now.second
+      game_mins = self.mgr.gameClock() // 60
+      game_secs = self.mgr.gameClock() % 60
       self.game_clock_var.set("%02d:%02d" % (game_mins, game_secs))
       game_clock_label.after(refresh_ms, lambda : refresh_time(self))
     game_clock_label.after(refresh_ms, lambda : refresh_time(self))
@@ -283,6 +285,8 @@ class NormalView(object):
       def submit_clicked(white_score, black_score):
         self.white_score = white_score
         self.black_score = black_score
+        self.mgr.setWhiteScore(white_score)
+        self.mgr.setBlackScore(black_score)
 
       ManualEditScore(self.root, self.white_score, self.black_score,
                       lambda : None, submit_clicked)
@@ -292,7 +296,23 @@ class NormalView(object):
                            manual_continuation)
 
 def main():
-  nv = NormalView()
+  mgr = uwhd.GameModelManager()
+  print "created manager"
+
+  xbee = uwhd.CreateXBeeSyncServer()
+  print "created xbee"
+  xbee.Init()
+  print "inited xbee"
+
+  xbee.setMgr(mgr)
+
+  mgr.setGameStateFirstHalf()
+  mgr.setGameClockRunning(0)
+  mgr.setBlackScore(0)
+  mgr.setWhiteScore(0)
+  mgr.setGameClock(11 * 60)
+
+  nv = NormalView(mgr)
 
 if __name__=="__main__":
   main()
