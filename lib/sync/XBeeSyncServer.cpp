@@ -224,6 +224,8 @@ void XBeeSyncClient::Init() {
           Msg.clear();
         }
       }
+
+      usleep(100);
     } while (true);
   }).detach();
 }
