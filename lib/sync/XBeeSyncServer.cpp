@@ -148,15 +148,12 @@ const int   XBeeSyncClient::XBeeBaudRate      = 9600;
 
 XBeeSyncServer::XBeeSyncServer()
   : fd(0), M(nullptr) {
-  printf("server ctor\n");
 }
 
 XBeeSyncServer::~XBeeSyncServer() {
-  printf("server dtor\n");
 }
 
 void XBeeSyncServer::Init() {
-  printf("server init\n");
   char *portname = "/dev/ttyAMA0";
   fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
   if (fd < 0) {
@@ -169,21 +166,17 @@ void XBeeSyncServer::Init() {
 
 void XBeeSyncServer::modelChanged(GameModel Model) {
   std::string Message = Model.serialize();
-  printf("server model changed: [%s]\n", Message.c_str());
   write(fd, Message.c_str(), Message.size());
 }
 
 XBeeSyncClient::XBeeSyncClient()
   : fd(0), M(nullptr) {
-    printf("client ctor\n");
 }
 
 XBeeSyncClient::~XBeeSyncClient() {
-  printf("client dtor\n");
 }
 
 void XBeeSyncClient::Init() {
-  printf("client init\n");
   char *portname = "/dev/ttyAMA0";
   fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
   if (fd < 0) {
