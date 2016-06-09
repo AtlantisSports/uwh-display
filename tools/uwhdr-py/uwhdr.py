@@ -7,6 +7,10 @@ import time
 import sys
 import uwhdnodisp as uwhd
 
+HALF_PLAY_DURATION = 2 * 60
+HALF_TIME_DURATION = 1 * 60
+GAME_OVER_DURATION = 1 * 60
+
 def sized_frame(master, height, width):
    F = Frame(master, height=height, width=width)
    F.pack_propagate(0)
@@ -146,10 +150,43 @@ class ManualEditScore(object):
     self.submit_continuation(self.white_score, self.black_score)
     self.root.destroy()
 
+class ConfirmManualEditTime(object):
+  def __init__(self, master, cancel_continuation, manual_continuation):
+    self.root = Toplevel(master)
+    self.root.resizable(width=FALSE, height=FALSE)
+    self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
+
+    self.root.overrideredirect(1)
+    self.root.transient(master)
+
+    manual_edit_button = SizedButton(self.root, lambda : self.manual_edit_clicked(),
+                                     "MANUALLY EDIT TIME", "orange", "black", ("Consolas", 50),
+                                     180, 800)
+    manual_edit_button.grid(row=0, column=0)
+
+    cancel_button = SizedButton(self.root, lambda : self.cancel_clicked(),
+                                "CANCEL", "red", "black", ("Consolas", 36),
+                                80, 800)
+    cancel_button.grid(row=1, column=0)
+
+    self.manual_continuation = manual_continuation
+    self.cancel_continuation = cancel_continuation
+
+    self.root.mainloop()
+
+  def manual_edit_clicked(self):
+    self.manual_continuation()
+    self.root.destroy()
+
+  def cancel_clicked(self):
+    self.cancel_continuation()
+    self.root.destroy()
+
 
 class NormalView(object):
   def __init__(self, mgr):
     self.mgr = mgr
+    self.first_game_started = False
 
     self.root = Tk()
     self.root.resizable(width=FALSE, height=FALSE)
@@ -180,14 +217,15 @@ class NormalView(object):
     ref_signal_height = penalty_height
     ref_signal_width = clock_width
 
-    refresh_ms = 250
+    refresh_ms = 50
 
     # Vars
     ###########################################################################
     self.black_score  = self.mgr.blackScore()
     self.white_score = self.mgr.whiteScore()
-    self.game_clock_mins = self.mgr.gameClock() // 60
-    self.game_clock_secs = self.mgr.gameClock() % 60
+    game_clock = self.mgr.gameClock()
+    self.game_clock_mins = game_clock // 60
+    self.game_clock_secs = game_clock % 60
 
     self.white_score_var = StringVar()
     self.white_score_var.set("##")
@@ -228,9 +266,36 @@ class NormalView(object):
                                   score_font, clock_height, clock_width)
     game_clock_label.grid(row=0, column=1)
     def refresh_time(self):
-      game_mins = self.mgr.gameClock() // 60
-      game_secs = self.mgr.gameClock() % 60
+      game_clock = self.mgr.gameClock()
+      game_mins = game_clock // 60
+      game_secs = game_clock % 60
       self.game_clock_var.set("%02d:%02d" % (game_mins, game_secs))
+
+      if game_mins == 0 and game_secs == 0:
+        self.mgr.setGameClockRunning(0)
+        if self.mgr.gameStateFirstHalf():
+          self.mgr.setGameStateHalfTime()
+          self.mgr.setGameClock(HALF_TIME_DURATION)
+          self.gong_clicked()
+          self.mgr.setGameClockRunning(1)
+        elif self.mgr.gameStateHalfTime():
+          self.mgr.setGameStateSecondHalf()
+          self.mgr.setGameClock(HALF_PLAY_DURATION)
+          self.gong_clicked()
+          self.mgr.setGameClockRunning(1)
+        elif self.mgr.gameStateSecondHalf():
+          self.mgr.setGameStateGameOver()
+          self.mgr.setGameClock(GAME_OVER_DURATION)
+          self.gong_clicked()
+          self.mgr.setGameClockRunning(1)
+        elif self.mgr.gameStateGameOver():
+          self.mgr.setBlackScore(0)
+          self.mgr.setWhiteScore(0)
+          self.mgr.setGameStateFirstHalf()
+          self.mgr.setGameClock(HALF_PLAY_DURATION)
+          self.gong_clicked()
+          self.mgr.setGameClockRunning(1)
+
       game_clock_label.after(refresh_ms, lambda : refresh_time(self))
     game_clock_label.after(refresh_ms, lambda : refresh_time(self))
 
@@ -279,6 +344,9 @@ class NormalView(object):
 
   def gong_clicked(self):
     print "gong clicked"
+    if not self.first_game_started:
+      self.first_game_started = True
+      self.mgr.setGameClockRunning(1)
 
   def score_change_clicked(self):
     def manual_continuation():
@@ -310,7 +378,7 @@ def main():
   mgr.setGameClockRunning(0)
   mgr.setBlackScore(0)
   mgr.setWhiteScore(0)
-  mgr.setGameClock(11 * 60)
+  mgr.setGameClock(HALF_PLAY_DURATION)
 
   nv = NormalView(mgr)
 
