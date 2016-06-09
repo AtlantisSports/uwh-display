@@ -271,7 +271,7 @@ class NormalView(object):
       game_secs = game_clock % 60
       self.game_clock_var.set("%02d:%02d" % (game_mins, game_secs))
 
-      if game_mins == 0 and game_secs == 0:
+      if game_clock <= 0:
         self.mgr.setGameClockRunning(0)
         if self.mgr.gameStateFirstHalf():
           self.mgr.setGameStateHalfTime()

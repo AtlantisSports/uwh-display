@@ -25,7 +25,7 @@ public:
     , State(GameModel::WallClock) {}
   unsigned char BlackScore;
   unsigned char WhiteScore;
-  unsigned GameClockSecs;         // Amount of time left in the game when wall clock == PrevStartTime
+  int GameClockSecs;         // Amount of time left in the game when wall clock == PrevStartTime
   struct timeval PrevStartTime;
   bool ClockRunning;
 
@@ -46,7 +46,7 @@ public:
   static bool deSerialize(std::string S, GameModel &M);
 
   void setPrevStartTime();
-  unsigned displayedTimeLeft();
+  int displayedTimeLeft();
 
   bool operator==(const GameModel &Other) const;
   bool operator!=(const GameModel &Other) const { return !(*this == Other); }
@@ -70,7 +70,7 @@ public:
 
   unsigned char blackScore();
   unsigned char whiteScore();
-  unsigned short gameClock();
+  int gameClock();
   bool gameClockRunning();
   GameModel::GameState gameState();
   bool gameStateWallClock();
@@ -84,7 +84,7 @@ public:
 
   void setBlackScore(unsigned char S);
   void setWhiteScore(unsigned char S);
-  void setGameClock(unsigned short T);
+  void setGameClock(int T);
   void setGameClockRunning(bool B);
 
   void setGameState(GameModel::GameState S);

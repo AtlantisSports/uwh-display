@@ -164,7 +164,7 @@ void GameModel::setPrevStartTime() {
   gettimeofday(&PrevStartTime, nullptr);
 }
 
-unsigned GameModel::displayedTimeLeft() {
+int GameModel::displayedTimeLeft() {
   struct timeval Now;
   gettimeofday(&Now, nullptr);
 
@@ -216,7 +216,7 @@ unsigned char GameModelManager::whiteScore() {
   return Model.WhiteScore;
 }
 
-unsigned short GameModelManager::gameClock() {
+int GameModelManager::gameClock() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
   return Model.displayedTimeLeft();
 }
@@ -246,7 +246,7 @@ void GameModelManager::setWhiteScore(unsigned char S) {
   modelChanged(M);
 }
 
-void GameModelManager::setGameClock(unsigned short T) {
+void GameModelManager::setGameClock(int T) {
   GameModel M;
   {
     std::lock_guard<std::mutex> Lock(ModelMutex);
