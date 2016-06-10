@@ -6,6 +6,8 @@ from datetime import datetime
 import time
 import sys
 import uwhdnodisp as uwhd
+import pigpio
+import os
 
 HALF_PLAY_DURATION = 5 #30
 HALF_TIME_DURATION = 5 #30
@@ -184,8 +186,9 @@ class ConfirmManualEditTime(object):
 
 
 class NormalView(object):
-  def __init__(self, mgr):
+  def __init__(self, mgr, iomgr):
     self.mgr = mgr
+    self.iomgr = iomgr
     self.first_game_started = False
 
     self.root = Tk()
@@ -349,6 +352,12 @@ class NormalView(object):
                           bg="black")
     black_penalty.grid(row=3, column=2)
 
+    def poll_clicker(self):
+      if self.iomgr.readClicker():
+        self.iomgr.setSound(1)
+      else:
+        self.iomgr.setSound(0)
+
     self.root.mainloop()
 
   def gong_clicked(self):
@@ -372,11 +381,44 @@ class NormalView(object):
                            lambda : None,
                            manual_continuation)
 
+class IOManager(object):
+  def __init__(self):
+    os.system("sudo pigpiod")
+    time.sleep(3)
+    self.io = pigpio.pi()
+    self.io.set_mode(4, pigpio.INPUT)
+    self.io.set_pull_up_down(4, pigpio.PUD_UP)
+    self.io.set_mode(18, pigpio.OUTPUT)
+    self.io.set_mode(26, pigpio.OUTPUT)
+
+  def turnOnWetDisplays(self):
+    self.io.write(4, 1)
+
+  def readClicker(self):
+    return not self.io.read(4)
+
+  def setSound(self, setting):
+    self.io.write(26, setting)
+
 def main():
+  print "Starting gpio..."
+  iomgr = IOManager()
+
+#while True:
+#  if iomgr.readClicker():
+#      print "clicker down"
+#      iomgr.setSound(1)
+#    else:
+#      iomgr.setSound(0)
+#      print "clicker up"
+
+  print "Turning on wet displays"
+  iomgr.turnOnWetDisplays()
+
+  print "Starting xbee comms..."
   mgr = uwhd.GameModelManager()
   xbee = uwhd.CreateXBeeSyncServer()
   xbee.Init()
-
   xbee.setMgr(mgr)
 
   mgr.setGameStateFirstHalf()
@@ -385,7 +427,7 @@ def main():
   mgr.setWhiteScore(0)
   mgr.setGameClock(HALF_PLAY_DURATION)
 
-  nv = NormalView(mgr)
+  nv = NormalView(mgr, iomgr)
 
 if __name__=="__main__":
   main()
