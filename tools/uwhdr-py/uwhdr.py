@@ -194,7 +194,7 @@ class NormalView(object):
     self.root = Tk()
     self.root.resizable(width=FALSE, height=FALSE)
     self.root.geometry('{}x{}+{}+{}'.format(800, 480, 0, 0))
-    #self.root.overrideredirect(1)
+    self.root.overrideredirect(1)
     #self.root.mainloop()
 
     score_font = ("Consolas", 96)
