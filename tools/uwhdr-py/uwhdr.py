@@ -224,8 +224,6 @@ class NormalView(object):
 
     # Vars
     ###########################################################################
-    self.black_score  = self.mgr.blackScore()
-    self.white_score = self.mgr.whiteScore()
     game_clock = self.mgr.gameClock()
     self.game_clock_mins = game_clock // 60
     self.game_clock_secs = game_clock % 60
@@ -247,7 +245,7 @@ class NormalView(object):
                                    score_width)
     white_score_label.grid(row=0, column=0)
     def refresh_white(self):
-      self.white_score_var.set("%d" % (self.white_score,))
+      self.white_score_var.set("%d" % (self.mgr.whiteScore(),))
       white_score_label.after(refresh_ms, lambda : refresh_white(self))
     white_score_label.after(refresh_ms, lambda : refresh_white(self))
 
@@ -337,7 +335,7 @@ class NormalView(object):
                                    score_width)
     black_score_label.grid(row=0, column=2)
     def refresh_black(self):
-      self.black_score_var.set("%d" % (self.black_score,))
+      self.black_score_var.set("%d" % (self.mgr.blackScore(),))
       black_score_label.after(refresh_ms, lambda : refresh_black(self))
     black_score_label.after(refresh_ms, lambda : refresh_black(self))
 
@@ -359,7 +357,6 @@ class NormalView(object):
     def poll_clicker(self):
       if self.iomgr.readClicker():
         print "remote clicked"
-        self.iomgr.setSound(1)
         self.gong_clicked()
       else:
         self.iomgr.setSound(0)
@@ -381,12 +378,10 @@ class NormalView(object):
   def score_change_clicked(self):
     def manual_continuation():
       def submit_clicked(white_score, black_score):
-        self.white_score = white_score
-        self.black_score = black_score
         self.mgr.setWhiteScore(white_score)
         self.mgr.setBlackScore(black_score)
 
-      ManualEditScore(self.root, self.white_score, self.black_score,
+      ManualEditScore(self.root, self.mgr.whiteScore(), self.mgr.blackScore(),
                       lambda : None, submit_clicked)
 
     ConfirmManualEditScore(self.root,
