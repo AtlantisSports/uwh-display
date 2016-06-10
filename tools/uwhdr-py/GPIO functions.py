@@ -9,7 +9,7 @@ def init():
     pi.setmode(4, PIGPIO.INPUT)
     pi.setmode(18, PIGPIO.OUTPUT)
     pi.setmode(26, PIGPIO.OUTPUT)
-    pi.write(4, 1)
+    pi.write(18, 1)
     return
 
 
