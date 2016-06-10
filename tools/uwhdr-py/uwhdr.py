@@ -9,9 +9,9 @@ import uwhdnodisp as uwhd
 import pigpio
 import os
 
-HALF_PLAY_DURATION = 5 #30
-HALF_TIME_DURATION = 5 #30
-GAME_OVER_DURATION = 5 #30
+HALF_PLAY_DURATION = 11 * 60
+HALF_TIME_DURATION = 2 * 60
+GAME_OVER_DURATION = 6 * 60
 
 def sized_frame(master, height, width):
    F = Frame(master, height=height, width=width)
@@ -287,6 +287,7 @@ class NormalView(object):
         if self.mgr.gameStateFirstHalf():
           self.mgr.setGameStateHalfTime()
           self.mgr.setGameClock(HALF_TIME_DURATION)
+          print "to half time"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
           self.status_var.set("HALF TIME")
@@ -294,6 +295,7 @@ class NormalView(object):
         elif self.mgr.gameStateHalfTime():
           self.mgr.setGameStateSecondHalf()
           self.mgr.setGameClock(HALF_PLAY_DURATION)
+          print "to second half"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
           self.status_var.set("SECOND HALF")
@@ -301,6 +303,7 @@ class NormalView(object):
         elif self.mgr.gameStateSecondHalf():
           self.mgr.setGameStateGameOver()
           self.mgr.setGameClock(GAME_OVER_DURATION)
+          print "to game over"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
           self.status_var.set("GAME OVER")
@@ -310,6 +313,7 @@ class NormalView(object):
           self.mgr.setWhiteScore(0)
           self.mgr.setGameStateFirstHalf()
           self.mgr.setGameClock(HALF_PLAY_DURATION)
+          print "to first half"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
           self.status_var.set("FIRST HALF")
@@ -354,14 +358,21 @@ class NormalView(object):
 
     def poll_clicker(self):
       if self.iomgr.readClicker():
+        print "remote clicked"
         self.iomgr.setSound(1)
       else:
         self.iomgr.setSound(0)
+      self.root.after(refresh_ms, lambda : poll_clicker(self))
+    self.root.after(refresh_ms, lambda : poll_clicker(self))
+
 
     self.root.mainloop()
 
   def gong_clicked(self):
     print "gong clicked"
+    self.iomgr.setSound(1)
+    time.sleep(1)
+    self.iomgr.setSound(0)
     if not self.first_game_started:
       self.first_game_started = True
       self.mgr.setGameClockRunning(1)
