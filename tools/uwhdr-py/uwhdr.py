@@ -384,7 +384,13 @@ class NormalView(object):
 class IOManager(object):
   def __init__(self):
     os.system("sudo pigpiod")
-    time.sleep(3)
+    sys.stdout.write("Initing IO")
+    sys.stdout.flush()
+    for i in range(1, 5):
+      time.sleep(1)
+      sys.stdout.write(".%d" %(4-i,))
+      sys.stdout.flush()
+
     self.io = pigpio.pi()
     self.io.set_mode(4, pigpio.INPUT)
     self.io.set_pull_up_down(4, pigpio.PUD_UP)
