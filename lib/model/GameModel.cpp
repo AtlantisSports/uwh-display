@@ -58,7 +58,7 @@ std::string GameModel::serialize() const {
   SS << "S"
      << "B" << int(BlackScore)
      << "W" << int(WhiteScore)
-     << "T" << int(GameClockSecs)
+     << "T" << int(displayedTimeLeft())
      << "R" << (ClockRunning ? 1 : 0)
      << 'G';
 
@@ -153,8 +153,8 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   return false;
 }
 
-static long timevaldiff(struct timeval *Start,
-                        struct timeval *End) {
+static long timevaldiff(const struct timeval *Start,
+                        const struct timeval *End) {
   long msec = (End->tv_sec - Start->tv_sec) * 1000;
   msec += (End->tv_usec - Start->tv_usec) / 1000;
   return msec;
@@ -164,7 +164,7 @@ void GameModel::setPrevStartTime() {
   gettimeofday(&PrevStartTime, nullptr);
 }
 
-int GameModel::displayedTimeLeft() {
+int GameModel::displayedTimeLeft() const {
   struct timeval Now;
   gettimeofday(&Now, nullptr);
 

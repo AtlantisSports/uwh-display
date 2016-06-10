@@ -46,7 +46,7 @@ public:
   static bool deSerialize(std::string S, GameModel &M);
 
   void setPrevStartTime();
-  int displayedTimeLeft();
+  int displayedTimeLeft() const;
 
   bool operator==(const GameModel &Other) const;
   bool operator!=(const GameModel &Other) const { return !(*this == Other); }
