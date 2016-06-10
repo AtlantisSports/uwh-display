@@ -360,6 +360,7 @@ class NormalView(object):
       if self.iomgr.readClicker():
         print "remote clicked"
         self.iomgr.setSound(1)
+        self.gong_clicked()
       else:
         self.iomgr.setSound(0)
       self.root.after(refresh_ms, lambda : poll_clicker(self))
@@ -420,14 +421,6 @@ class IOManager(object):
 def main():
   print "Starting gpio..."
   iomgr = IOManager()
-
-#while True:
-#  if iomgr.readClicker():
-#      print "clicker down"
-#      iomgr.setSound(1)
-#    else:
-#      iomgr.setSound(0)
-#      print "clicker up"
 
   print "Turning on wet displays"
   iomgr.turnOnWetDisplays()
