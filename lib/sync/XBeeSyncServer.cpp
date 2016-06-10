@@ -104,6 +104,8 @@ public:
   virtual GameModelManager &getMgr() override { return *M; }
 
   virtual void modelChanged(GameModel Model) override;
+
+  virtual void heartbeat() override;
 private:
   int fd;
   GameModelManager *M;
@@ -167,6 +169,10 @@ void XBeeSyncServer::Init() {
 void XBeeSyncServer::modelChanged(GameModel Model) {
   std::string Message = Model.serialize();
   write(fd, Message.c_str(), Message.size());
+}
+
+void XBeeSyncServer::heartbeat() {
+  modelChanged(M->getModel());
 }
 
 XBeeSyncClient::XBeeSyncClient()
