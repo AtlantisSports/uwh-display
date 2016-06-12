@@ -386,37 +386,41 @@ class NormalView(object):
         if self.mgr.gameStateFirstHalf():
           self.mgr.setGameStateHalfTime()
           self.mgr.setGameClock(HALF_TIME_DURATION)
-          print "to half time"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
-          self.status_var.set("HALF TIME")
           self.root.update()
         elif self.mgr.gameStateHalfTime():
           self.mgr.setGameStateSecondHalf()
           self.mgr.setGameClock(HALF_PLAY_DURATION)
-          print "to second half"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
-          self.status_var.set("SECOND HALF")
           self.root.update()
         elif self.mgr.gameStateSecondHalf():
           self.mgr.setGameStateGameOver()
           self.mgr.setGameClock(GAME_OVER_DURATION)
-          print "to game over"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
-          self.status_var.set("GAME OVER")
           self.root.update()
         elif self.mgr.gameStateGameOver():
           self.mgr.setBlackScore(0)
           self.mgr.setWhiteScore(0)
           self.mgr.setGameStateFirstHalf()
           self.mgr.setGameClock(HALF_PLAY_DURATION)
-          print "to first half"
           self.gong_clicked()
           self.mgr.setGameClockRunning(1)
-          self.status_var.set("FIRST HALF")
-          self.root.update()
+
+      if self.mgr.gameStateFirstHalf():
+        self.status_var.set("FIRST HALF")
+      elif self.mgr.gameStateHalfTime():
+        self.status_var.set("HALF TIME")
+      elif self.mgr.gameStateSecondHalf():
+        self.status_var.set("SECOND HALF")
+      elif self.mgr.gameStateGameOver():
+        self.status_var.set("GAME OVER")
+      elif self.mgr.gameStateRefTimeOut():
+        self.status_var.set("REF TIMEOUT")
+      self.root.update()
+
       self.game_clock_label.after(refresh_ms, lambda : refresh_time(self))
     self.game_clock_label.after(refresh_ms, lambda : refresh_time(self))
     self.refresh_time = refresh_time
@@ -507,6 +511,19 @@ class NormalView(object):
     clock_at_pause = self.mgr.gameClock()
     self.mgr.setGameClockRunning(0)
     self.mgr.setGameClock(max(clock_at_pause,0))
+
+    if self.mgr.gameStateFirstHalf():
+      self.state_before_pause = "FIRST HALF"
+    elif self.mgr.gameStateHalfTime():
+      self.state_before_pause = "HALF TIME"
+    elif self.mgr.gameStateSecondHalf():
+      self.state_before_pause = "SECOND HALF"
+    elif self.mgr.gameStateGameOver():
+      self.state_before_pause = "GAME OVER"
+    elif self.mgr.gameStateRefTimeOut():
+      self.state_before_pause = "REF TIMEOUT"
+
+    self.mgr.setGameStateRefTimeOut()
     self.refresh_time(self)
 
     def edit_continuation(self):
@@ -522,6 +539,17 @@ class NormalView(object):
                      cancel_clicked, submit_clicked)
 
     def resume_continuation(self, pause_time):
+      if self.state_before_pause == "FIRST HALF":
+        self.mgr.setGameStateFirstHalf()
+      elif self.state_before_pause == "HALF TIME":
+        self.mgr.setGameStateHalfTime()
+      elif self.state_before_pause == "SECOND HALF":
+        self.mgr.setGameStateSecondHalf()
+      elif self.state_before_pause == "GAME OVER":
+        self.mgr.setGameStateGameOver()
+      elif self.state_before_pause == "REF TIMEOUT":
+        self.mgr.setGameStateFirstHalf()
+        print "something strange in the resume continuation"
       self.mgr.setGameClockRunning(1)
       self.mgr.setGameClock(max(pause_time,0))
 
