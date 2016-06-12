@@ -12,6 +12,12 @@ import os
 HALF_PLAY_DURATION = 11 * 60
 HALF_TIME_DURATION = 2 * 60
 GAME_OVER_DURATION = 6 * 60
+NO_TITLE_BAR = False
+
+if NO_TITLE_BAR:
+  tb_offset = 0
+else:
+  tb_offset = 70
 
 def sized_frame(master, height, width):
    F = Frame(master, height=height, width=width)
@@ -36,7 +42,7 @@ class ConfirmManualEditScore(object):
   def __init__(self, master, cancel_continuation, manual_continuation):
     self.root = Toplevel(master)
     self.root.resizable(width=FALSE, height=FALSE)
-    self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
+    self.root.geometry('{}x{}+{}+{}'.format(800, 310, 0, 170 + tb_offset))
 
     self.root.overrideredirect(1)
     self.root.transient(master)
@@ -48,7 +54,7 @@ class ConfirmManualEditScore(object):
 
     cancel_button = SizedButton(self.root, lambda : self.cancel_clicked(),
                                 "CANCEL", "red", "black", ("Consolas", 36),
-                                80, 800)
+                                130, 800)
     cancel_button.grid(row=1, column=0)
 
     self.manual_continuation = manual_continuation
@@ -57,12 +63,12 @@ class ConfirmManualEditScore(object):
     self.root.mainloop()
 
   def manual_edit_clicked(self):
-    self.manual_continuation()
     self.root.destroy()
+    self.manual_continuation()
 
   def cancel_clicked(self):
-    self.cancel_continuation()
     self.root.destroy()
+    self.cancel_continuation()
 
 class ManualEditScore(object):
   def __init__(self, master, white_score, black_score,
@@ -72,7 +78,7 @@ class ManualEditScore(object):
 
     self.root = Toplevel(master)
     self.root.resizable(width=FALSE, height=FALSE)
-    self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
+    self.root.geometry('{}x{}+{}+{}'.format(800, 310, 0, 170 + tb_offset))
 
     self.root.overrideredirect(1)
     self.root.transient(master)
@@ -88,12 +94,12 @@ class ManualEditScore(object):
 
     cancel_button = SizedButton(self.root, lambda : self.cancel_clicked(),
                                 "CANCEL", "red", "black", button_font,
-                                80, 400)
+                                130, 400)
     cancel_button.grid(row=2, column=0, columnspan=2)
 
     submit_button = SizedButton(self.root, lambda : self.submit_clicked(),
                                 "SUBMIT", "green", "black", button_font,
-                                80, 400)
+                                130, 400)
     submit_button.grid(row=2, column=2, columnspan=2)
 
     white_new = SizedLabel(self.root, self.white_new_var, "black", "white", label_font,
@@ -145,44 +151,135 @@ class ManualEditScore(object):
     self.redraw()
 
   def cancel_clicked(self):
-    self.cancel_continuation()
     self.root.destroy()
+    self.cancel_continuation()
 
   def submit_clicked(self):
-    self.submit_continuation(self.white_score, self.black_score)
     self.root.destroy()
+    self.submit_continuation(self.white_score, self.black_score)
 
-class ConfirmManualEditTime(object):
-  def __init__(self, master, cancel_continuation, manual_continuation):
+class ConfirmRefTimeOut(object):
+  def __init__(self, master, game_clock, edit_continuation,
+               resume_continuation):
     self.root = Toplevel(master)
     self.root.resizable(width=FALSE, height=FALSE)
-    self.root.geometry('{}x{}+{}+{}'.format(800, 240, 0, 240))
+    self.root.geometry('{}x{}+{}+{}'.format(800, 190, 0, 115 + 170 + tb_offset))
 
     self.root.overrideredirect(1)
     self.root.transient(master)
 
-    manual_edit_button = SizedButton(self.root, lambda : self.manual_edit_clicked(),
-                                     "MANUALLY EDIT TIME", "orange", "black", ("Consolas", 50),
-                                     180, 800)
-    manual_edit_button.grid(row=0, column=0)
+    self.game_clock = game_clock
 
-    cancel_button = SizedButton(self.root, lambda : self.cancel_clicked(),
-                                "CANCEL", "red", "black", ("Consolas", 36),
-                                80, 800)
-    cancel_button.grid(row=1, column=0)
+    resume_button = SizedButton(self.root, lambda : self.resume_clicked(),
+                                "RESUME\nPLAY", "green", "black", ("Consolas", 50),
+                                190, 400)
+    resume_button.grid(row=0, column=0)
 
-    self.manual_continuation = manual_continuation
-    self.cancel_continuation = cancel_continuation
+    edit_button = SizedButton(self.root, lambda : self.edit_clicked(),
+                              "EDIT TIME", "orange", "black", ("Consolas", 50),
+                              190, 400)
+    edit_button.grid(row=0, column=1)
+
+    self.edit_continuation = edit_continuation
+    self.resume_continuation = resume_continuation
 
     self.root.mainloop()
 
-  def manual_edit_clicked(self):
-    self.manual_continuation()
+  def resume_clicked(self):
     self.root.destroy()
+    self.resume_continuation(self.game_clock)
+
+  def edit_clicked(self):
+    self.root.destroy()
+    self.edit_continuation()
+
+
+class ManualEditTime(object):
+  def __init__(self, master, clock_at_pause,
+               cancel_continuation, submit_continuation):
+    self.cancel_continuation = cancel_continuation
+    self.submit_continuation = submit_continuation
+
+    self.root = Toplevel(master)
+    self.root.resizable(width=FALSE, height=FALSE)
+    self.root.geometry('{}x{}+{}+{}'.format(800, 310, 0, 170 + tb_offset))
+
+    self.root.overrideredirect(1)
+    self.root.transient(master)
+
+    self.clock_at_pause = clock_at_pause
+    self.orig_clock_at_pause = clock_at_pause
+    self.clock_running_var = StringVar()
+    self.game_clock_var = StringVar()
+    self.redraw()
+
+    button_font = ("Consolas", 36)
+    label_font  = ("Consolas", 96)
+    playpause_button_font = ("Consolas", 36)
+    game_clock_font = ("Consolas", 72)
+
+    cancel_button = SizedButton(self.root, lambda : self.cancel_clicked(),
+                                "CANCEL", "red", "black", button_font,
+                                150, 400)
+    cancel_button.grid(row=2, column=0, columnspan=2)
+
+    submit_button = SizedButton(self.root, lambda : self.submit_clicked(),
+                                "SUBMIT", "green", "black", button_font,
+                                150, 400)
+    submit_button.grid(row=2, column=2, columnspan=2)
+
+    m_up_button = SizedButton(self.root, lambda : self.game_clock_m_up(),
+                              u"Min \u2191", "light blue", "black", button_font,
+                              80, 200)
+    m_up_button.grid(row=0, column=0)
+
+    m_dn_button = SizedButton(self.root, lambda : self.game_clock_m_dn(),
+                              u"Min \u2193", "grey", "black", button_font,
+                              80, 200)
+    m_dn_button.grid(row=1, column=0)
+
+    s_up_button = SizedButton(self.root, lambda : self.game_clock_s_up(),
+                              u"Sec \u2191", "light blue", "black", button_font,
+                              80, 200)
+    s_up_button.grid(row=0, column=3)
+
+    s_dn_button = SizedButton(self.root, lambda : self.game_clock_s_dn(),
+                              u"Sec \u2193", "grey", "black", button_font,
+                              80, 200)
+    s_dn_button.grid(row=1, column=3)
+
+
+    game_clock_new = SizedLabel(self.root, self.game_clock_var, "black", "blue", game_clock_font,
+                           160, 400)
+    game_clock_new.grid(row=0, rowspan=2, column=1, columnspan=2)
+
+  def redraw(self):
+    self.game_clock_var.set('%d:%02d' % (self.clock_at_pause // 60,
+                                         self.clock_at_pause % 60))
+
+  def game_clock_s_up(self):
+    self.clock_at_pause = self.clock_at_pause + 1
+    self.redraw()
+
+  def game_clock_s_dn(self):
+    self.clock_at_pause = self.clock_at_pause - 1
+    self.redraw()
+
+  def game_clock_m_up(self):
+    self.clock_at_pause = self.clock_at_pause + 60
+    self.redraw()
+
+  def game_clock_m_dn(self):
+    self.clock_at_pause = self.clock_at_pause - 60
+    self.redraw()
 
   def cancel_clicked(self):
-    self.cancel_continuation()
     self.root.destroy()
+    self.cancel_continuation(self.orig_clock_at_pause)
+
+  def submit_clicked(self):
+    self.root.destroy()
+    self.submit_continuation(self.clock_at_pause)
 
 
 class NormalView(object):
@@ -194,7 +291,8 @@ class NormalView(object):
     self.root = Tk()
     self.root.resizable(width=FALSE, height=FALSE)
     self.root.geometry('{}x{}+{}+{}'.format(800, 480, 0, 0))
-    self.root.overrideredirect(1)
+    if NO_TITLE_BAR:
+      self.root.overrideredirect(1)
     #self.root.mainloop()
 
     score_font = ("Consolas", 96)
@@ -202,6 +300,7 @@ class NormalView(object):
     status_font = label_font
     button_font = label_font
     gong_font = button_font
+    time_change_font = gong_font
 
     score_width  = 200
     score_height = 120
@@ -215,10 +314,12 @@ class NormalView(object):
     button_height = 120
     gong_width = clock_width
     gong_height = button_height
-    penalty_height = 240
+    penalty_height = 190
     penalty_width = score_width
     ref_signal_height = penalty_height
     ref_signal_width = clock_width
+    time_change_height = penalty_height
+    time_change_width = clock_width
 
     refresh_ms = 50
 
@@ -318,15 +419,21 @@ class NormalView(object):
           self.root.update()
       self.game_clock_label.after(refresh_ms, lambda : refresh_time(self))
     self.game_clock_label.after(refresh_ms, lambda : refresh_time(self))
+    self.refresh_time = refresh_time
 
     gong_button = SizedButton(self.root, lambda : self.gong_clicked(), "GONG",
                               "red", "black", gong_font, gong_height,
                               gong_width)
     gong_button.grid(row=2, column=1)
 
-    ref_signal_cover = Frame(self.root, height=ref_signal_height,
-                             width=ref_signal_width, bg="black")
-    ref_signal_cover.grid(row=3, column=1)
+    time_button = SizedButton(self.root, lambda : self.ref_timeout_clicked(),
+                              "REF TIMEOUT", "yellow", "black", time_change_font,
+                              time_change_height, time_change_width)
+    time_button.grid(row=3, column=1)
+
+    #ref_signal_cover = Frame(self.root, height=ref_signal_height,
+    #                         width=ref_signal_width, bg="black")
+    #ref_signal_cover.grid(row=3, column=1)
 
     # Right Column
     ###########################################################################
@@ -368,12 +475,12 @@ class NormalView(object):
 
   def gong_clicked(self):
     print "gong clicked"
-    self.iomgr.setSound(1)
-    time.sleep(1)
-    self.iomgr.setSound(0)
     if not self.first_game_started:
       self.first_game_started = True
       self.mgr.setGameClockRunning(1)
+    self.iomgr.setSound(1)
+    time.sleep(1)
+    self.iomgr.setSound(0)
 
   def score_change_clicked(self):
     def manual_continuation():
@@ -387,6 +494,41 @@ class NormalView(object):
     ConfirmManualEditScore(self.root,
                            lambda : None,
                            manual_continuation)
+
+  def ref_timeout_clicked(self):
+    # The awkward sequence here is to work around a bug in the c++ code,
+    # which can't easily be fixed at the moment: it is baked into the displays.
+    #
+    # The bug itself is that self.mgr.gameClock() returns the wrong value
+    # when it is called while the clock is paused. It does produce the correct
+    # value when the clock is running, so we save it off, stop the clock, and
+    # write the saved value so that all of the clock displays get the correct
+    # paused time.
+    clock_at_pause = self.mgr.gameClock()
+    self.mgr.setGameClockRunning(0)
+    self.mgr.setGameClock(max(clock_at_pause,0))
+    self.refresh_time(self)
+
+    def edit_continuation(self):
+      def submit_clicked(game_clock):
+        self.mgr.setGameClock(max(game_clock, 0))
+        self.ref_timeout_clicked()
+
+      def cancel_clicked(game_clock):
+        self.mgr.setGameClock(max(clock_at_pause,0))
+        self.ref_timeout_clicked()
+
+      ManualEditTime(self.root, clock_at_pause,
+                     cancel_clicked, submit_clicked)
+
+    def resume_continuation(self, pause_time):
+      self.mgr.setGameClockRunning(1)
+      self.mgr.setGameClock(max(pause_time,0))
+
+    ConfirmRefTimeOut(self.root,
+                      clock_at_pause,
+                      lambda : edit_continuation(self),
+                      lambda pause_time : resume_continuation(self, pause_time))
 
 class IOManager(object):
   def __init__(self):
