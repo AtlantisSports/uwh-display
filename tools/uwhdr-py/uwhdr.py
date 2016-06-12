@@ -12,7 +12,7 @@ import os
 HALF_PLAY_DURATION = 11 * 60
 HALF_TIME_DURATION = 2 * 60
 GAME_OVER_DURATION = 6 * 60
-NO_TITLE_BAR = False
+NO_TITLE_BAR = True
 
 if NO_TITLE_BAR:
   tb_offset = 0
