@@ -8,10 +8,13 @@ import sys
 import uwhdnodisp as uwhd
 import pigpio
 import os
+import ConfigParser
 
-HALF_PLAY_DURATION = 11 * 60
-HALF_TIME_DURATION = 2 * 60
-GAME_OVER_DURATION = 6 * 60
+config = ConfigParser.RawConfigParser()
+config.read('/home/pi/workdir/uwh-display/tools/uwhdr-py/game.cfg')
+HALF_PLAY_DURATION = config.getint('game', 'half_play_duration')
+HALF_TIME_DURATION = config.getint('game', 'half_time_duration')
+GAME_OVER_DURATION = config.getint('game', 'game_over_duration')
 NO_TITLE_BAR = True
 
 if NO_TITLE_BAR:
