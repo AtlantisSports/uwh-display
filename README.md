@@ -10,6 +10,7 @@ Getting the source
     $ pushd
     $ git clone git@github.com:jroelofs/uwh-display.git
     $ cd uwh-display/matrix
+    $ git submodule init
     $ git submodule update
     $ popd
 
