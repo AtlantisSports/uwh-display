@@ -96,6 +96,7 @@ int main(int argc, char *argv[]) {
   // Start the rendering loop
   auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
   Display->Start();
+  Display->getMgr().setModelKindPassiveSlave();
 
   syslog(LOG_INFO, "uwhdd: Display started.");
 

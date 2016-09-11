@@ -56,8 +56,9 @@ bool CheckNotEquals(GameModel M1, GameModel M2) {
 
   if (M1.BlackScore == M2.BlackScore &&
       M1.WhiteScore == M2.WhiteScore &&
-      M1.GameClockSecs == M2.GameClockSecs &&
       M1.ClockRunning == M2.ClockRunning &&
+      ((M1.ClockRunning && M1.Kind != GameModel::PassiveSlave) ||
+       M1.GameClockSecs == M2.GameClockSecs) &&
       M1.State == M2.State) {
     std::cerr << "FAIL: " << M1.serialize() << " == " << M2.serialize() << " "
               << __PRETTY_FUNCTION__ << " equality\n";
@@ -82,8 +83,9 @@ bool CheckEquals(GameModel M1, GameModel M2) {
 
   if (M1.BlackScore != M2.BlackScore ||
       M1.WhiteScore != M2.WhiteScore ||
-      M1.GameClockSecs != M2.GameClockSecs ||
       M1.ClockRunning != M2.ClockRunning ||
+      ((!M1.ClockRunning && M1.Kind == GameModel::PassiveSlave) &&
+       M1.GameClockSecs != M2.GameClockSecs) ||
       M1.State != M2.State) {
     std::cerr << "FAIL: " << M1.serialize() << " != " << M2.serialize() << " "
               << __PRETTY_FUNCTION__ << " inequality\n";
@@ -122,6 +124,7 @@ int main(int argc, char *argv[]) {
   M1.GameClockSecs = 15;
   M1.ClockRunning = true;
   M1.State = GameModel::WallClock;
+  M1.Kind = GameModel::PassiveSlave;
 
   GameModel M2 = M1;
   Failed |= CheckEquals(M1, M2);

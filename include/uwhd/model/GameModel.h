@@ -22,7 +22,8 @@ public:
     : BlackScore(0)
     , WhiteScore(0)
     , GameClockSecs(0)
-    , State(GameModel::WallClock) {}
+    , State(GameModel::WallClock)
+    , Kind(GameModel::Master) {}
   unsigned char BlackScore;
   unsigned char WhiteScore;
   int GameClockSecs;         // Amount of time left in the game when wall clock == PrevStartTime
@@ -40,6 +41,13 @@ public:
     GameOver,
   };
   GameState State;
+
+  enum ModelKind {
+    Master,
+    PassiveSlave,
+    ActiveSlave,
+  };
+  ModelKind Kind;
 
   std::string dump() const;
   std::string serialize() const;
@@ -82,6 +90,11 @@ public:
   bool gameStateBlackTimeOut();
   bool gameStateGameOver();
 
+  GameModel::ModelKind modelKind();
+  bool modelKindMaster();
+  bool modelKindPassiveSlave();
+  bool modelKindActiveSlave();
+
   void setBlackScore(unsigned char S);
   void setWhiteScore(unsigned char S);
   void setGameClock(int T);
@@ -96,6 +109,11 @@ public:
   void setGameStateBlackTimeOut();
   void setGameStateWhiteTimeOut();
   void setGameStateGameOver();
+
+  void setModelKind(GameModel::ModelKind K);
+  void setModelKindMaster();
+  void setModelKindPassiveSlave();
+  void setModelKindActiveSlave();
 
   virtual void heartbeat();
 

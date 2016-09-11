@@ -21,8 +21,9 @@
 bool GameModel::operator==(const GameModel &Other) const {
   return BlackScore == Other.BlackScore &&
          WhiteScore == Other.WhiteScore &&
-         GameClockSecs == Other.GameClockSecs &&
          ClockRunning == Other.ClockRunning &&
+         ((ClockRunning && Kind != PassiveSlave) ||
+          GameClockSecs == Other.GameClockSecs) &&
          State == Other.State;
 }
 
@@ -44,6 +45,16 @@ std::string GameModel::dump() const {
   case GameModel::WhiteTimeOut: SS << "White Timeout"; break;
   case GameModel::BlackTimeOut: SS << "Black Timeout"; break;
   case GameModel::GameOver:     SS << "Game Over"; break;
+  default:                      SS << "???"; break;
+  }
+
+  SS << "\n"
+     << "         Kind: ";
+
+  switch (State) {
+  case GameModel::Master:       SS << "Master"; break;
+  case GameModel::ActiveSlave:  SS << "Active Slave"; break;
+  case GameModel::PassiveSlave: SS << "Passive Slave"; break;
   default:                      SS << "???"; break;
   }
 
@@ -73,6 +84,19 @@ std::string GameModel::serialize() const {
   case GameModel::GameOver:     SS << 'O'; break;
   default:                      SS << '?'; break;
   }
+
+#if 0
+  // Don't serialize the kind, it needs to be set independently
+  // based on where it's being used.
+  SS << 'K';
+
+  switch (State) {
+  case GameModel::Master:       SS << "M"; break;
+  case GameModel::ActiveSlave:  SS << "A"; break;
+  case GameModel::PassiveSlave: SS << "P"; break;
+  default:                      SS << "?"; break;
+  }
+#endif
 
   SS << "E";
 
@@ -146,6 +170,22 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   default: return true;
   }
 
+#if 0
+  // Don't serialize the kind, it needs to be set independently based on where
+  // it is being used.
+  if (check(SS, 'K'))
+    return true;
+
+  char MK;
+  SS.get(MK);
+  switch (MK) {
+  case 'M': NewM.Kind = GameModel::Master; break;
+  case 'A': NewM.Kind = GameModel::ActiveSlave; break;
+  case 'P': NewM.Kind = GameModel::PassiveSlave; break;
+  default: return true;
+  }
+#endif
+
   if (check(SS, 'E'))
     return true;
 
@@ -218,7 +258,15 @@ unsigned char GameModelManager::whiteScore() {
 
 int GameModelManager::gameClock() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.displayedTimeLeft();
+
+  switch (Model.Kind) {
+  case GameModel::Master:
+  case GameModel::ActiveSlave:
+    return Model.displayedTimeLeft();
+  case GameModel::PassiveSlave:
+  default:
+    return Model.GameClockSecs;
+  }
 }
 
 bool GameModelManager::gameClockRunning() {
@@ -279,6 +327,7 @@ GameModel::GameState GameModelManager::gameState() {
   return Model.State;
 }
 
+
 bool GameModelManager::gameStateWallClock() {
   return gameState() == GameModel::WallClock;
 }
@@ -309,6 +358,23 @@ bool GameModelManager::gameStateBlackTimeOut() {
 
 bool GameModelManager::gameStateGameOver() {
   return gameState() == GameModel::GameOver;
+}
+
+GameModel::ModelKind GameModelManager::modelKind() {
+  std::lock_guard<std::mutex> Lock(ModelMutex);
+  return Model.Kind;
+}
+
+bool GameModelManager::modelKindMaster() {
+  return modelKind() == GameModel::Master;
+}
+
+bool GameModelManager::modelKindPassiveSlave() {
+  return modelKind() == GameModel::PassiveSlave;
+}
+
+bool GameModelManager::modelKindActiveSlave() {
+  return modelKind() == GameModel::ActiveSlave;
 }
 
 void GameModelManager::setGameState(GameModel::GameState S) {
@@ -351,6 +417,28 @@ void GameModelManager::setGameStateBlackTimeOut() {
 
 void GameModelManager::setGameStateGameOver() {
   setGameState(GameModel::GameOver);
+}
+
+void GameModelManager::setModelKindMaster() {
+  setModelKind(GameModel::Master);
+}
+
+void GameModelManager::setModelKindPassiveSlave() {
+  setModelKind(GameModel::PassiveSlave);
+}
+
+void GameModelManager::setModelKindActiveSlave() {
+  setModelKind(GameModel::ActiveSlave);
+}
+
+void GameModelManager::setModelKind(GameModel::ModelKind K) {
+  GameModel M;
+  {
+    std::lock_guard<std::mutex> Lock(ModelMutex);
+    Model.Kind = K;
+    M = Model;
+  }
+  modelChanged(M);
 }
 
 void GameModelManager::heartbeat() { }
