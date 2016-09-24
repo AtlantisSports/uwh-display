@@ -21,11 +21,22 @@ using namespace rgb_matrix;
 void GameDisplay::Run() {
   FrameCanvas *Frame = Mtx->CreateFrameCanvas();
   while (running()) {
-    for (unsigned y = 0; y < 32 * 3; y++)
+    for (unsigned y = 0; y < 32; y++)
       for (unsigned x = 0; x < 32 * 3; x++)
         Frame->SetPixel(x, y, Background.r, Background.g, Background.b);
 
     GameModel M = Mgr.getModel();
+
+    if (M.State == GameModel::RawData) {
+      printf("Run: raw model\n");
+      for (unsigned y = 0; y < 32; y++)
+        for (unsigned x = 0; x < 32 * 3; x++)
+          if (M.Data[y * 32 * 3 + x] != 'a')
+            Frame->SetPixel(x, y, WhiteTeamFG.r, WhiteTeamFG.g, WhiteTeamFG.b);
+
+      Frame = Mtx->SwapOnVSync(Frame);
+      continue;
+    }
 
     TD.Render(Frame);
 
