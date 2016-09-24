@@ -502,7 +502,7 @@ class NormalView(object):
                            lambda : None,
                            manual_continuation)
 
-  def ref_timeout_clicked(self):
+  def ref_timeout_clicked(self, save_state=True):
     # The awkward sequence here is to work around a bug in the c++ code,
     # which can't easily be fixed at the moment: it is baked into the displays.
     #
@@ -515,28 +515,30 @@ class NormalView(object):
     self.mgr.setGameClockRunning(0)
     self.mgr.setGameClock(max(clock_at_pause,0))
 
-    if self.mgr.gameStateFirstHalf():
-      self.state_before_pause = "FIRST HALF"
-    elif self.mgr.gameStateHalfTime():
-      self.state_before_pause = "HALF TIME"
-    elif self.mgr.gameStateSecondHalf():
-      self.state_before_pause = "SECOND HALF"
-    elif self.mgr.gameStateGameOver():
-      self.state_before_pause = "GAME OVER"
-    elif self.mgr.gameStateRefTimeOut():
-      self.state_before_pause = "REF TIMEOUT"
+    if save_state:
+      if self.mgr.gameStateFirstHalf():
+        self.state_before_pause = "FIRST HALF"
+      elif self.mgr.gameStateHalfTime():
+        self.state_before_pause = "HALF TIME"
+      elif self.mgr.gameStateSecondHalf():
+        self.state_before_pause = "SECOND HALF"
+      elif self.mgr.gameStateGameOver():
+        self.state_before_pause = "GAME OVER"
+      elif self.mgr.gameStateRefTimeOut():
+        self.state_before_pause = "REF TIMEOUT"
 
-    self.mgr.setGameStateRefTimeOut()
+      self.mgr.setGameStateRefTimeOut()
+
     self.refresh_time(self)
 
     def edit_continuation(self):
       def submit_clicked(game_clock):
         self.mgr.setGameClock(max(game_clock, 0))
-        self.ref_timeout_clicked()
+        self.ref_timeout_clicked(save_state=False)
 
       def cancel_clicked(game_clock):
-        self.mgr.setGameClock(max(clock_at_pause,0))
-        self.ref_timeout_clicked()
+        self.mgr.setGameClock(max(clock_at_pause, 0))
+        self.ref_timeout_clicked(save_state=False)
 
       ManualEditTime(self.root, clock_at_pause,
                      cancel_clicked, submit_clicked)
@@ -554,7 +556,7 @@ class NormalView(object):
         self.mgr.setGameStateFirstHalf()
         print "something strange in the resume continuation"
       self.mgr.setGameClockRunning(1)
-      self.mgr.setGameClock(max(pause_time,0))
+      self.mgr.setGameClock(max(pause_time, 0))
 
     ConfirmRefTimeOut(self.root,
                       clock_at_pause,
