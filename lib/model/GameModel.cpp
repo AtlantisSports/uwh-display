@@ -235,6 +235,8 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   if (C != 'E')
     return true;
 
+  gettimeofday(&NewM.PrevStartTime, nullptr);
+
   Mod = NewM;
   return false;
 }
