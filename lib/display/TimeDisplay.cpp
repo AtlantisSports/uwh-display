@@ -289,7 +289,7 @@ void TimeDisplay::Render(Canvas *C) {
       // Alternate this based on wall clock time instead, because the game
       // clock could be stopped:
       if (time(nullptr) % 4) {
-        renderCondensedTime(*this, C, 1, Now, SecondsColor, &Background);
+        renderCondensedTime(*this, C, 1, Now, TimeOutColor, &Background);
       } else {
         for (int y = 0; y < 10; y++)
           for (int x = 0; x < 32; x++)
