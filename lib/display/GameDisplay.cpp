@@ -28,7 +28,6 @@ void GameDisplay::Run() {
     GameModel M = Mgr.getModel();
 
     if (M.State == GameModel::RawData) {
-      printf("Run: raw model\n");
       for (unsigned y = 0; y < 32; y++)
         for (unsigned x = 0; x < 32 * 3; x++)
           if (M.Data[y * 32 * 3 + x] != 'a')
