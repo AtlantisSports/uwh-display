@@ -45,6 +45,7 @@ public:
     static const rgb_matrix::Color BlackTimeOutColor;
     static const rgb_matrix::Color TimeOutColor;
     static const rgb_matrix::Color HalfTimeColor;
+    static const rgb_matrix::Color GameOverColor;
 };
 
 #endif

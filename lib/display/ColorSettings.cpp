@@ -31,4 +31,5 @@ const Color TimeDisplay::WhiteTimeOutColor = Color(255, 255, 255);
 const Color TimeDisplay::BlackTimeOutColor = Color(  0,   0, 255);
 const Color TimeDisplay::TimeOutColor      = Color(255, 255,   0);
 const Color TimeDisplay::HalfTimeColor     = Color(255, 160,   0);
+const Color TimeDisplay::GameOverColor     = Color(255,   0,   0);
 
