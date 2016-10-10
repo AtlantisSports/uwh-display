@@ -175,8 +175,11 @@ static void renderColon(UWHDCanvas *C, unsigned X, unsigned Y) {
 }
 
 static void renderCondensedTime(UWHDCanvas *C, unsigned DisplayNum,
-                                unsigned Now, const UWHDPixel &FG,
+                                GameModel M,
+                                const UWHDPixel &FG,
                                 const UWHDPixel *BG) {
+  unsigned Now = M.GameClockSecs;
+
   // We can't yet display larger times than 99:59
   if (99 * 60 + 59 < Now)
     Now = 99 * 60 + 59;
@@ -251,8 +254,36 @@ static void renderCondensedTime(UWHDCanvas *C, unsigned DisplayNum,
   }
 }
 
-static void renderWideTime(UWHDCanvas *C, unsigned Now, const UWHDPixel &FG,
+static void renderGameState(UWHDCanvas *C,
+                            GameModel M,
+                            const UWHDPixel &FG,
+                            const UWHDPixel *BG) {
+  const char *Text;
+  switch (M.GS) {
+  case GameModel::GS_HalfTime:
+    Text = "HALF TIME";
+    break;
+  case GameModel::GS_GameOver:
+    Text = "GAME OVER";
+    break;
+  case GameModel::GS_FirstHalf:
+    Text = "1ST  HALF";
+    break;
+  case GameModel::GS_SecondHalf:
+    Text = "2ND  HALF";
+    break;
+  default:
+    Text = "";
+  }
+
+  BigNumber::printf(C, 22, 1, FG, BG, "%s", Text);
+}
+
+static void renderWideTime(UWHDCanvas *C, GameModel M,
+                           const UWHDPixel &FG,
                            const UWHDPixel *BG) {
+  unsigned Now = M.GameClockSecs;
+
   // We can't yet display larger times than 99:59
   if (99 * 60 + 59 < Now)
     Now = 99 * 60 + 59;
@@ -267,41 +298,46 @@ static void renderWideTime(UWHDCanvas *C, unsigned Now, const UWHDPixel &FG,
   unsigned SOnes = Secs % 10;
 
   // Minutes Ten's
-  BigNumber::Render(C, 0, MTens, /*xo=*/18 + 4, /*yo=*/7,
-                    BigNumber::Font::Digit11x20, FG, BG);
+  if (MTens != 0)
+    BigNumber::Render(C, 0, MTens, /*xo=*/18 + 4, /*yo=*/7 + 3,
+                      BigNumber::Font::Digit11x20, FG, BG);
 
   // Minutes One's
-  BigNumber::Render(C, 0, MOnes, /*xo=*/18 + 17, /*yo=*/7,
+  BigNumber::Render(C, 0, MOnes, /*xo=*/18 + 17, /*yo=*/7 + 3,
                     BigNumber::Font::Digit11x20, FG, BG);
 
   // Top Colon
-  C->at(47    , 13) = FG;
-  C->at(47 + 1, 13) = FG;
-  C->at(47    , 14) = FG;
-  C->at(47 + 1, 14) = FG;
+  C->at(47    , 13 + 3) = FG;
+  C->at(47 + 1, 13 + 3) = FG;
+  C->at(47    , 14 + 3) = FG;
+  C->at(47 + 1, 14 + 3) = FG;
 
   // Bottom Colon
-  C->at(47    , 19) = FG;
-  C->at(47 + 1, 19) = FG;
-  C->at(47    , 20) = FG;
-  C->at(47 + 1, 20) = FG;
+  C->at(47    , 19 + 3) = FG;
+  C->at(47 + 1, 19 + 3) = FG;
+  C->at(47    , 20 + 3) = FG;
+  C->at(47 + 1, 20 + 3) = FG;
 
   // Seconds Ten's
-  BigNumber::Render(C, 0, STens, /*xo=*/46 + 4, /*yo=*/7,
+  BigNumber::Render(C, 0, STens, /*xo=*/46 + 4, /*yo=*/7 + 3,
                     BigNumber::Font::Digit11x20, FG, BG);
 
   // Seconds One's
-  BigNumber::Render(C, 0, SOnes, /*xo=*/46 + 17, /*yo=*/7,
+  BigNumber::Render(C, 0, SOnes, /*xo=*/46 + 17, /*yo=*/7 + 3,
                     BigNumber::Font::Digit11x20, FG, BG);
 }
 
-static void renderGameTime(unsigned Version, UWHDCanvas *C, unsigned Now,
+static void renderGameTime(unsigned Version,
+                           UWHDCanvas *C,
+                           GameModel M,
                            const UWHDPixel &FG,
                            const UWHDPixel *BG) {
   if (Version == 1)
-    renderCondensedTime(C, 1, Now, FG, BG);
-  else if (Version == 2)
-    renderWideTime(C, Now, FG, BG);
+    renderCondensedTime(C, 1, M, FG, BG);
+  else if (Version == 2) {
+    renderGameState(C, M, FG, BG);
+    renderWideTime(C, M, FG, BG);
+  }
 }
 
 static void renderWallClock(UWHDCanvas *C) {
@@ -345,10 +381,10 @@ static void renderWallClock(UWHDCanvas *C) {
     BigNumber::printf(C, 21, 24, UWHDLogoColor1, nullptr, "TIMESHARK");
 }
 
-static void renderHalfTime(unsigned Version, unsigned Now, bool Toggle, UWHDCanvas *C) {
+static void renderHalfTime(unsigned Version, GameModel M, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderGameTime(Version, C, Now, UWHDHalfTimeColor, &UWHDBackground);
+    renderGameTime(Version, C, M, UWHDHalfTimeColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 32; y++)
       for (int x = 0; x < 32; x++)
@@ -357,10 +393,10 @@ static void renderHalfTime(unsigned Version, unsigned Now, bool Toggle, UWHDCanv
   }
 }
 
-static void renderGameOver(unsigned Version, unsigned Now, bool Toggle, UWHDCanvas *C) {
+static void renderGameOver(unsigned Version, GameModel M, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderGameTime(Version, C, Now, UWHDGameOverColor, &UWHDBackground);
+    renderGameTime(Version, C, M, UWHDGameOverColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 32; y++)
       for (int x = 0; x < 32; x++)
@@ -388,10 +424,10 @@ static void renderTimeoutRing(unsigned Version, UWHDCanvas *C, const UWHDPixel &
   }
 }
 
-static void renderRefTimeout(unsigned Version, unsigned Now, bool Toggle, UWHDCanvas *C) {
+static void renderRefTimeout(unsigned Version, GameModel M, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderGameTime(Version, C, Now, UWHDTimeoutColor, &UWHDBackground);
+    renderGameTime(Version, C, M, UWHDTimeoutColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
@@ -405,10 +441,10 @@ static void renderRefTimeout(unsigned Version, unsigned Now, bool Toggle, UWHDCa
   }
 }
 
-static void renderBlackTimeout(unsigned Version, unsigned Now, bool Toggle, UWHDCanvas *C) {
+static void renderBlackTimeout(unsigned Version, GameModel M, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderGameTime(Version, C, Now, UWHDTimeoutColor, &UWHDBackground);
+    renderGameTime(Version, C, M, UWHDTimeoutColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
@@ -422,10 +458,10 @@ static void renderBlackTimeout(unsigned Version, unsigned Now, bool Toggle, UWHD
   }
 }
 
-static void renderWhiteTimeout(unsigned Version, unsigned Now, bool Toggle, UWHDCanvas *C) {
+static void renderWhiteTimeout(unsigned Version, GameModel M, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderGameTime(Version, C, Now, UWHDTimeoutColor, &UWHDBackground);
+    renderGameTime(Version, C, M, UWHDTimeoutColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
@@ -441,14 +477,6 @@ static void renderWhiteTimeout(unsigned Version, unsigned Now, bool Toggle, UWHD
 
 
 void renderTimeDisplay(unsigned Version, GameModel M, UWHDCanvas *C) {
-  unsigned Now = M.GameClockSecs;
-
-  // We can't yet display larger times than 99:59
-  if (99 * 60 + 59 < Now)
-    Now = 99 * 60 + 59;
-
-  unsigned xoffs = 32;
-
   // Alternate based on the wall clock instead of the game clock,
   // as the game clock might be paused.
   bool Toggle = time(nullptr) % 4;
@@ -458,27 +486,27 @@ void renderTimeDisplay(unsigned Version, GameModel M, UWHDCanvas *C) {
     renderWallClock(C);
     break;
   case GameModel::GS_HalfTime:
-    renderHalfTime(Version, Now, Toggle, C);
+    renderHalfTime(Version, M, Toggle, C);
     break;
   case GameModel::GS_GameOver:
-    renderGameOver(Version, Now, Toggle, C);
+    renderGameOver(Version, M, Toggle, C);
     break;
   case GameModel::GS_FirstHalf:
   case GameModel::GS_SecondHalf: {
     switch (M.TS) {
     case GameModel::TS_None:
-      renderGameTime(Version, C, Now, UWHDSecondsColor, &UWHDBackground);
+      renderGameTime(Version, C, M, UWHDSecondsColor, &UWHDBackground);
       break;
     case GameModel::TS_RefTimeout:
-      renderRefTimeout(Version, Now, Toggle, C);
+      renderRefTimeout(Version, M, Toggle, C);
       renderTimeoutRing(Version, C, UWHDTimeoutColor);
       break;
     case GameModel::TS_WhiteTimeout:
-      renderWhiteTimeout(Version, Now, Toggle, C);
+      renderWhiteTimeout(Version, M, Toggle, C);
       renderTimeoutRing(Version, C, UWHDWhiteTimeoutColor);
       break;
     case GameModel::TS_BlackTimeout:
-      renderBlackTimeout(Version, Now, Toggle, C);
+      renderBlackTimeout(Version, M, Toggle, C);
       renderTimeoutRing(Version, C, UWHDBlackTimeoutColor);
       break;
     }
