@@ -4,25 +4,23 @@ http://navisjon.com/ultimate-uwh-camera/
 
 https://www.gofundme.com/ultimateuwhcamera
 
-Getting the source
-------------------
-
-    $ pushd
-    $ git clone git@github.com:jroelofs/uwh-display.git
-    $ cd uwh-display/matrix
-    $ git submodule init
-    $ git submodule update
-    $ popd
-
 Building
 --------
 
-    $ mkdir build
-    $ cd build
-    $ cmake ../uwh-display
-    $ make
+On Linux:
+
+```bash
+$ git clone --recursive git@github.com:jroelofs/uwh-display.git
+$ cd uwh-display
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make -j
+```
 
 Running the display daemon
 --------------------------
 
-    $ sudo ./bin/uwhdd
+```bash
+$ sudo ./bin/uwhdd
+```
