@@ -13,5 +13,3 @@ if(UWHD_BUILD_SERVER AND
    UWHD_BUILD_DISPLAY)
   add_subdirectory(uwhdd)
 endif()
-
-add_subdirectory(xbee-node-detect)
