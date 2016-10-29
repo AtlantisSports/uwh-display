@@ -7,6 +7,15 @@ https://www.gofundme.com/ultimateuwhcamera
 Building
 --------
 
+Prerequisites:
+
+* cmake
+* make
+* g++
+* swig
+* python-dev
+* libxbee
+
 On Linux:
 
 ```bash
