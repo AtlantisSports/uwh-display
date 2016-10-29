@@ -95,7 +95,7 @@ public:
 
   virtual void Init() override;
 
-  virtual void setMgr(GameModelManager *NewM) {
+  virtual void setMgr(GameModelManager *NewM) override {
     assert(!M);
     M = NewM;
     M->registerListener(this);
@@ -121,7 +121,7 @@ public:
 
   virtual void Init() override;
 
-  virtual void setMgr(GameModelManager *NewM) {
+  virtual void setMgr(GameModelManager *NewM) override {
     assert(!M);
     M = NewM;
     //M->registerListener(this);
