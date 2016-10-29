@@ -22,6 +22,13 @@ if(UWHD_HAVE_LIBXBEE3)
   set(UWHD_COMMS_LIB ${LIBXBEE3})
 endif()
 
+FIND_LIBRARY(LIBRT rt)
+if(LIBRT)
+  set(UWHD_SUPPORT_LIBS ${LIBRT} m pthread)
+else()
+  set(UWHD_SUPPORT_LIBS m pthread)
+endif()
+
 SET(SWIG_MODULE_uwhd_EXTRA_DEPS
     ${CMAKE_CURRENT_SOURCE_DIR}/console.i
     ${CMAKE_CURRENT_SOURCE_DIR}/display.i
@@ -40,9 +47,7 @@ SWIG_LINK_LIBRARIES(uwhd
                     uwhdmodel
                     ${LIBRGBMATRIX}
                     ${UWHD_COMMS_LIB}
-                    rt
-                    m
-                    pthread)
+                    ${UWHD_SUPPORT_LIBS})
 
 SET(SWIG_MODULE_uwhdnodisp_EXTRA_DEPS
     ${CMAKE_CURRENT_SOURCE_DIR}/console.i
@@ -59,7 +64,5 @@ SWIG_LINK_LIBRARIES(uwhdnodisp
                     uwhdconsole
                     uwhdmodel
                     ${UWHD_COMMS_LIB}
-                    rt
-                    m
-                    pthread)
+                    ${UWHD_SUPPORT_LIBS})
 
