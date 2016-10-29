@@ -44,6 +44,9 @@ endif()
 # -----------------------------------------------------------------------------
 set(LIBXBEE3  "/usr/lib/libxbee.so")
 set(LIBXBEE3P "/usr/lib/libxbeep.so")
+if(EXISTS ${LIBXBEE3})
+  set(UWHD_HAVE_LIBXBEE3 YES)
+endif()
 
 # -----------------------------------------------------------------------------
 # Build libraries, and tools
