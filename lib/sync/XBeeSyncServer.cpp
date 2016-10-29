@@ -156,7 +156,7 @@ XBeeSyncServer::~XBeeSyncServer() {
 }
 
 void XBeeSyncServer::Init() {
-  char *portname = "/dev/ttyAMA0";
+  const char *portname = "/dev/ttyAMA0";
   fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
   if (fd < 0) {
     printf("error %d opening %s: %s", errno, portname, strerror (errno));
@@ -183,7 +183,7 @@ XBeeSyncClient::~XBeeSyncClient() {
 }
 
 void XBeeSyncClient::Init() {
-  char *portname = "/dev/ttyAMA0";
+  const char *portname = "/dev/ttyAMA0";
   fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
   if (fd < 0) {
     printf("error %d opening %s: %s", errno, portname, strerror (errno));
