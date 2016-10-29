@@ -1,17 +1,14 @@
-if(UWHD_BUILD_SERVER AND UWHD_BUILD_CLIENT)
-  add_library(uwhdsync
-              SocketSyncServer.cpp
-              SocketSyncClient.cpp
-              XBeeSyncServer.cpp)
-elseif(UWHD_BUILD_SERVER)
-  add_library(uwhdsync
-              SocketSyncServer.cpp
-              XBeeSyncServer.cpp)
-elseif(UWHD_BUILD_CLIENT)
-  add_library(uwhdsync
-              SocketSyncClient.cpp
-              XBeeSyncServer.cpp)
+if(UWHD_BUILD_SERVER)
+  list(APPEND UWHD_SYNC_SOURCES SocketSyncServer.cpp)
 endif()
+
+if (UWHD_BUILD_CLIENT)
+  list(APPEND UWHD_SYNC_SOURCES SocketSyncClient.cpp)
+endif()
+
+list(APPEND UWHD_SYNC_SOURCES XBeeSyncServer.cpp)
+
+add_library(uwhdsync ${UWHD_SYNC_SOURCES})
 
 target_link_libraries(uwhdsync ${LIBXBEE3})
 
