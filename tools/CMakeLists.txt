@@ -1,4 +1,5 @@
-if(UWHD_BUILD_CLIENT)
+if(UWHD_BUILD_CLIENT AND
+   UWHD_BUILD_DISPLAY)
   add_subdirectory(uwhdc)
 endif()
 
