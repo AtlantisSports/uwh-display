@@ -4,6 +4,8 @@ option(UWHD_BUILD_CLIENT "Build the client" ON)
 option(UWHD_BUILD_SERVER "Build the server" ON)
 option(UWHD_BUILD_DISPLAY "Build the display driver" ON)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # -----------------------------------------------------------------------------
 # Verify that the compiler supports c++11
 # -----------------------------------------------------------------------------
