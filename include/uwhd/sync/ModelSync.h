@@ -17,6 +17,7 @@
 #include <vector>
 
 struct ModelSync {
+  virtual ~ModelSync() = 0;
   virtual void Init() = 0;
   virtual void setMgr(GameModelManager *M) = 0;
   virtual GameModelManager &getMgr() = 0;
@@ -28,6 +29,7 @@ struct ModelSync {
 //};
 
 struct ModelSyncServer : public ModelSync {
+  virtual ~ModelSyncServer() = 0;
   //virtual std::vector<ModelSyncPeer*> peers() = 0;
   //virtual void claimPeer(const ModelSyncPeer *P) = 0;
   //virtual void getPeerWallClock(const ModelSyncPeer *P) = 0;
