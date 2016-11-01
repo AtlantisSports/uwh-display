@@ -3,7 +3,11 @@
 import time
 import sys
 import uwhdnodisp as uwhd
-import pigpio
+try:
+  import pigpio
+  NO_PIGPIO = False
+except ImportError as e:
+  NO_PIGPIO = True
 import os
 import ConfigParser
 from uwhdui.ui import NormalView
@@ -40,18 +44,32 @@ class IOManager(object):
   def setSound(self, setting):
     self.io.write(26, setting)
 
+class NOIOManager(object):
+  def __init__(self):
+    pass
+
+  def turnOnWetDisplays(self):
+    pass
+
+  def readClicker(self):
+    return False
+
+  def setSound(self, setting):
+    pass
+
 def main():
   print "Starting gpio..."
-  iomgr = IOManager()
+  iomgr = NOIOManager() if NO_PIGPIO else IOManager()
 
   print "Turning on wet displays"
   iomgr.turnOnWetDisplays()
 
   print "Starting xbee comms..."
   mgr = uwhd.GameModelManager()
-  xbee = uwhd.CreateXBeeSyncServer()
-  xbee.Init()
-  xbee.setMgr(mgr)
+  if not NO_PIGPIO:
+    xbee = uwhd.CreateXBeeSyncServer()
+    xbee.Init()
+    xbee.setMgr(mgr)
 
   mgr.setGameStateFirstHalf()
   mgr.setGameClockRunning(0)
