@@ -1,0 +1,6 @@
+.tox/
+.coverage
+*.pyc
+__pycache__/
+uwhdr.egg-info/
+.cache/
