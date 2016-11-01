@@ -367,24 +367,24 @@ class NormalView(object):
       self.game_clock_var.set("%02d:%02d" % (game_mins, game_secs))
 
       if game_clock <= 0:
-        self.mgr.setGameClockRunning(0)
+        self.mgr.setGameClockRunning(False)
         if self.mgr.gameStateFirstHalf():
           self.mgr.setGameStateHalfTime()
           self.mgr.setGameClock(HALF_TIME_DURATION)
           self.gong_clicked()
-          self.mgr.setGameClockRunning(1)
+          self.mgr.setGameClockRunning(True)
           self.root.update()
         elif self.mgr.gameStateHalfTime():
           self.mgr.setGameStateSecondHalf()
           self.mgr.setGameClock(HALF_PLAY_DURATION)
           self.gong_clicked()
-          self.mgr.setGameClockRunning(1)
+          self.mgr.setGameClockRunning(True)
           self.root.update()
         elif self.mgr.gameStateSecondHalf():
           self.mgr.setGameStateGameOver()
           self.mgr.setGameClock(GAME_OVER_DURATION)
           self.gong_clicked()
-          self.mgr.setGameClockRunning(1)
+          self.mgr.setGameClockRunning(True)
           self.root.update()
         elif self.mgr.gameStateGameOver():
           self.mgr.setBlackScore(0)
@@ -392,7 +392,7 @@ class NormalView(object):
           self.mgr.setGameStateFirstHalf()
           self.mgr.setGameClock(HALF_PLAY_DURATION)
           self.gong_clicked()
-          self.mgr.setGameClockRunning(1)
+          self.mgr.setGameClockRunning(True)
 
       if self.mgr.gameStateFirstHalf():
         self.status_var.set("FIRST HALF")
@@ -466,7 +466,7 @@ class NormalView(object):
     print "gong clicked"
     if not self.first_game_started:
       self.first_game_started = True
-      self.mgr.setGameClockRunning(1)
+      self.mgr.setGameClockRunning(True)
     self.iomgr.setSound(1)
     time.sleep(1)
     self.iomgr.setSound(0)
@@ -496,7 +496,7 @@ class NormalView(object):
     # write the saved value so that all of the clock displays get the correct
     # paused time.
     clock_at_pause = self.mgr.gameClock()
-    self.mgr.setGameClockRunning(0)
+    self.mgr.setGameClockRunning(False)
     self.mgr.setGameClock(max(clock_at_pause,0))
 
     if save_state:
@@ -539,7 +539,7 @@ class NormalView(object):
       elif self.state_before_pause == "REF TIMEOUT":
         self.mgr.setGameStateFirstHalf()
         print "something strange in the resume continuation"
-      self.mgr.setGameClockRunning(1)
+      self.mgr.setGameClockRunning(True)
       self.mgr.setGameClock(max(pause_time, 0))
 
     ConfirmRefTimeOut(self.root,
