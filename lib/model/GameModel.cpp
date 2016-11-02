@@ -38,7 +38,6 @@ std::string GameModel::dump() const {
 
   switch (State) {
   case GameModel::WallClock:    SS << "Wall Clock"; break;
-  case GameModel::RawData:      SS << "Raw Data"; break;
   case GameModel::FirstHalf:    SS << "First Half"; break;
   case GameModel::SecondHalf:   SS << "Second Half"; break;
   case GameModel::HalfTime:     SS << "Half Time"; break;
@@ -66,17 +65,6 @@ std::string GameModel::dump() const {
 
 std::string GameModel::serialize() const {
   std::stringstream SS;
-
-  if (State == GameState::RawData) {
-    SS << "<<";
-
-    for (int y = 0; y < 32; ++y)
-      for (int x = 0; x < 32 * 3; ++x)
-        SS << Data[y * 32 * 3 + x];
-
-    SS << ">>";
-    return SS.str();
-  }
 
   SS << "S"
      << "B" << int(BlackScore)
@@ -115,49 +103,21 @@ std::string GameModel::serialize() const {
   return SS.str();
 }
 
+static bool check(std::stringstream &SS, char V) {
+  char C;
+  SS.get(C);
+  return C != V;
+}
+
 bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   GameModel NewM;
   std::stringstream SS;
   SS << S;
 
-  char C;
-  SS.get(C);
-  if (C == '<') {
-    printf("deserialize raw:\n");
-
-    SS.get(C);
-    if (C != '<')
-      return true;
-
-    for (int y = 0; y < 32; ++y)
-      for (int x = 0; x < 32 * 3; ++x) {
-        char CC;
-        SS.get(CC);
-        NewM.Data[y * 32 * 3 + x] = CC;
-        printf("%c", CC);
-    }
-
-    SS.get(C);
-    if (C != '>')
-      return true;
-
-    SS.get(C);
-    if (C != '>')
-      return true;
-
-    printf("\nsuccess\n");
-
-    NewM.State = GameModel::RawData;
-
-    Mod = NewM;
-    return false;
-  }
-
-  if (C != 'S')
+  if (check(SS, 'S'))
     return true;
 
-  SS.get(C);
-  if (C != 'B')
+  if (check(SS, 'B'))
     return true;
 
   {
@@ -166,8 +126,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
     NewM.BlackScore = B;
   }
 
-  SS.get(C);
-  if (C != 'W')
+  if (check(SS, 'W'))
     return true;
 
   {
@@ -176,8 +135,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
     NewM.WhiteScore = W;
   }
 
-  SS.get(C);
-  if (C != 'T')
+  if (check(SS, 'T'))
     return true;
 
   {
@@ -186,8 +144,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
     NewM.GameClockSecs = T;
   }
 
-  SS.get(C);
-  if (C != 'R')
+  if (check(SS, 'R'))
     return true;
 
   {
@@ -196,8 +153,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
     NewM.ClockRunning = (R == 1);
   }
 
-  SS.get(C);
-  if (C != 'G')
+  if (check(SS, 'G'))
     return true;
 
   char GS;
@@ -217,8 +173,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
 #if 0
   // Don't serialize the kind, it needs to be set independently based on where
   // it is being used.
-  SS.get(C);
-  if (C != 'K')
+  if (check(SS, 'K'))
     return true;
 
   char MK;
@@ -231,8 +186,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   }
 #endif
 
-  SS.get(C);
-  if (C != 'E')
+  if (check(SS, 'E'))
     return true;
 
   gettimeofday(&NewM.PrevStartTime, nullptr);

@@ -30,11 +30,8 @@ public:
   struct timeval PrevStartTime;
   bool ClockRunning;
 
-  char Data[3 * 32 * 32];
-
   enum GameState {
     WallClock,
-    RawData,
     FirstHalf,
     SecondHalf,
     HalfTime,
