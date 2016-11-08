@@ -1,3 +1,4 @@
+add_subdirectory(canvas)
 add_subdirectory(console)
 add_subdirectory(model)
 add_subdirectory(sync)
