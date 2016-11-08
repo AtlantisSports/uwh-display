@@ -14,3 +14,8 @@ UWHDCanvas *UWHDCanvas::create(unsigned W, unsigned H) {
   return C;
 }
 
+void UWHDCanvas::fill(UWHDPixel V) {
+  forEach([=](unsigned X, unsigned Y) {
+    at(X, Y) = V;
+  });
+}

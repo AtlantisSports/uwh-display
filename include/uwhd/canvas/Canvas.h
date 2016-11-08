@@ -12,6 +12,12 @@ struct UWHDPixel {
   };
 };
 
+inline bool operator==(UWHDPixel LHS, UWHDPixel RHS) {
+  return LHS.r == RHS.r &&
+         LHS.g == RHS.g &&
+         LHS.b == RHS.b;
+}
+
 struct UWHDCanvas {
   unsigned w;
   unsigned h;
@@ -19,13 +25,18 @@ struct UWHDCanvas {
 
   static UWHDCanvas *create(unsigned W, unsigned H);
 
-  inline void set(unsigned X, unsigned Y, UWHDPixel V) {
-    get(X, Y) = V;
-  }
-
-  inline UWHDPixel &get(unsigned X, unsigned Y) {
+  inline UWHDPixel &at(unsigned X, unsigned Y) {
     return data[X + Y * h];
   }
+
+  template<typename F>
+  void forEach(F Func) {
+    for (unsigned Y = 0, YE = h; Y != YE; ++Y)
+      for (unsigned X = 0, XE = w; X != XE; ++X)
+        Func(X, Y);
+  }
+
+  void fill(UWHDPixel V);
 };
 
 #endif
