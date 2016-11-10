@@ -3,8 +3,6 @@ if(UWHD_BUILD_CLIENT AND
   add_subdirectory(uwhdc)
 endif()
 
-add_subdirectory(test-gamemodel)
-
 if(UWHD_BUILD_DISPLAY)
   add_subdirectory(uwhdi)
 endif()
