@@ -28,14 +28,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Teach CMake how to build librgbmatrix
 # -----------------------------------------------------------------------------
 if(UWHD_BUILD_DISPLAY)
-set(LIBRGBMATRIX "${CMAKE_SOURCE_DIR}/matrix/lib/librgbmatrix.a")
+set(LIBRGBMATRIX "${CMAKE_SOURCE_DIR}/deps/matrix/lib/librgbmatrix.a")
 add_custom_command(
     OUTPUT "${LIBRGBMATRIX}"
-    COMMAND make -C "${CMAKE_SOURCE_DIR}/matrix")
+    COMMAND make -C "${CMAKE_SOURCE_DIR}/deps/matrix")
 add_custom_target(rgbmatrix
     DEPENDS "${LIBRGBMATRIX}")
-include_directories("${CMAKE_SOURCE_DIR}/matrix/include")
-link_directories("${CMAKE_SOURCE_DIR}/matrix/lib")
+include_directories("${CMAKE_SOURCE_DIR}/deps/matrix/include")
+link_directories("${CMAKE_SOURCE_DIR}/deps/matrix/lib")
 endif()
 
 
