@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdio>
+#include <fstream>
+#include <ostream>
+#include <sstream>
 
 namespace {
 
@@ -21,7 +24,7 @@ char maxValue(UWHDCanvas *C) {
   return Max;
 }
 
-void printPPM(FILE *F, UWHDCanvas *C) {
+void printPPM(std::ostream &OS, UWHDCanvas *C) {
   // See: http://netpbm.sourceforge.net/doc/pgm.html
 
   // 1: Magic number
@@ -32,51 +35,48 @@ void printPPM(FILE *F, UWHDCanvas *C) {
   // 6: Whitespace
   // 7: Max Value
   // 8: Whitespace
-  fprintf(F, "%s\n%d %d\n%d\n", "P6", C->w, C->h, maxValue(C));
+  OS << "P6\n"
+     << C->w << " " << C->h << "\n"
+     << (int)maxValue(C) << "\n";
 
   // 9: Image Data
   for (unsigned Y = 0, YE = C->h; Y != YE; ++Y) {
     for (unsigned X = 0, XE = C->w; X != XE; ++X) {
       UWHDPixel &V = C->at(X, Y);
-      fprintf(F, "%c %c %c", V.r, V.g, V.b);
+      OS << (int)V.r << " " << (int)V.g << " " << (int)V.b;
       if (X + 1 != XE)
-        fprintf(F, "%s", " ");
+        OS << "  ";
     }
-    fprintf(F, "%s", "\n");
+    OS << "\n";
   }
 }
 
 class PPMCanvasViewer : public UWHDCanvasViewer {
 public:
-  PPMCanvasViewer(FILE *F, bool Close) : F(F), Close(Close) {}
+  PPMCanvasViewer(std::fstream &&OS) : OS(std::move(OS)) {}
 
   ~PPMCanvasViewer() {
-    assert(F);
-    if (Close)
-      fclose(F);
+    OS.flush();
+    OS.close();
   }
 
   void show(UWHDCanvas *C) override {
-    assert(F);
-    printPPM(F, C);
+    printPPM(OS, C);
+    OS.flush();
   }
 
 private:
-  FILE *F;
-  bool Close;
+  std::fstream OS;
 };
 
 } // namespace
 
-UWHDCanvasViewer *createPPMCanvasViewer(const char *FileName) {
-  FILE *F = fopen(FileName, "w");
-
-  if (!F)
-    return nullptr;
-
-  return new PPMCanvasViewer(F, /*Close=*/true);
+std::string asPPMString(UWHDCanvas *C) {
+  std::stringstream SS;
+  printPPM(SS, C);
+  return SS.str();
 }
 
-UWHDCanvasViewer *createPPMCanvasViewer(FILE *F) {
-  return new PPMCanvasViewer(F, /*Close=*/false);
+UWHDCanvasViewer *createPPMCanvasViewer(const char *FileName) {
+  return new PPMCanvasViewer(std::fstream(FileName, std::fstream::out));
 }

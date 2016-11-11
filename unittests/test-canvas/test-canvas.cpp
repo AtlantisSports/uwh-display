@@ -1,6 +1,10 @@
 #include "uwhd/canvas/Canvas.h"
+#include "uwhd/canvas/CanvasViewer.h"
+#include "uwhd/canvas/PPMCanvasViewer.h"
 
 #include "gtest/gtest.h"
+
+#include <fstream>
 
 TEST(CanvasTest, Allocation) {
   unsigned h = 5;
@@ -52,6 +56,43 @@ TEST(CanvasTest, Fill) {
   EXPECT_EQ(C->at(1, 0), V);
   EXPECT_EQ(C->at(1, 1), V);
 
+}
+
+TEST(CanvasTest, PPMOutput) {
+  UWHDCanvas *C = UWHDCanvas::create(2, 3);
+
+  C->forEach([&](unsigned X, unsigned Y) {
+    C->at(X, Y).r = X;
+    C->at(X, Y).g = Y;
+    C->at(X, Y).b = 0;
+  });
+
+  const std::string Reference =
+    "P6\n"
+    "2 3\n"
+    "2\n"
+    "0 0 0  1 0 0\n"
+    "0 1 0  1 1 0\n"
+    "0 2 0  1 2 0\n";
+
+  EXPECT_EQ(asPPMString(C), Reference);
+
+  // Now try Round-tripping through a temp file
+  char FileName[] = "/tmp/uwhdtemp.XXXXXX";
+  int fd = mkstemp(FileName);
+  ASSERT_NE(fd, -1)
+    << "Failed to create temp file";
+
+  UWHDCanvasViewer *PPMV = createPPMCanvasViewer(FileName);
+  PPMV->show(C);
+  free(PPMV);
+  close(fd);
+
+  std::ifstream OF(FileName);
+  std::string OS((std::istreambuf_iterator<char>(OF)),
+                  std::istreambuf_iterator<char>());
+  EXPECT_EQ(OS, Reference)
+    << FileName;
 }
 
 int main(int argc, char **argv) {

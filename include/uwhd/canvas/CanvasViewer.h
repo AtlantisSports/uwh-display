@@ -5,7 +5,7 @@ struct UWHDCanvas;
 
 struct UWHDCanvasViewer {
   virtual ~UWHDCanvasViewer() {}
-  virtual void show(UWHDCanvas *C);
+  virtual void show(UWHDCanvas *C) = 0;
 };
 
 #endif
