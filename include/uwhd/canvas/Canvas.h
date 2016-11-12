@@ -31,7 +31,7 @@ struct UWHDCanvas {
 
   inline UWHDPixel &at(unsigned X, unsigned Y) {
     assert(X < w && Y < h && "coords not in bounds?");
-    return data[X + Y * h];
+    return data[X + Y * w];
   }
 
   template<typename F>
