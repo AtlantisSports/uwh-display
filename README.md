@@ -24,6 +24,7 @@ Prerequisites:
 * swig
 * python-dev
 * libxbee
+* lit
 
 On Linux:
 
