@@ -7,69 +7,43 @@
 #include <graphics.h>
 #include <canvas.h>
 #include <led-matrix.h>
-#include <threaded-canvas-manipulator.h>
-
-namespace rgb_matrix {
-  class RGBMatrix;
-}
+#include <memory>
 
 using namespace rgb_matrix;
 
-class GameDisplay : public rgb_matrix::ThreadedCanvasManipulator {
+class LEDCanvasViewer {
 public:
-  GameDisplay(rgb_matrix::RGBMatrix *Mtx)
-    : ThreadedCanvasManipulator(Mtx)
-    , Mtx(Mtx)
-    , Mgr()
-    , TD(1, Mgr)
+  LEDCanvasViewer(std::unique_ptr<RGBMatrix> Mtx)
+    , Mtx(std::move(Mtx))
   {}
 
-  void Run();
-
-  /// For the SWIG bindings, which can't tell the overloads apart:
-  virtual void Start0() { Start(); }
-  virtual void Start2(int RealtimePriority, uint32_t CPUAffinityMask) {
-    Start(RealtimePriority, CPUAffinityMask);
-  }
-
-  GameModelManager &getMgr() { return Mgr; }
-
-  /// For SWIG, which doesn't do the right thing for references
-  /// FIXME: replace uses of the other getter with this one.
-  GameModelManager *getMgr2() { return &Mgr; }
-
-private:
-  rgb_matrix::RGBMatrix *Mtx;
-  GameModelManager Mgr;
-  TimeDisplay TD;
-
-public:
-  static const rgb_matrix::Color WhiteTeamFG;
-  static const rgb_matrix::Color WhiteTeamBG;
-  static const rgb_matrix::Color BlackTeamFG;
-  static const rgb_matrix::Color BlackTeamBG;
-  static const rgb_matrix::Color Background;
-};
-
-void GameDisplay::Run() {
-  FrameCanvas *Frame = Mtx->CreateFrameCanvas();
-  while (running()) {
-    GameModel M = Mgr.getModel();
-
-    renderGameDisplay(M, Canvas);
-
-    Canvas->forEach([&](unsigned X, unsigned Y) {
-      UWHDPixel &V = Canvas->at(X, Y);
+  virtual void show(UWHDCanvas *C) `{
+    FrameCanvas *Frame = Mtx->CreateFrameCanvas();
+    C->forEach([&](unsigned X, unsigned Y) {
+      UWHDPixel &V = C->at(X, Y);
       Frame->SetPixel(X, Y, V.r, V.g, V.b);
     });
-
     Frame = Mtx->SwapOnVSync(Frame);
   }
-}
+
+private:
+  std::unique_ptr<RGBMatrix> Mtx;
+};
 
 #endif // UWHD_BUILD_DISPLAY
 
 UWHDCanvasViewer *createLEDCanvasViewer() {
+#ifdef UWHD_BUILD_DISPLAY
+  static GPIO IO;
+  if (!IO.Init())
+    return nullptr;
+
+  auto Matrix = std::unique_ptr<RGBMatrix>(new RGBMatrix(&IO, 32, 3, 1));
+  Matrix->SetPWMBits(11);
+
+  return new LEDCanvasViewer(std::move(Matrix));
+#else
   return nullptr;
+#endif
 }
 
