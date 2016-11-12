@@ -12,3 +12,4 @@ if(UWHD_BUILD_SERVER AND
   add_subdirectory(uwhdd)
 endif()
 
+add_subdirectory(display-check)

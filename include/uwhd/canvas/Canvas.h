@@ -2,6 +2,7 @@
 #define UWHD_DISPLAY_CANVAS_H
 
 #include <cassert>
+#include <iosfwd>
 
 struct UWHDPixel {
   union {
@@ -21,6 +22,12 @@ inline bool operator==(UWHDPixel LHS, UWHDPixel RHS) {
          LHS.g == RHS.g &&
          LHS.b == RHS.b;
 }
+
+inline bool operator!=(UWHDPixel LHS, UWHDPixel RHS) {
+  return !(LHS == RHS);
+}
+
+::std::ostream& operator<<(::std::ostream& os, const UWHDPixel &V);
 
 struct UWHDCanvas {
   unsigned w;
