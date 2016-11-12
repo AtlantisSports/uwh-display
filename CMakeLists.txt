@@ -84,3 +84,11 @@ add_subdirectory(lib)
 add_subdirectory(tools)
 add_subdirectory(swig)
 add_subdirectory(unittests)
+
+# -----------------------------------------------------------------------------
+# Tests
+# -----------------------------------------------------------------------------
+enable_testing()
+add_test(test-canvas    ${CMAKE_BINARY_DIR}/bin/test-canvas)
+add_test(test-display   ${CMAKE_BINARY_DIR}/bin/test-display)
+add_test(test-gamemodel ${CMAKE_BINARY_DIR}/bin/test-gamemodel)
