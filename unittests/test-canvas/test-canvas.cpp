@@ -65,12 +65,12 @@ TEST(CanvasTest, PPMOutput) {
   });
 
   const std::string Reference =
-    "P6\n"
+    "P3\n"
     "2 3\n"
     "2\n"
-    "0 0 0  1 0 0\n"
-    "0 1 0  1 1 0\n"
-    "0 2 0  1 2 0\n";
+    "  0   0   0    1   0   0\n"
+    "  0   1   0    1   1   0\n"
+    "  0   2   0    1   2   0\n";
 
   EXPECT_EQ(asPPMString(C), Reference);
 
