@@ -10,16 +10,22 @@
 #include <fstream>
 #include <ostream>
 #include <sstream>
+#include <cstdint>
+#include <iomanip>
 
 namespace {
 
-char maxValue(UWHDCanvas *C) {
-  char Max = 0;
+unsigned clamp(unsigned Min, unsigned V, unsigned Max) {
+  return std::max(Min, std::min(V, Max));
+}
+
+unsigned maxValue(UWHDCanvas *C) {
+  unsigned Max = 0;
   C->forEach([&](unsigned X, unsigned Y) {
     UWHDPixel &V = C->at(X, Y);
-    Max = std::max(Max, V.r);
-    Max = std::max(Max, V.g);
-    Max = std::max(Max, V.b);
+    Max = std::max(Max, clamp(0, V.r, 255));
+    Max = std::max(Max, clamp(0, V.g, 255));
+    Max = std::max(Max, clamp(0, V.b, 255));
   });
   return Max;
 }
@@ -35,15 +41,18 @@ void printPPM(std::ostream &OS, UWHDCanvas *C) {
   // 6: Whitespace
   // 7: Max Value
   // 8: Whitespace
-  OS << "P6\n"
+  OS << "P3\n"
      << C->w << " " << C->h << "\n"
-     << (int)maxValue(C) << "\n";
+     << maxValue(C) << "\n";
 
   // 9: Image Data
   for (unsigned Y = 0, YE = C->h; Y != YE; ++Y) {
     for (unsigned X = 0, XE = C->w; X != XE; ++X) {
       UWHDPixel &V = C->at(X, Y);
-      OS << (int)V.r << " " << (int)V.g << " " << (int)V.b;
+      OS << std::setfill(' ')
+         << std::setw(3) << clamp(0, V.r, 255) << " "
+         << std::setw(3) << clamp(0, V.g, 255) << " "
+         << std::setw(3) << clamp(0, V.b, 255);
       if (X + 1 != XE)
         OS << "  ";
     }
