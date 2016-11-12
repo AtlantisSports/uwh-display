@@ -88,8 +88,11 @@ TEST(CanvasTest, PPMOutput) {
   std::ifstream OF(FileName);
   std::string OS((std::istreambuf_iterator<char>(OF)),
                   std::istreambuf_iterator<char>());
-  EXPECT_EQ(OS, Reference)
+  ASSERT_EQ(OS, Reference)
     << FileName;
+
+  ASSERT_FALSE(remove(FileName))
+    << "Failed to delete the temp file";
 }
 
 int main(int argc, char **argv) {
