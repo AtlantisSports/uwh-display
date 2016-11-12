@@ -95,6 +95,31 @@ TEST(CanvasTest, PPMOutput) {
     << "Failed to delete the temp file";
 }
 
+TEST(CanvasTest, PPMInput) {
+  std::unique_ptr<UWHDCanvas> CIn(UWHDCanvas::create(2, 3));
+
+  CIn->forEach([&](unsigned X, unsigned Y) {
+    CIn->at(X, Y).r = X;
+    CIn->at(X, Y).g = Y;
+    CIn->at(X, Y).b = 0;
+  });
+
+  std::string Str = asPPMString(CIn.get());
+
+  std::unique_ptr<UWHDCanvas> COut(createCanvasFromPPMString(Str));
+  ASSERT_TRUE(COut)
+    << "Failed to parse image:\n"
+    << Str;
+
+  ASSERT_EQ(CIn->w, COut->w);
+  ASSERT_EQ(CIn->h, COut->h);
+
+  CIn->forEach([&](unsigned X, unsigned Y) {
+    EXPECT_EQ(CIn->at(X, Y), COut->at(X, Y))
+      << "X: " << X << " Y: " << Y;
+  });
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

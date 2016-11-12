@@ -7,6 +7,7 @@ struct UWHDCanvasViewer;
 struct UWHDCanvas;
 
 std::string asPPMString(UWHDCanvas *C);
+UWHDCanvas *createCanvasFromPPMString(const std::string &Str);
 
 UWHDCanvasViewer *createPPMCanvasViewer(const char *FileName);
 
