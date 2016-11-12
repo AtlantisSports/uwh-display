@@ -9,14 +9,11 @@
 
 #include "uwhd/display/BigNumber.h"
 
-#include <canvas.h>
-#include <led-matrix.h>
-#include <graphics.h>
+#include "uwhd/canvas/Canvas.h"
 
+#include <cstdio>
 #include <cassert>
 #include <cstdarg>
-
-using namespace rgb_matrix;
 
 #define _ 0
 
@@ -1097,13 +1094,13 @@ static const char *character(enum BigNumber::Font F, unsigned char Digit) {
   return nullptr;
 }
 
-void BigNumber::Render(Canvas *Canvas,
+void BigNumber::Render(UWHDCanvas *Canvas,
                        unsigned Display,
                        unsigned char Digit,
                        unsigned XOffs, unsigned YOffs,
                        enum BigNumber::Font F,
-                       const Color &FG,
-                       const Color *BG) {
+                       const UWHDPixel &FG,
+                       const UWHDPixel *BG) {
   unsigned H = height(F);
   unsigned W = width(F);
   const char *Character = character(F, Digit);
@@ -1115,17 +1112,17 @@ void BigNumber::Render(Canvas *Canvas,
   for (unsigned y = 0; y < H; y++) {
     for (unsigned x = 0; x < W; x++) {
       if (Character[x + y * W])
-        Canvas->SetPixel(XOffs + x, YOffs + y, FG.r, FG.g, FG.b);
+        Canvas->at(XOffs + x, YOffs + y) = FG;
       else if (BG)
-        Canvas->SetPixel(XOffs + x, YOffs + y, BG->r, BG->g, BG->b);
+        Canvas->at(XOffs + x, YOffs + y) = *BG;
     }
   }
 }
 
-void BigNumber::printf(rgb_matrix::Canvas *Canvas,
+void BigNumber::printf(UWHDCanvas *Canvas,
                        unsigned XS, unsigned YS,
-                       const rgb_matrix::Color &FG,
-                       const rgb_matrix::Color *BG,
+                       const UWHDPixel &FG,
+                       const UWHDPixel *BG,
                        const char *Fmt, ...) {
   va_list a_list;
   va_start(a_list, Fmt);

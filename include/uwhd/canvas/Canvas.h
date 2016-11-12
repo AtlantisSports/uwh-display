@@ -10,6 +10,8 @@ struct UWHDPixel {
     };
     char data[3];
   };
+
+  UWHDPixel(char r, char g, char b) : r(r), g(g), b(b) {}
 };
 
 inline bool operator==(UWHDPixel LHS, UWHDPixel RHS) {

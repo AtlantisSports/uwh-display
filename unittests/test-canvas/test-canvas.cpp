@@ -39,10 +39,7 @@ TEST(CanvasTest, ForEach) {
 TEST(CanvasTest, Fill) {
   UWHDCanvas *C = UWHDCanvas::create(2, 2);
 
-  UWHDPixel V;
-  V.r = 1;
-  V.g = 2;
-  V.b = 3;
+  UWHDPixel V(1, 2, 3);
 
   C->fill(V);
 

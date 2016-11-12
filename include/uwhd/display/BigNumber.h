@@ -11,10 +11,8 @@
 #ifndef BIGNUMBER_H
 #define BIGNUMBER_H
 
-namespace rgb_matrix {
-    class Canvas;
-    class Color;
-}
+class UWHDCanvas;
+class UWHDPixel;
 
 class BigNumber {
 public:
@@ -26,18 +24,18 @@ public:
   Digit15x29
   };
 
-  static void Render(rgb_matrix::Canvas *Canvas,
+  static void Render(UWHDCanvas *C,
                      unsigned Display,
                      unsigned char Digit,
                      unsigned XOffs, unsigned YOffs,
                      enum BigNumber::Font F,
-                     const rgb_matrix::Color &FG,
-                     const rgb_matrix::Color *BG = nullptr);
+                     const UWHDPixel &FG,
+                     const UWHDPixel *BG = nullptr);
 
-  static void printf(rgb_matrix::Canvas *Canvas,
+  static void printf(UWHDCanvas *C,
                      unsigned X, unsigned Y,
-                     const rgb_matrix::Color &FG,
-                     const rgb_matrix::Color *BG,
+                     const UWHDPixel &FG,
+                     const UWHDPixel *BG,
                      const char *Fmt, ...);
 };
 
