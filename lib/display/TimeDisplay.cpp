@@ -252,8 +252,7 @@ static void renderCondensedTime(UWHDCanvas *C, unsigned DisplayNum,
   }
 }
 
-void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
-  unsigned Now = M.GameClockSecs;
+void renderWallClock(UWHDCanvas *C) {
   time_t WallClock = time(nullptr);
   struct tm *LocalClock;
   LocalClock = localtime(&WallClock);
@@ -261,55 +260,52 @@ void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
   unsigned MM = LocalClock->tm_min;
   unsigned SS = LocalClock->tm_sec;
 
+  BigNumber::Render(C, 0, HH / 10, /*xo=*/ 3,  /*yo=*/ 2,
+                    BigNumber::Font::Digit11x20, UWHDSecondsColor,
+                    &UWHDBackground);
+  BigNumber::Render(C, 0, HH % 10, /*xo=*/ 18, /*yo=*/ 2,
+                    BigNumber::Font::Digit11x20, UWHDSecondsColor,
+                    &UWHDBackground);
+
+  renderColon(C, 31, 7);
+  renderColon(C, 31, 15);
+
+  BigNumber::Render(C, 1, MM / 10, /*xo=*/ 3,  /*yo=*/ 2,
+                    BigNumber::Font::Digit11x20, UWHDSecondsColor,
+                    &UWHDBackground);
+  BigNumber::Render(C, 1, MM % 10, /*xo=*/ 18, /*yo=*/ 2,
+                    BigNumber::Font::Digit11x20, UWHDSecondsColor,
+                    &UWHDBackground);
+
+  renderColon(C, 63, 7);
+  renderColon(C, 63, 15);
+
+  BigNumber::Render(C, 2, SS / 10, /*xo=*/ 3,  /*yo=*/ 2,
+                    BigNumber::Font::Digit11x20, UWHDSecondsColor,
+                    &UWHDBackground);
+  BigNumber::Render(C, 2, SS % 10, /*xo=*/ 18, /*yo=*/ 2,
+                    BigNumber::Font::Digit11x20, UWHDSecondsColor,
+                    &UWHDBackground);
+
+  if ((SS / 10) % 2 == 0)
+    BigNumber::printf(C, 24, 24, UWHDLogoColor2, nullptr, "NAVISJON");
+  else
+    BigNumber::printf(C, 21, 24, UWHDLogoColor1, nullptr, "TIMESHARK");
+}
+
+void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
+  unsigned Now = M.GameClockSecs;
+
   // We can't yet display larger times than 99:59
   if (99 * 60 + 59 < Now)
     Now = 99 * 60 + 59;
 
-  // Note that we show 1h30m as 90m here:
-  unsigned Mins = (Now / 60) % 100;
-  unsigned MTens = Mins / 10;
-  unsigned MOnes = Mins % 10;
-
-  unsigned Secs = Now % 60;
-  unsigned STens = Secs / 10;
-  unsigned SOnes = Secs % 10;
-
   unsigned xoffs = 32;
 
   if (M.State == GameModel::WallClock) {
-    BigNumber::Render(C, 0, HH / 10, /*xo=*/ 3,  /*yo=*/ 2,
-                      BigNumber::Font::Digit11x20, UWHDSecondsColor,
-                      &UWHDBackground);
-    BigNumber::Render(C, 0, HH % 10, /*xo=*/ 18, /*yo=*/ 2,
-                      BigNumber::Font::Digit11x20, UWHDSecondsColor,
-                      &UWHDBackground);
-
-    renderColon(C, 31, 7);
-    renderColon(C, 31, 15);
-
-    BigNumber::Render(C, 1, MM / 10, /*xo=*/ 3,  /*yo=*/ 2,
-                      BigNumber::Font::Digit11x20, UWHDSecondsColor,
-                      &UWHDBackground);
-    BigNumber::Render(C, 1, MM % 10, /*xo=*/ 18, /*yo=*/ 2,
-                      BigNumber::Font::Digit11x20, UWHDSecondsColor,
-                      &UWHDBackground);
-
-    renderColon(C, 63, 7);
-    renderColon(C, 63, 15);
-
-    BigNumber::Render(C, 2, SS / 10, /*xo=*/ 3,  /*yo=*/ 2,
-                      BigNumber::Font::Digit11x20, UWHDSecondsColor,
-                      &UWHDBackground);
-    BigNumber::Render(C, 2, SS % 10, /*xo=*/ 18, /*yo=*/ 2,
-                      BigNumber::Font::Digit11x20, UWHDSecondsColor,
-                      &UWHDBackground);
-
-    if ((SS / 10) % 2 == 0)
-      BigNumber::printf(C, 24, 24, UWHDLogoColor2, nullptr, "NAVISJON");
-    else
-      BigNumber::printf(C, 21, 24, UWHDLogoColor1, nullptr, "TIMESHARK");
+    renderWallClock(C);
   } else if (M.State == GameModel::HalfTime ||
-             M.State == GameModel::GameOver) {
+           M.State == GameModel::GameOver) {
     auto &TimeColor = M.State == GameModel::HalfTime
                         ? UWHDHalfTimeColor
                         : UWHDGameOverColor;
