@@ -60,6 +60,41 @@ void printPPM(std::ostream &OS, UWHDCanvas *C) {
   }
 }
 
+} // namespace
+
+std::string asPPMString(UWHDCanvas *C) {
+  std::stringstream SS;
+  printPPM(SS, C);
+  return SS.str();
+}
+
+UWHDCanvas *createCanvasFromPPMString(const std::string &Str) {
+  std::stringstream SS(Str);
+
+  std::string Magic;
+  SS >> Magic;
+  if (Magic != "P3")
+    return nullptr;
+
+  unsigned W, H, Max;
+  SS >> W >> H >> Max;
+
+  UWHDCanvas *C = UWHDCanvas::create(W, H);
+
+  if (!C)
+    return nullptr;
+
+  C->forEach([&](unsigned X, unsigned Y) {
+    unsigned R, G, B;
+    SS >> R >> G >> B;
+    C->at(X, Y) = UWHDPixel(R, G, B);
+  });
+
+  return C;
+}
+
+namespace {
+
 class PPMCanvasViewer : public UWHDCanvasViewer {
 public:
   PPMCanvasViewer(std::fstream &&OS) : OS(std::move(OS)) {}
@@ -79,12 +114,6 @@ private:
 };
 
 } // namespace
-
-std::string asPPMString(UWHDCanvas *C) {
-  std::stringstream SS;
-  printPPM(SS, C);
-  return SS.str();
-}
 
 UWHDCanvasViewer *createPPMCanvasViewer(const char *FileName) {
   return new PPMCanvasViewer(std::fstream(FileName, std::fstream::out));
