@@ -1,6 +1,8 @@
 #ifndef UWHD_DISPLAY_CANVAS_H
 #define UWHD_DISPLAY_CANVAS_H
 
+#include <cassert>
+
 struct UWHDPixel {
   union {
     struct {
@@ -28,6 +30,7 @@ struct UWHDCanvas {
   static UWHDCanvas *create(unsigned W, unsigned H);
 
   inline UWHDPixel &at(unsigned X, unsigned Y) {
+    assert(X < w && Y < h && "coords not in bounds?");
     return data[X + Y * h];
   }
 
