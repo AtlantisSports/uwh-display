@@ -19,38 +19,44 @@ const UWHDPixel UWHDBlackTeamFG  = UWHDPixel(  0,   0, 255);
 const UWHDPixel UWHDWhiteTeamBG  = UWHDBackground;
 const UWHDPixel UWHDBlackTeamBG  = UWHDBackground;
 
+void renderSingleDigitScore(unsigned X, unsigned Y, unsigned Score,
+                            UWHDPixel FG, const UWHDPixel *BG,
+                            UWHDCanvas *C) {
+  assert(Score < 10);
+  // One's
+  BigNumber::Render(C, 0, Score % 10, /*xo=*/X, /*yo=*/Y,
+                    BigNumber::Font::Digit15x29, FG, BG);
+}
+
+void renderDoubleDigitScore(unsigned X, unsigned Y, unsigned Score,
+                            UWHDPixel FG, const UWHDPixel *BG,
+                            UWHDCanvas *C) {
+  assert(Score < 100);
+  // Ten's
+  BigNumber::Render(C, 0, (Score / 10) % 10, /*xo=*/X, /*yo=*/Y,
+                    BigNumber::Font::Digit15x29, FG, BG);
+
+  // One's
+  BigNumber::Render(C, 0, Score % 10, /*xo=*/X+17, /*yo=*/Y,
+                    BigNumber::Font::Digit15x29, FG, BG);
+}
+
+void renderScore(unsigned Display, unsigned Score,
+                 UWHDPixel FG, const UWHDPixel *BG,
+                 UWHDCanvas *C) {
+  if (Score < 10)
+    renderSingleDigitScore(32 * Display + 10, 1, Score, FG, BG, C);
+  else if (10 <= Score && Score < 100)
+    renderDoubleDigitScore(32 * Display +  0, 1, Score, FG, BG, C);
+}
+
 void renderGameDisplay(GameModel M, UWHDCanvas *C) {
   C->fill(UWHDBackground);
 
   renderTimeDisplay(M, C);
 
   if (M.State != GameModel::WallClock) {
-    if (M.BlackScore < 10)
-      // One's
-      BigNumber::Render(C, 0, M.BlackScore % 10, /*xo=*/10, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, UWHDBlackTeamFG, &UWHDBlackTeamBG);
-    else if (10 <= M.BlackScore && M.BlackScore < 100) {
-      // Ten's
-      BigNumber::Render(C, 0, (M.BlackScore / 10) % 10, /*xo=*/0, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, UWHDBlackTeamFG, &UWHDBlackTeamBG);
-
-      // One's
-      BigNumber::Render(C, 0, M.BlackScore % 10, /*xo=*/17, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, UWHDBlackTeamFG, &UWHDBlackTeamBG);
-    }
-
-    if (M.WhiteScore < 10)
-      // One's
-      BigNumber::Render(C, 2, M.WhiteScore % 10, /*xo=*/10, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, UWHDWhiteTeamFG, &UWHDWhiteTeamBG);
-    else if (10 <= M.WhiteScore && M.WhiteScore < 100) {
-      // Ten's
-      BigNumber::Render(C, 2, (M.WhiteScore / 10) % 10, /*xo=*/0, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, UWHDWhiteTeamFG, &UWHDWhiteTeamBG);
-
-      // One's
-      BigNumber::Render(C, 2, M.WhiteScore % 10, /*xo=*/17, /*yo=*/1,
-                        BigNumber::Font::Digit15x29, UWHDWhiteTeamFG, &UWHDWhiteTeamBG);
-    }
+    renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
+    renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
   }
 }
