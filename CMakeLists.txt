@@ -78,6 +78,13 @@ if(EXISTS ${LIBXBEE3})
 endif()
 
 # -----------------------------------------------------------------------------
+# Config file
+# -----------------------------------------------------------------------------
+configure_file(${CMAKE_SOURCE_DIR}/include/uwhd/config/Config.h.cmake
+               ${CMAKE_BINARY_DIR}/include/uwhd/config/Config.h)
+include_directories(${CMAKE_BINARY_DIR}/include)
+
+# -----------------------------------------------------------------------------
 # Build libraries, and tools
 # -----------------------------------------------------------------------------
 add_subdirectory(lib)

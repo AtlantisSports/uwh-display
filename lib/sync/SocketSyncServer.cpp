@@ -8,6 +8,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "uwhd/sync/ModelSync.h"
+#include "uwhd/config/Config.h"
+
+#ifdef UWHD_BUILD_SERVER
 
 #include <string>
 
@@ -274,6 +277,12 @@ void SocketSyncServer::Init() {
   SocketFD = 0;
 }
 
+#endif // UWHD_BUILD_SERVER
+
 ModelSync *CreateSocketServer(const std::string &Port) {
+#ifdef UWHD_BUILD_SERVER
   return new SocketSyncServer(Port);
+#else
+  return nullptr;
+#endif
 }
