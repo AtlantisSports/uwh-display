@@ -15,6 +15,6 @@
 
 class UWHDCanvas;
 
-void renderGameDisplay(GameModel M, UWHDCanvas *C);
+void renderGameDisplay(unsigned Version, GameModel M, UWHDCanvas *C);
 
 #endif

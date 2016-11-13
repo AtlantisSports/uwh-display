@@ -15,7 +15,7 @@ TEST(CanvasTest, PPMOutput) {
   M.BlackScore = 1;
   M.WhiteScore = 3;
 
-  renderGameDisplay(M, C);
+  renderGameDisplay(1, M, C);
 
   EXPECT_EQ(asPPMString(C),
             "P3\n"

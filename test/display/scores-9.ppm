@@ -1,5 +1,6 @@
 # RUN: display-check %s
 
+# SET-VERSION: 1
 # SET-STATE: FirstHalf
 # SET-BLACK: 9
 # SET-WHITE: 9

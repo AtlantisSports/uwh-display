@@ -21,10 +21,20 @@ struct ActionResult {
 
   GameModel M;
   bool Dump;
+  unsigned Version;
 };
 
 void parseComment(const std::string &Line, ActionResult &AR) {
   std::stringstream SS(Line);
+
+  if (startsWith(Line, "# SET-VERSION:")) {
+    SS.seekg(sizeof("# SET-VERSION:"));
+    unsigned Version;
+    SS >> Version;
+    AR.Version = Version;
+    return;
+  }
+
   if (startsWith(Line, "# SET-BLACK:")) {
     SS.seekg(sizeof("# SET-BLACK:"));
     unsigned Score;
@@ -100,7 +110,7 @@ int main(int argc, const char *argv[]) {
     return 1;
   }
 
-  renderGameDisplay(AR.M, FromDirectives.get());
+  renderGameDisplay(AR.Version, AR.M, FromDirectives.get());
 
   if (AR.Dump) {
     std::cout << asPPMString(FromDirectives.get()) << std::endl;
