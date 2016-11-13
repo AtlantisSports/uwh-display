@@ -21,7 +21,7 @@ The first version of the controller was a simple iPhone app, connected to the
 display over WiFi. It had basic functionality for updating scores, and
 starting/stopping/setting the game clock.
 
-![Controller v1.0](http://i.imgur.com/Z1JJBMo.gif)
+![Controller v1.0](/docs/img/display-controller-v1.gif)
 
 Version 2.0
 ===========
