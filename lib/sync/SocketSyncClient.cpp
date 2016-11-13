@@ -8,6 +8,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "uwhd/sync/ModelSync.h"
+#include "uwhd/config/Config.h"
+
+#ifdef UWHD_BUILD_CLIENT
 
 #include "uwhd/model/GameModel.h"
 
@@ -79,6 +82,12 @@ void SocketSyncClient::modelChanged(GameModel Model) {
   close(SockFD);
 }
 
+#endif // UWHD_BUILD_CLIENT
+
 ModelSync *CreateSocketClient(const std::string &Host, const std::string &Port) {
+#ifdef UWHD_BUILD_CLIENT
   return new SocketSyncClient(Host, Port);
+#else
+  return nullptr;
+#endif
 }

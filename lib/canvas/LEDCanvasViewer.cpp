@@ -1,4 +1,8 @@
+#include "uwhd/config/Config.h"
+
 #include "uwhd/canvas/CanvasViewer.h"
+
+#ifdef UWHD_BUILD_DISPLAY
 
 #include <graphics.h>
 #include <canvas.h>
@@ -62,6 +66,8 @@ void GameDisplay::Run() {
     Frame = Mtx->SwapOnVSync(Frame);
   }
 }
+
+#endif // UWHD_BUILD_DISPLAY
 
 UWHDCanvasViewer *createLEDCanvasViewer() {
   return nullptr;

@@ -8,6 +8,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "uwhd/sync/ModelSync.h"
+#include "uwhd/config/Config.h"
+
+#ifdef UWHD_HAVE_LIBXBEE3
 
 #include "uwhd/model/GameModel.h"
 
@@ -234,11 +237,21 @@ void XBeeSyncClient::receivedModel(GameModel Model) {
   M->setModel(Model);
 }
 
+#endif // UWHD_HAVE_LIBXBEE3
+
 ModelSyncServer *CreateXBeeSyncServer() {
+#ifdef UWHD_HAVE_LIBXBEE3
   return new XBeeSyncServer();
+#else
+  return nullptr;
+#endif
 }
 
 ModelSync *CreateXBeeSyncClient() {
+#ifdef UWHD_HAVE_LIBXBEE3
   return new XBeeSyncClient();
+#else
+  return nullptr;
+#endif
 }
 
