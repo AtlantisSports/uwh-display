@@ -1,5 +1,7 @@
 # uwh-display
 
+![Display Testing](/docs/img/display-testing.png)
+
 http://navisjon.com/ultimate-uwh-camera/
 
 https://www.gofundme.com/ultimateuwhcamera
