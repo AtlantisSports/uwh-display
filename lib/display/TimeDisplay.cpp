@@ -292,6 +292,96 @@ void renderWallClock(UWHDCanvas *C) {
     BigNumber::printf(C, 21, 24, UWHDLogoColor1, nullptr, "TIMESHARK");
 }
 
+void renderHalfTime(unsigned Now, bool Toggle, UWHDCanvas *C) {
+  unsigned xoffs = 32;
+  if (Toggle) {
+    renderCondensedTime(C, 1, Now, UWHDHalfTimeColor, &UWHDBackground);
+  } else {
+    for (int y = 0; y < 32; y++)
+      for (int x = 0; x < 32; x++)
+        if (HalfTime[x + y * 32])
+          C->at(xoffs + x, y) = UWHDTimeOutColor;
+  }
+}
+
+void renderGameOver(unsigned Now, bool Toggle, UWHDCanvas *C) {
+  unsigned xoffs = 32;
+  if (Toggle) {
+    renderCondensedTime(C, 1, Now, UWHDGameOverColor, &UWHDBackground);
+  } else {
+    for (int y = 0; y < 32; y++)
+      for (int x = 0; x < 32; x++)
+        if (GameOver[x + y * 32])
+          C->at(xoffs + x, y) = UWHDTimeOutColor;
+  }
+}
+
+void renderTimeOutRing(UWHDCanvas *C) {
+  unsigned xoffs = 32;
+
+  // Draw a ring around the center display for emphasis that this is a time out:
+  for (int x = 0; x < 32; x++) {
+    C->at(xoffs + x, 0) = UWHDTimeOutColor;
+    C->at(xoffs + x, 31) = UWHDTimeOutColor;
+  }
+  for (int y = 1; y < 31; ++y) {
+    C->at(xoffs,      y) = UWHDTimeOutColor;
+    C->at(xoffs  +31, y) = UWHDTimeOutColor;
+  }
+}
+
+void renderRefTimeOut(unsigned Now, bool Toggle, UWHDCanvas *C) {
+  unsigned xoffs = 32;
+  if (Toggle) {
+    renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
+  } else {
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (Ref[x + y * 32])
+          C->at(xoffs + x, 2 + y) = UWHDTimeOutColor;
+
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (Timeout[x + y * 32])
+          C->at(xoffs + x, 20 + y) = UWHDTimeOutColor;
+  }
+  renderTimeOutRing(C);
+}
+
+void renderBlackTimeOut(unsigned Now, bool Toggle, UWHDCanvas *C) {
+  unsigned xoffs = 32;
+  if (Toggle) {
+    renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
+  } else {
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (Black[x + y * 32])
+          C->at(xoffs + x, 3 + y) = UWHDBlackTimeOutColor;
+
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (Black[x + y * 32])
+          C->at(xoffs + x, 19 + y) = UWHDBlackTimeOutColor;
+  }
+}
+
+void renderWhiteTimeOut(unsigned Now, bool Toggle, UWHDCanvas *C) {
+  unsigned xoffs = 32;
+  if (Toggle) {
+    renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
+  } else {
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (White[x + y * 32])
+          C->at(xoffs + x, 3 + y) = UWHDWhiteTimeOutColor;
+
+    for (int y = 0; y < 10; y++)
+      for (int x = 0; x < 32; x++)
+        if (White[x + y * 32])
+          C->at(xoffs + x, 19 + y) = UWHDWhiteTimeOutColor;
+  }
+}
+
 void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
   unsigned Now = M.GameClockSecs;
 
@@ -301,76 +391,31 @@ void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
 
   unsigned xoffs = 32;
 
-  if (M.State == GameModel::WallClock) {
+  // Alternate based on the wall clock instead of the game clock,
+  // as the game clock might be paused.
+  bool Toggle = time(nullptr) % 4;
+
+  switch (M.State) {
+  case GameModel::WallClock:
     renderWallClock(C);
-  } else if (M.State == GameModel::HalfTime ||
-           M.State == GameModel::GameOver) {
-    auto &TimeColor = M.State == GameModel::HalfTime
-                        ? UWHDHalfTimeColor
-                        : UWHDGameOverColor;
-    auto &DisplayPX = M.State == GameModel::HalfTime
-                        ? HalfTime
-                        : GameOver;
-    if (time(nullptr) % 4) {
-      renderCondensedTime(C, 1, Now, TimeColor, &UWHDBackground);
-    } else {
-      for (int y = 0; y < 32; y++)
-        for (int x = 0; x < 32; x++)
-          if (DisplayPX[x + y * 32])
-            C->at(xoffs + x, y) = TimeColor;
-    }
-  } else if (M.State == GameModel::RefTimeOut ||
-             M.State == GameModel::WhiteTimeOut ||
-             M.State == GameModel::BlackTimeOut) {
-    if (M.State == GameModel::RefTimeOut) {
-      // Alternate this based on wall clock time instead, because the game
-      // clock could be stopped:
-      if (time(nullptr) % 4) {
-        renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
-      } else {
-        for (int y = 0; y < 10; y++)
-          for (int x = 0; x < 32; x++)
-            if (Ref[x + y * 32])
-              C->at(xoffs + x, 2 + y) = UWHDTimeOutColor;
-
-        for (int y = 0; y < 10; y++)
-          for (int x = 0; x < 32; x++)
-            if (Timeout[x + y * 32])
-              C->at(xoffs + x, 20 + y) = UWHDTimeOutColor;
-      }
-    } else if (M.State == GameModel::WhiteTimeOut ||
-               M.State == GameModel::BlackTimeOut) {
-      if (time(nullptr) % 4) {
-        renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
-      } else {
-        UWHDPixel TeamColor = M.State == GameModel::WhiteTimeOut
-                                        ? UWHDWhiteTimeOutColor
-                                        : UWHDBlackTimeOutColor;
-        const char *Team = M.State == GameModel::WhiteTimeOut
-                                        ? White
-                                        : Black;
-        for (int y = 0; y < 10; y++)
-          for (int x = 0; x < 32; x++)
-            if (Team[x + y * 32])
-              C->at(xoffs + x, 3 + y) = TeamColor;
-
-        for (int y = 0; y < 10; y++)
-          for (int x = 0; x < 32; x++)
-            if (Timeout[x + y * 32])
-              C->at(xoffs + x, 19 + y) = TeamColor;
-      }
-    }
-
-    // Draw a ring around the center display for emphasis that this is a time out:
-    for (int x = 0; x < 32; x++) {
-      C->at(xoffs + x, 0) = UWHDTimeOutColor;
-      C->at(xoffs + x, 31) = UWHDTimeOutColor;
-    }
-    for (int y = 1; y < 31; ++y) {
-      C->at(xoffs,      y) = UWHDTimeOutColor;
-      C->at(xoffs  +31, y) = UWHDTimeOutColor;
-    }
-  } else {
+    break;
+  case GameModel::HalfTime:
+    renderHalfTime(Now, Toggle, C);
+    break;
+  case GameModel::GameOver:
+    renderGameOver(Now, Toggle, C);
+    break;
+  case GameModel::RefTimeOut:
+    renderRefTimeOut(Now, Toggle, C);
+    break;
+  case GameModel::WhiteTimeOut:
+    renderWhiteTimeOut(Now, Toggle, C);
+    break;
+  case GameModel::BlackTimeOut:
+    renderBlackTimeOut(Now, Toggle, C);
+    break;
+  default:
     renderCondensedTime(C, 1, Now, UWHDSecondsColor, &UWHDBackground);
+    break;
   }
 }
