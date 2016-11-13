@@ -50,13 +50,19 @@ void renderScore(unsigned Display, unsigned Score,
     renderDoubleDigitScore(32 * Display +  0, 1, Score, FG, BG, C);
 }
 
-void renderGameDisplay(GameModel M, UWHDCanvas *C) {
+void renderGameDisplay(unsigned Version, GameModel M, UWHDCanvas *C) {
   C->fill(UWHDBackground);
 
-  renderTimeDisplay(M, C);
+  switch (Version) {
+  case 1:
+    renderTimeDisplay(M, C);
 
-  if (M.State != GameModel::WallClock) {
-    renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
-    renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
+    if (M.State != GameModel::WallClock) {
+      renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
+      renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
+    }
+    break;
+  default:
+    break;
   }
 }
