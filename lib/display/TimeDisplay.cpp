@@ -10,7 +10,6 @@
 #include "uwhd/display/TimeDisplay.h"
 
 #include "uwhd/display/BigNumber.h"
-#include "uwhd/display/SecondsRing.h"
 #include "uwhd/model/GameModel.h"
 
 #include <ctime>
