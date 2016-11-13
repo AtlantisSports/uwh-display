@@ -1,5 +1,10 @@
 # uwh-display
 
+![Timeshark](/docs/img/timeshark-logo0-cropped.jpg)
+
+About
+-----
+
 ![Display Testing](/docs/img/display-testing.png)
 
 http://navisjon.com/ultimate-uwh-camera/
