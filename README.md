@@ -5,6 +5,11 @@
 About
 -----
 
+TImeshark is a custom-built platform for display of timing & scoring
+information for Underwater Hockey tournaments. `uwh-display` is the software
+that runs on top of it. For details on previous versions of the hardware, see:
+[docs/Hardware.md](docs/Hardware.md).
+
 ![Display Testing](/docs/img/display-testing.png)
 
 http://navisjon.com/ultimate-uwh-camera/
