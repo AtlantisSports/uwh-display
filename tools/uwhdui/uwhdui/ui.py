@@ -1,4 +1,8 @@
-from Tkinter import *
+try:
+    from Tkinter import *
+except ImportError:
+    from tkinter import *
+
 import time
 
 def sized_frame(master, height, width):
@@ -452,7 +456,7 @@ class NormalView(object):
 
     def poll_clicker(self):
       if self.iomgr.readClicker():
-        print "remote clicked"
+        print("remote clicked")
         self.gong_clicked()
       else:
         self.iomgr.setSound(0)
@@ -463,7 +467,7 @@ class NormalView(object):
     self.root.mainloop()
 
   def gong_clicked(self):
-    print "gong clicked"
+    print("gong clicked")
     if not self.first_game_started:
       self.first_game_started = True
       self.mgr.setGameClockRunning(True)
@@ -538,7 +542,7 @@ class NormalView(object):
         self.mgr.setGameStateGameOver()
       elif self.state_before_pause == "REF TIMEOUT":
         self.mgr.setGameStateFirstHalf()
-        print "something strange in the resume continuation"
+        print("something strange in the resume continuation")
       self.mgr.setGameClockRunning(True)
       self.mgr.setGameClock(max(pause_time, 0))
 
