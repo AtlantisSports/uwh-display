@@ -374,19 +374,22 @@ class NormalView(object):
         self.mgr.setGameClockRunning(False)
         if self.mgr.gameStateFirstHalf():
           self.mgr.setGameStateHalfTime()
-          self.mgr.setGameClock(HALF_TIME_DURATION)
+          #FIXME:
+          #self.mgr.setGameClock(HALF_TIME_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(True)
           self.root.update()
         elif self.mgr.gameStateHalfTime():
           self.mgr.setGameStateSecondHalf()
-          self.mgr.setGameClock(HALF_PLAY_DURATION)
+          #FIXME:
+          #self.mgr.setGameClock(HALF_PLAY_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(True)
           self.root.update()
         elif self.mgr.gameStateSecondHalf():
           self.mgr.setGameStateGameOver()
-          self.mgr.setGameClock(GAME_OVER_DURATION)
+          #FIXME:
+          #self.mgr.setGameClock(GAME_OVER_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(True)
           self.root.update()
@@ -394,7 +397,8 @@ class NormalView(object):
           self.mgr.setBlackScore(0)
           self.mgr.setWhiteScore(0)
           self.mgr.setGameStateFirstHalf()
-          self.mgr.setGameClock(HALF_PLAY_DURATION)
+          #FIXME:
+          #self.mgr.setGameClock(HALF_PLAY_DURATION)
           self.gong_clicked()
           self.mgr.setGameClockRunning(True)
 
