@@ -1,3 +1,6 @@
 [submodule "matrix"]
 	path = deps/matrix
 	url = https://github.com/hzeller/rpi-rgb-led-matrix.git
+[submodule "deps/matrix"]
+	path = deps/matrix
+	url = https://github.com/hzeller/rpi-rgb-led-matrix.git

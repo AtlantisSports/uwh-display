@@ -97,7 +97,7 @@ namespace {
 
 class PPMCanvasViewer : public UWHDCanvasViewer {
 public:
-  PPMCanvasViewer(std::fstream &&OS) : OS(std::move(OS)) {}
+  PPMCanvasViewer(const char *FileName) : OS(FileName, std::fstream::out) {}
 
   ~PPMCanvasViewer() {
     OS.flush();
@@ -116,5 +116,5 @@ private:
 } // namespace
 
 UWHDCanvasViewer *createPPMCanvasViewer(const char *FileName) {
-  return new PPMCanvasViewer(std::fstream(FileName, std::fstream::out));
+  return new PPMCanvasViewer(FileName);
 }

@@ -10,9 +10,9 @@
 #include "uwhd/display/GameDisplay.h"
 
 #include "uwhd/sync/ModelSync.h"
-
-#include <led-matrix.h>
-#include <gpio.h>
+#include "uwhd/canvas/Canvas.h"
+#include "uwhd/canvas/CanvasViewer.h"
+#include "uwhd/canvas/LEDCanvasViewer.h"
 
 #include <climits>
 #include <cstdlib>
@@ -23,8 +23,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
-
-using namespace rgb_matrix;
 
 class SysLog {
 public:
@@ -83,26 +81,43 @@ int main(int argc, char *argv[]) {
     printf("non-daemon mode\n");
   }
 
-  GPIO IO;
-  if (!IO.Init()) {
-    syslog(LOG_ERR, "uwhdd: Could not init GPIO.");
+  GameModelManager Mgr;
+  Mgr.setModelKindPassiveSlave();
+
+  struct ListenAdapter final : public GameModelListener {
+    ListenAdapter(UWHDCanvasViewer *Viewer, UWHDCanvas *Canvas)
+      : Viewer(Viewer), Canvas(Canvas) {}
+    UWHDCanvasViewer *Viewer;
+    UWHDCanvas *Canvas;
+
+    virtual void modelChanged(GameModel M) override {
+      renderGameDisplay(1, M, Canvas);
+      Viewer->show(Canvas);
+    }
+  };
+
+  UWHDCanvasViewer *LEDPanel = createLEDCanvasViewer();
+  if (!LEDPanel) {
+    syslog(LOG_ERR, "uwhdd: Could not start LED Canvas Viewer");
     exit(-1);
   }
 
-  // Start the display matrix
-  auto Matrix = std::unique_ptr<RGBMatrix>(new RGBMatrix(&IO, 32, 3, 1));
-  Matrix->SetPWMBits(11);
+  UWHDCanvas *Canvas = UWHDCanvas::create(32 * 3, 32);
+  if (!Canvas) {
+    syslog(LOG_ERR, "uwhdd: Could not create Canvas");
+    exit(-1);
+  }
 
-  // Start the rendering loop
-  auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
-  Display->Start();
-  Display->getMgr().setModelKindPassiveSlave();
+  ListenAdapter LA = { LEDPanel, Canvas };
+  Mgr.registerListener(&LA);
 
   syslog(LOG_INFO, "uwhdd: Display started.");
 
   auto SyncClient = CreateXBeeSyncClient();
-  SyncClient->setMgr(&Display->getMgr());
+  SyncClient->setMgr(&Mgr);
   SyncClient->Init();
+
+  syslog(LOG_INFO, "uwhdd: XBee comms started.");
 
   // Enter the daemon loop
   while (true) {
