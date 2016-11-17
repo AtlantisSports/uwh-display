@@ -4,6 +4,7 @@ target_link_libraries(uwhdd
     uwhdsync
     uwhddisplay
     uwhdmodel
+    uwhdcanvas
     ${LIBRGBMATRIX}
     rt
     m

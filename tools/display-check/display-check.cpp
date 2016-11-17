@@ -104,20 +104,20 @@ int main(int argc, const char *argv[]) {
       PPMStr << Line << "\n";
   }
 
-  std::unique_ptr<UWHDCanvas> FromDirectives(UWHDCanvas::create(32 * 3, 32));
+  UWHDCanvas *FromDirectives = UWHDCanvas::create(32 * 3, 32);
   if (!FromDirectives) {
     std::cerr << "error: could not allocate a canvas\n";
     return 1;
   }
 
-  renderGameDisplay(AR.Version, AR.M, FromDirectives.get());
+  renderGameDisplay(AR.Version, AR.M, FromDirectives);
 
   if (AR.Dump) {
-    std::cout << asPPMString(FromDirectives.get()) << std::endl;
+    std::cout << asPPMString(FromDirectives) << std::endl;
     return 0;
   }
 
-  std::unique_ptr<UWHDCanvas> FromText(createCanvasFromPPMString(PPMStr.str()));
+  UWHDCanvas *FromText = createCanvasFromPPMString(PPMStr.str());
   if (!FromText) {
     std::cerr << "error: could not parse PPM data\n";
     return 1;
@@ -145,6 +145,9 @@ int main(int argc, const char *argv[]) {
       exit(1);
     }
   });
+
+  free(FromDirectives);
+  free(FromText);
 
   return 0;
 }

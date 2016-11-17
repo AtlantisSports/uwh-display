@@ -9,10 +9,9 @@
 
 #include "uwhd/console/Console.h"
 #include "uwhd/display/GameDisplay.h"
-#include "uwhd/sync/ModelSync.h"
-
-#include <led-matrix.h>
-#include <gpio.h>
+#include "uwhd/canvas/Canvas.h"
+#include "uwhd/canvas/CanvasViewer.h"
+#include "uwhd/canvas/LEDCanvasViewer.h"
 
 #include <climits>
 #include <cstdlib>
@@ -21,23 +20,27 @@
 #include <sstream>
 #include <unistd.h>
 
-using namespace rgb_matrix;
-
 int main(int argc, char *argv[]) {
-  GPIO IO;
+  GameModelManager Mgr;
 
-  if (!IO.Init()) {
-      std::cerr << "Error: Could not init GPIO. Try again with 'sudo'?\n";
-      exit(-1);
-  }
+  struct ListenAdapter final : public GameModelListener {
+    ListenAdapter(UWHDCanvasViewer *Viewer, UWHDCanvas *Canvas)
+      : Viewer(Viewer), Canvas(Canvas) {}
+    UWHDCanvasViewer *Viewer;
+    UWHDCanvas *Canvas;
 
-  auto Matrix = std::unique_ptr<RGBMatrix>(new RGBMatrix(&IO, 32, 3, 1));
-  Matrix->SetPWMBits(11);
+    virtual void modelChanged(GameModel M) override {
+      renderGameDisplay(1, M, Canvas);
+      Viewer->show(Canvas);
+    }
+  };
 
-  auto Display = std::unique_ptr<GameDisplay>(new GameDisplay(&*Matrix));
-  Display->Start();
+  UWHDCanvasViewer *LEDPanel = createLEDCanvasViewer();
+  UWHDCanvas *Canvas = UWHDCanvas::create(32 * 3, 32);
+  ListenAdapter LA = { LEDPanel, Canvas };
+  Mgr.registerListener(&LA);
 
-  Console C(Display->getMgr());
+  Console C(Mgr);
   C.Loop();
 
   return 0;

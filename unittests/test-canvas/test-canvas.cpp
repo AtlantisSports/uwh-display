@@ -96,7 +96,7 @@ TEST(CanvasTest, PPMOutput) {
 }
 
 TEST(CanvasTest, PPMInput) {
-  std::unique_ptr<UWHDCanvas> CIn(UWHDCanvas::create(2, 3));
+  UWHDCanvas *CIn = UWHDCanvas::create(2, 3);
 
   CIn->forEach([&](unsigned X, unsigned Y) {
     CIn->at(X, Y).r = X;
@@ -104,9 +104,9 @@ TEST(CanvasTest, PPMInput) {
     CIn->at(X, Y).b = 0;
   });
 
-  std::string Str = asPPMString(CIn.get());
+  std::string Str = asPPMString(CIn);
 
-  std::unique_ptr<UWHDCanvas> COut(createCanvasFromPPMString(Str));
+  UWHDCanvas *COut = createCanvasFromPPMString(Str);
   ASSERT_TRUE(COut)
     << "Failed to parse image:\n"
     << Str;
