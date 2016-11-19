@@ -1,8 +1,0 @@
-from setuptools import setup, find_packages
-
-setup(
-    name='uwhdr',
-    version='1.0.0',
-    packages=find_packages(),
-    scripts=['bin/uwhdr-sim'],
-)

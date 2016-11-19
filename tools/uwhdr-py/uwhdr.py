@@ -10,7 +10,7 @@ except ImportError as e:
   NO_PIGPIO = True
 import os
 import ConfigParser
-from uwhdui.ui import NormalView
+from refbox.ui import NormalView
 
 config = ConfigParser.RawConfigParser()
 config.read('/home/pi/workdir/uwh-display/tools/uwhdr-py/game.cfg')
