@@ -1,8 +1,0 @@
-#!/usr/bin/env python
-
-from uwhdui.ui import NormalView
-from uwhdui.gamemanager import GameManager
-from uwhdui.noiomanager import IOManager
-
-NormalView(GameManager(), IOManager(), NO_TITLE_BAR=True)
-
