@@ -90,19 +90,31 @@ void parseComment(const std::string &Line, ActionResult &AR) {
   }
 }
 
-int main(int argc, const char *argv[]) {
-  if (argc != 2)
-    printUsage(argc, argv);
-
-  std::ifstream IF(argv[1]);
-  std::stringstream PPMStr;
-  ActionResult AR;
+void parseFile(std::istream &IF, ActionResult &AR, std::stringstream &Image) {
   for (std::string Line; std::getline(IF, Line); ) {
     if (Line[0] == '#')
       parseComment(Line, AR);
     else
-      PPMStr << Line << "\n";
+      Image << Line << "\n";
   }
+}
+
+std::istream &openInput(const char *Source) {
+  if (std::string(Source) == "-")
+    return std::cin;
+
+  static std::ifstream IF(Source);
+  return IF;
+}
+
+int main(int argc, const char *argv[]) {
+  if (argc != 2)
+    printUsage(argc, argv);
+
+  std::istream &IF = openInput(argv[1]);
+  std::stringstream PPMStr;
+  ActionResult AR;
+  parseFile(IF, AR, PPMStr);
 
   UWHDCanvas *FromDirectives = UWHDCanvas::create(32 * 3, 32);
   if (!FromDirectives) {
