@@ -78,6 +78,7 @@ def main():
   mgr.setGameClock(HALF_PLAY_DURATION)
 
   nv = NormalView(mgr, iomgr, NO_TITLE_BAR)
+  nv.root.mainloop()
 
 if __name__=="__main__":
   main()
