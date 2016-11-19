@@ -2,7 +2,7 @@
 
 import time
 import sys
-import uwhdnodisp as uwhd
+import uwhd
 try:
   import pigpio
   NO_PIGPIO = False
