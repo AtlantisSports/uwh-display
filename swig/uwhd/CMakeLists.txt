@@ -31,6 +31,7 @@ endif()
 
 if(UWHD_BUILD_DISPLAY)
   SET(SWIG_MODULE_uwhd_EXTRA_DEPS
+      ${CMAKE_CURRENT_SOURCE_DIR}/canvas.i
       ${CMAKE_CURRENT_SOURCE_DIR}/console.i
       ${CMAKE_CURRENT_SOURCE_DIR}/display.i
       ${CMAKE_CURRENT_SOURCE_DIR}/model.i
@@ -45,6 +46,7 @@ if(UWHD_BUILD_DISPLAY)
                       uwhdmodel
                       uwhdconsole
                       uwhddisplay
+                      uwhdcanvas
                       uwhdmodel
                       ${LIBRGBMATRIX}
                       ${UWHD_COMMS_LIB}
@@ -52,6 +54,7 @@ if(UWHD_BUILD_DISPLAY)
 endif()
 
 SET(SWIG_MODULE_uwhdnodisp_EXTRA_DEPS
+    ${CMAKE_CURRENT_SOURCE_DIR}/canvas.i
     ${CMAKE_CURRENT_SOURCE_DIR}/console.i
     ${CMAKE_CURRENT_SOURCE_DIR}/model.i
     ${CMAKE_CURRENT_SOURCE_DIR}/sync.i
@@ -64,6 +67,7 @@ SWIG_LINK_LIBRARIES(uwhdnodisp
                     uwhdsync
                     uwhdmodel
                     uwhdconsole
+                    uwhdcanvas
                     uwhdmodel
                     ${UWHD_COMMS_LIB}
                     ${UWHD_SUPPORT_LIBS})

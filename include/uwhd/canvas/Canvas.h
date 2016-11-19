@@ -5,18 +5,14 @@
 #include <iosfwd>
 
 struct UWHDPixel {
-  union {
-    struct {
-      char r;
-      char g;
-      char b;
-    };
-    char data[3];
-  };
+  char r;
+  char g;
+  char b;
 
   UWHDPixel(char r, char g, char b) : r(r), g(g), b(b) {}
 };
 
+#ifndef SWIG
 inline bool operator==(UWHDPixel LHS, UWHDPixel RHS) {
   return LHS.r == RHS.r &&
          LHS.g == RHS.g &&
@@ -28,6 +24,7 @@ inline bool operator!=(UWHDPixel LHS, UWHDPixel RHS) {
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const UWHDPixel &V);
+#endif
 
 struct UWHDCanvas {
   unsigned w;
