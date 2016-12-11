@@ -62,27 +62,28 @@ def display_checks(mgr, is_front):
   s = ask_user_yes_no('Does the time show 1:42?') and s
 
   mgr.setGameClock(60)
-  mgr.setGameStateBlackTimeOut()
+  mgr.setTimeoutStateBlack()
   mgr.setGameClockRunning(True)
   time.sleep(12)
   mgr.setGameClockRunning(False)
   s = ask_user_yes_no('Did the display show a BLACK timeout?') and s
 
   mgr.setGameClock(60)
-  mgr.setGameStateWhiteTimeOut()
+  mgr.setTimeoutStateWhiteTimeOut()
   mgr.setGameClockRunning(True)
   time.sleep(12)
   mgr.setGameClockRunning(False)
   s = ask_user_yes_no('Did the display show a WHITE timeout?') and s
 
   mgr.setGameClock(60)
-  mgr.setGameStateRefTimeOut()
+  mgr.setTimeoutStateRef()
   mgr.setGameClockRunning(True)
   time.sleep(12)
   mgr.setGameClockRunning(False)
   s = ask_user_yes_no('Did the display show a REF timeout?') and s
 
   mgr.setGameClock(2*60)
+  mgr.setTimeoutStateNone()
   mgr.setGameStateHalfTime()
   mgr.setGameClockRunning(True)
   time.sleep(12)

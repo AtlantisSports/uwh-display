@@ -64,22 +64,36 @@ void parseComment(const std::string &Line, ActionResult &AR) {
     return;
   }
 
-  struct Directive {
+  struct {
     const char *Str;
-    GameModel::GameState State;
-  } const Directives[] = {
-    { "# SET-STATE: WallClock",    GameModel::WallClock },
-    { "# SET-STATE: FirstHalf",    GameModel::FirstHalf },
-    { "# SET-STATE: SecondHalf",   GameModel::SecondHalf },
-    { "# SET-STATE: RefTimeOut",   GameModel::RefTimeOut },
-    { "# SET-STATE: WhiteTimeOut", GameModel::WhiteTimeOut },
-    { "# SET-STATE: BlackTimeOut", GameModel::BlackTimeOut },
-    { "# SET-STATE: GameOver",     GameModel::GameOver },
+    GameModel::GameState GS;
+  } const GSDirectives[] = {
+    { "# SET-STATE: WallClock",    GameModel::GS_WallClock },
+    { "# SET-STATE: FirstHalf",    GameModel::GS_FirstHalf },
+    { "# SET-STATE: SecondHalf",   GameModel::GS_SecondHalf },
+    { "# SET-STATE: GameOver",     GameModel::GS_GameOver },
   };
 
-  for (const Directive &D : Directives) {
+  for (const auto &D : GSDirectives) {
     if (startsWith(Line, D.Str)) {
-      AR.M.State = D.State;
+      AR.M.GS = D.GS;
+      return;
+    }
+  }
+
+  struct {
+    const char *Str;
+    GameModel::TimeoutState TS;
+  } const TSDirectives[] = {
+    { "# SET-TIMEOUT: None",         GameModel::TS_None },
+    { "# SET-TIMEOUT: RefTimeout",   GameModel::TS_RefTimeout },
+    { "# SET-TIMEOUT: WhiteTimeout", GameModel::TS_WhiteTimeout },
+    { "# SET-TIMEOUT: BlackTimeout", GameModel::TS_BlackTimeout },
+  };
+
+  for (const auto &D : TSDirectives) {
+    if (startsWith(Line, D.Str)) {
+      AR.M.TS = D.TS;
       return;
     }
   }

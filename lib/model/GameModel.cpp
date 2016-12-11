@@ -22,9 +22,10 @@ bool GameModel::operator==(const GameModel &Other) const {
   return BlackScore == Other.BlackScore &&
          WhiteScore == Other.WhiteScore &&
          ClockRunning == Other.ClockRunning &&
-         ((ClockRunning && Kind != PassiveSlave) ||
+         ((ClockRunning && MK != MK_PassiveSlave) ||
           GameClockSecs == Other.GameClockSecs) &&
-         State == Other.State;
+         GS == Other.GS &&
+         TS == Other.TS;
 }
 
 std::string GameModel::dump() const {
@@ -34,28 +35,36 @@ std::string GameModel::dump() const {
      << "        White: " << int(WhiteScore) << "\n"
      << "GameClockSecs: " << int(GameClockSecs) << "\n"
      << " ClockRunning: " << (ClockRunning ? "YES" : "NO") << "\n"
-     << "        State: ";
+     << "    GameState: ";
 
-  switch (State) {
-  case GameModel::WallClock:    SS << "Wall Clock"; break;
-  case GameModel::FirstHalf:    SS << "First Half"; break;
-  case GameModel::SecondHalf:   SS << "Second Half"; break;
-  case GameModel::HalfTime:     SS << "Half Time"; break;
-  case GameModel::RefTimeOut:   SS << "Ref Timeout"; break;
-  case GameModel::WhiteTimeOut: SS << "White Timeout"; break;
-  case GameModel::BlackTimeOut: SS << "Black Timeout"; break;
-  case GameModel::GameOver:     SS << "Game Over"; break;
-  default:                      SS << "???"; break;
+  switch (GS) {
+  case GameModel::GS_WallClock:    SS << "Wall Clock"; break;
+  case GameModel::GS_FirstHalf:    SS << "First Half"; break;
+  case GameModel::GS_SecondHalf:   SS << "Second Half"; break;
+  case GameModel::GS_HalfTime:     SS << "Half Time"; break;
+  case GameModel::GS_GameOver:     SS << "Game Over"; break;
+  default:                         SS << "???"; break;
+  }
+
+  SS << "\n"
+     << "      Timeout: ";
+
+  switch (TS) {
+  case GameModel::TS_None:         SS << "None"; break;
+  case GameModel::TS_RefTimeout:   SS << "Ref Timeout"; break;
+  case GameModel::TS_BlackTimeout: SS << "Black Timeout"; break;
+  case GameModel::TS_WhiteTimeout: SS << "White Timeout"; break;
+  default:                         SS << "???"; break;
   }
 
   SS << "\n"
      << "         Kind: ";
 
-  switch (State) {
-  case GameModel::Master:       SS << "Master"; break;
-  case GameModel::ActiveSlave:  SS << "Active Slave"; break;
-  case GameModel::PassiveSlave: SS << "Passive Slave"; break;
-  default:                      SS << "???"; break;
+  switch (MK) {
+  case GameModel::MK_Master:       SS << "Master"; break;
+  case GameModel::MK_ActiveSlave:  SS << "Active Slave"; break;
+  case GameModel::MK_PassiveSlave: SS << "Passive Slave"; break;
+  default:                         SS << "???"; break;
   }
 
   SS << "\n";
@@ -73,16 +82,23 @@ std::string GameModel::serialize() const {
      << "R" << (ClockRunning ? 1 : 0)
      << 'G';
 
-  switch (State) {
-  case GameModel::WallClock:    SS << 'C'; break;
-  case GameModel::FirstHalf:    SS << 'F'; break;
-  case GameModel::SecondHalf:   SS << 'S'; break;
-  case GameModel::HalfTime:     SS << 'H'; break;
-  case GameModel::RefTimeOut:   SS << 'R'; break;
-  case GameModel::WhiteTimeOut: SS << 'W'; break;
-  case GameModel::BlackTimeOut: SS << 'B'; break;
-  case GameModel::GameOver:     SS << 'O'; break;
-  default:                      SS << '?'; break;
+  switch (GS) {
+  case GameModel::GS_WallClock:    SS << 'C'; break;
+  case GameModel::GS_FirstHalf:    SS << 'F'; break;
+  case GameModel::GS_SecondHalf:   SS << 'S'; break;
+  case GameModel::GS_HalfTime:     SS << 'H'; break;
+  case GameModel::GS_GameOver:     SS << 'O'; break;
+  default:                         SS << '?'; break;
+  }
+
+  SS << "P"; // 'P' as in Pause
+
+  switch (TS) {
+  case GameModel::TS_None:         SS << 'N'; break;
+  case GameModel::TS_RefTimeout:   SS << 'R'; break;
+  case GameModel::TS_WhiteTimeout: SS << 'W'; break;
+  case GameModel::TS_BlackTimeout: SS << 'B'; break;
+  default:                         SS << '?'; break;
   }
 
 #if 0
@@ -90,11 +106,11 @@ std::string GameModel::serialize() const {
   // based on where it's being used.
   SS << 'K';
 
-  switch (State) {
-  case GameModel::Master:       SS << "M"; break;
-  case GameModel::ActiveSlave:  SS << "A"; break;
-  case GameModel::PassiveSlave: SS << "P"; break;
-  default:                      SS << "?"; break;
+  switch (MK) {
+  case GameModel::MK_Master:       SS << "M"; break;
+  case GameModel::MK_ActiveSlave:  SS << "A"; break;
+  case GameModel::MK_PassiveSlave: SS << "P"; break;
+  default:                         SS << "?"; break;
   }
 #endif
 
@@ -159,14 +175,24 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   char GS;
   SS.get(GS);
   switch (GS) {
-  case 'C': NewM.State = GameModel::WallClock; break;
-  case 'F': NewM.State = GameModel::FirstHalf; break;
-  case 'S': NewM.State = GameModel::SecondHalf; break;
-  case 'H': NewM.State = GameModel::HalfTime; break;
-  case 'R': NewM.State = GameModel::RefTimeOut; break;
-  case 'W': NewM.State = GameModel::WhiteTimeOut; break;
-  case 'B': NewM.State = GameModel::BlackTimeOut; break;
-  case 'O': NewM.State = GameModel::GameOver; break;
+  case 'C': NewM.GS = GameModel::GS_WallClock; break;
+  case 'F': NewM.GS = GameModel::GS_FirstHalf; break;
+  case 'S': NewM.GS = GameModel::GS_SecondHalf; break;
+  case 'H': NewM.GS = GameModel::GS_HalfTime; break;
+  case 'O': NewM.GS = GameModel::GS_GameOver; break;
+  default: return true;
+  }
+
+  if (check(SS, 'P'))
+    return true;
+
+  char TS;
+  SS.get(TS);
+  switch (TS) {
+  case 'N': NewM.TS = GameModel::TS_None; break;
+  case 'R': NewM.TS = GameModel::TS_RefTimeout; break;
+  case 'W': NewM.TS = GameModel::TS_WhiteTimeout; break;
+  case 'B': NewM.TS = GameModel::TS_BlackTimeout; break;
   default: return true;
   }
 
@@ -179,9 +205,9 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   char MK;
   SS.get(MK);
   switch (MK) {
-  case 'M': NewM.Kind = GameModel::Master; break;
-  case 'A': NewM.Kind = GameModel::ActiveSlave; break;
-  case 'P': NewM.Kind = GameModel::PassiveSlave; break;
+  case 'M': NewM.MK = GameModel::MK_Master; break;
+  case 'A': NewM.MK = GameModel::MK_ActiveSlave; break;
+  case 'P': NewM.MK = GameModel::MK_PassiveSlave; break;
   default: return true;
   }
 #endif
@@ -261,11 +287,11 @@ unsigned char GameModelManager::whiteScore() {
 int GameModelManager::gameClock() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
 
-  switch (Model.Kind) {
-  case GameModel::Master:
-  case GameModel::ActiveSlave:
+  switch (Model.MK) {
+  case GameModel::MK_Master:
+  case GameModel::MK_ActiveSlave:
     return Model.displayedTimeLeft();
-  case GameModel::PassiveSlave:
+  case GameModel::MK_PassiveSlave:
   default:
     return Model.GameClockSecs;
   }
@@ -326,118 +352,140 @@ void GameModelManager::setGameClockRunning(bool B) {
 
 GameModel::GameState GameModelManager::gameState() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.State;
+  return Model.GS;
 }
 
-
 bool GameModelManager::gameStateWallClock() {
-  return gameState() == GameModel::WallClock;
+  return gameState() == GameModel::GS_WallClock;
 }
 
 bool GameModelManager::gameStateFirstHalf() {
-  return gameState() == GameModel::FirstHalf;
+  return gameState() == GameModel::GS_FirstHalf;
 }
 
 bool GameModelManager::gameStateSecondHalf() {
-  return gameState() == GameModel::SecondHalf;
+  return gameState() == GameModel::GS_SecondHalf;
 }
 
 bool GameModelManager::gameStateHalfTime() {
-  return gameState() == GameModel::HalfTime;
-}
-
-bool GameModelManager::gameStateRefTimeOut() {
-  return gameState() == GameModel::RefTimeOut;
-}
-
-bool GameModelManager::gameStateWhiteTimeOut() {
-  return gameState() == GameModel::WhiteTimeOut;
-}
-
-bool GameModelManager::gameStateBlackTimeOut() {
-  return gameState() == GameModel::BlackTimeOut;
+  return gameState() == GameModel::GS_HalfTime;
 }
 
 bool GameModelManager::gameStateGameOver() {
-  return gameState() == GameModel::GameOver;
+  return gameState() == GameModel::GS_GameOver;
+}
+
+GameModel::TimeoutState GameModelManager::timeoutState() {
+  std::lock_guard<std::mutex> Lock(ModelMutex);
+  return Model.TS;
+}
+
+bool GameModelManager::timeoutStateNone() {
+  return timeoutState() == GameModel::TS_None;
+}
+
+bool GameModelManager::timeoutStateRef() {
+  return timeoutState() == GameModel::TS_RefTimeout;
+}
+
+bool GameModelManager::timeoutStateWhite() {
+  return timeoutState() == GameModel::TS_WhiteTimeout;
+}
+
+bool GameModelManager::timeoutStateBlack() {
+  return timeoutState() == GameModel::TS_BlackTimeout;
 }
 
 GameModel::ModelKind GameModelManager::modelKind() {
   std::lock_guard<std::mutex> Lock(ModelMutex);
-  return Model.Kind;
+  return Model.MK;
 }
 
 bool GameModelManager::modelKindMaster() {
-  return modelKind() == GameModel::Master;
+  return modelKind() == GameModel::MK_Master;
 }
 
 bool GameModelManager::modelKindPassiveSlave() {
-  return modelKind() == GameModel::PassiveSlave;
+  return modelKind() == GameModel::MK_PassiveSlave;
 }
 
 bool GameModelManager::modelKindActiveSlave() {
-  return modelKind() == GameModel::ActiveSlave;
+  return modelKind() == GameModel::MK_ActiveSlave;
 }
 
-void GameModelManager::setGameState(GameModel::GameState S) {
+void GameModelManager::setGameState(GameModel::GameState GS) {
   GameModel M;
   {
     std::lock_guard<std::mutex> Lock(ModelMutex);
-    Model.State = S;
+    Model.GS = GS;
+    M = Model;
+  }
+  modelChanged(M);
+}
+
+void GameModelManager::setTimeoutState(GameModel::TimeoutState TS) {
+  GameModel M;
+  {
+    std::lock_guard<std::mutex> Lock(ModelMutex);
+    Model.TS = TS;
     M = Model;
   }
   modelChanged(M);
 }
 
 void GameModelManager::setGameStateWallClock() {
-  setGameState(GameModel::WallClock);
+  setGameState(GameModel::GS_WallClock);
 }
 
 void GameModelManager::setGameStateFirstHalf() {
-  setGameState(GameModel::FirstHalf);
+  setGameState(GameModel::GS_FirstHalf);
 }
 
 void GameModelManager::setGameStateSecondHalf() {
-  setGameState(GameModel::SecondHalf);
+  setGameState(GameModel::GS_SecondHalf);
 }
 
 void GameModelManager::setGameStateHalfTime() {
-  setGameState(GameModel::HalfTime);
-}
-
-void GameModelManager::setGameStateRefTimeOut() {
-  setGameState(GameModel::RefTimeOut);
-}
-
-void GameModelManager::setGameStateWhiteTimeOut() {
-  setGameState(GameModel::WhiteTimeOut);
-}
-
-void GameModelManager::setGameStateBlackTimeOut() {
-  setGameState(GameModel::BlackTimeOut);
+  setGameState(GameModel::GS_HalfTime);
 }
 
 void GameModelManager::setGameStateGameOver() {
-  setGameState(GameModel::GameOver);
+  setGameState(GameModel::GS_GameOver);
+}
+
+void GameModelManager::setTimeoutStateNone() {
+  setTimeoutState(GameModel::TS_None);
+}
+
+void GameModelManager::setTimeoutStateRef() {
+  setTimeoutState(GameModel::TS_RefTimeout);
+}
+
+void GameModelManager::setTimeoutStateWhite() {
+  setTimeoutState(GameModel::TS_WhiteTimeout);
+}
+
+void GameModelManager::setTimeoutStateBlack() {
+  setTimeoutState(GameModel::TS_BlackTimeout);
 }
 
 void GameModelManager::setModelKindMaster() {
-  setModelKind(GameModel::Master);
+  setModelKind(GameModel::MK_Master);
 }
 
 void GameModelManager::setModelKindPassiveSlave() {
-  setModelKind(GameModel::PassiveSlave);
+  setModelKind(GameModel::MK_PassiveSlave);
 }
 
 void GameModelManager::setModelKindActiveSlave() {
-  setModelKind(GameModel::ActiveSlave);
+  setModelKind(GameModel::MK_ActiveSlave);
 }
 
-void GameModelManager::setModelKind(GameModel::ModelKind K) {
+void GameModelManager::setModelKind(GameModel::ModelKind MK) {
   GameModel M;
   {
     std::lock_guard<std::mutex> Lock(ModelMutex);
-    Model.Kind = K;
+    Model.MK = MK;
     M = Model;
   }
   modelChanged(M);

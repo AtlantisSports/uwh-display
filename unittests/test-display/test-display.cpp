@@ -11,7 +11,8 @@ TEST(CanvasTest, PPMOutput) {
   UWHDCanvas *C = UWHDCanvas::create(32 * 3, 32);
 
   GameModel M;
-  M.State = GameModel::FirstHalf;
+  M.GS = GameModel::GS_FirstHalf;
+  M.TS = GameModel::TS_None;
   M.BlackScore = 1;
   M.WhiteScore = 3;
 

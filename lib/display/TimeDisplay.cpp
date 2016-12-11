@@ -20,9 +20,9 @@ const UWHDPixel UWHDColonColor   = UWHDPixel(  0, 255,   0);
 const UWHDPixel UWHDBackground   = UWHDPixel(  0,   0,   0);
 const UWHDPixel UWHDLogoColor1   = UWHDPixel(160,   0, 255);
 const UWHDPixel UWHDLogoColor2   = UWHDPixel( 80,   0, 255);
-const UWHDPixel UWHDWhiteTimeOutColor = UWHDPixel(255, 255, 255);
-const UWHDPixel UWHDBlackTimeOutColor = UWHDPixel(  0,   0, 255);
-const UWHDPixel UWHDTimeOutColor      = UWHDPixel(255, 255,   0);
+const UWHDPixel UWHDWhiteTimeoutColor = UWHDPixel(255, 255, 255);
+const UWHDPixel UWHDBlackTimeoutColor = UWHDPixel(  0,   0, 255);
+const UWHDPixel UWHDTimeoutColor      = UWHDPixel(255, 255,   0);
 const UWHDPixel UWHDHalfTimeColor     = UWHDPixel(255, 160,   0);
 const UWHDPixel UWHDGameOverColor     = UWHDPixel(255,   0,   0);
 
@@ -300,7 +300,7 @@ void renderHalfTime(unsigned Now, bool Toggle, UWHDCanvas *C) {
     for (int y = 0; y < 32; y++)
       for (int x = 0; x < 32; x++)
         if (HalfTime[x + y * 32])
-          C->at(xoffs + x, y) = UWHDTimeOutColor;
+          C->at(xoffs + x, y) = UWHDTimeoutColor;
   }
 }
 
@@ -312,73 +312,73 @@ void renderGameOver(unsigned Now, bool Toggle, UWHDCanvas *C) {
     for (int y = 0; y < 32; y++)
       for (int x = 0; x < 32; x++)
         if (GameOver[x + y * 32])
-          C->at(xoffs + x, y) = UWHDTimeOutColor;
+          C->at(xoffs + x, y) = UWHDTimeoutColor;
   }
 }
 
-void renderTimeOutRing(UWHDCanvas *C) {
+void renderTimeoutRing(UWHDCanvas *C) {
   unsigned xoffs = 32;
 
   // Draw a ring around the center display for emphasis that this is a time out:
   for (int x = 0; x < 32; x++) {
-    C->at(xoffs + x, 0) = UWHDTimeOutColor;
-    C->at(xoffs + x, 31) = UWHDTimeOutColor;
+    C->at(xoffs + x, 0) = UWHDTimeoutColor;
+    C->at(xoffs + x, 31) = UWHDTimeoutColor;
   }
   for (int y = 1; y < 31; ++y) {
-    C->at(xoffs,      y) = UWHDTimeOutColor;
-    C->at(xoffs  +31, y) = UWHDTimeOutColor;
+    C->at(xoffs,      y) = UWHDTimeoutColor;
+    C->at(xoffs  +31, y) = UWHDTimeoutColor;
   }
 }
 
-void renderRefTimeOut(unsigned Now, bool Toggle, UWHDCanvas *C) {
+void renderRefTimeout(unsigned Now, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
+    renderCondensedTime(C, 1, Now, UWHDTimeoutColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
         if (Ref[x + y * 32])
-          C->at(xoffs + x, 2 + y) = UWHDTimeOutColor;
+          C->at(xoffs + x, 2 + y) = UWHDTimeoutColor;
 
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
         if (Timeout[x + y * 32])
-          C->at(xoffs + x, 20 + y) = UWHDTimeOutColor;
+          C->at(xoffs + x, 20 + y) = UWHDTimeoutColor;
   }
-  renderTimeOutRing(C);
+  renderTimeoutRing(C);
 }
 
-void renderBlackTimeOut(unsigned Now, bool Toggle, UWHDCanvas *C) {
+void renderBlackTimeout(unsigned Now, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
+    renderCondensedTime(C, 1, Now, UWHDTimeoutColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
         if (Black[x + y * 32])
-          C->at(xoffs + x, 3 + y) = UWHDBlackTimeOutColor;
+          C->at(xoffs + x, 3 + y) = UWHDBlackTimeoutColor;
 
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
         if (Black[x + y * 32])
-          C->at(xoffs + x, 19 + y) = UWHDBlackTimeOutColor;
+          C->at(xoffs + x, 19 + y) = UWHDBlackTimeoutColor;
   }
 }
 
-void renderWhiteTimeOut(unsigned Now, bool Toggle, UWHDCanvas *C) {
+void renderWhiteTimeout(unsigned Now, bool Toggle, UWHDCanvas *C) {
   unsigned xoffs = 32;
   if (Toggle) {
-    renderCondensedTime(C, 1, Now, UWHDTimeOutColor, &UWHDBackground);
+    renderCondensedTime(C, 1, Now, UWHDTimeoutColor, &UWHDBackground);
   } else {
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
         if (White[x + y * 32])
-          C->at(xoffs + x, 3 + y) = UWHDWhiteTimeOutColor;
+          C->at(xoffs + x, 3 + y) = UWHDWhiteTimeoutColor;
 
     for (int y = 0; y < 10; y++)
       for (int x = 0; x < 32; x++)
         if (White[x + y * 32])
-          C->at(xoffs + x, 19 + y) = UWHDWhiteTimeOutColor;
+          C->at(xoffs + x, 19 + y) = UWHDWhiteTimeoutColor;
   }
 }
 
@@ -395,27 +395,33 @@ void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
   // as the game clock might be paused.
   bool Toggle = time(nullptr) % 4;
 
-  switch (M.State) {
-  case GameModel::WallClock:
+  switch (M.GS) {
+  case GameModel::GS_WallClock:
     renderWallClock(C);
     break;
-  case GameModel::HalfTime:
+  case GameModel::GS_HalfTime:
     renderHalfTime(Now, Toggle, C);
     break;
-  case GameModel::GameOver:
+  case GameModel::GS_GameOver:
     renderGameOver(Now, Toggle, C);
     break;
-  case GameModel::RefTimeOut:
-    renderRefTimeOut(Now, Toggle, C);
+  case GameModel::GS_FirstHalf:
+  case GameModel::GS_SecondHalf:
     break;
-  case GameModel::WhiteTimeOut:
-    renderWhiteTimeOut(Now, Toggle, C);
-    break;
-  case GameModel::BlackTimeOut:
-    renderBlackTimeOut(Now, Toggle, C);
-    break;
-  default:
+  }
+
+  switch (M.TS) {
+  case GameModel::TS_None:
     renderCondensedTime(C, 1, Now, UWHDSecondsColor, &UWHDBackground);
+    break;
+  case GameModel::TS_RefTimeout:
+    renderRefTimeout(Now, Toggle, C);
+    break;
+  case GameModel::TS_WhiteTimeout:
+    renderWhiteTimeout(Now, Toggle, C);
+    break;
+  case GameModel::TS_BlackTimeout:
+    renderBlackTimeout(Now, Toggle, C);
     break;
   }
 }
