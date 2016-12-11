@@ -62,8 +62,8 @@ bool Console::ParseLine(std::string I) {
     goto Success;
   }
 
-  case 'P':
-  case 'p': {
+  case 'C':
+  case 'c': {
     bool Running = M.gameClockRunning();
     M.setGameClockRunning(!Running);
     goto Success;
@@ -75,15 +75,21 @@ bool Console::ParseLine(std::string I) {
               << "  B[0-9]+     - Set the Black Score\n"
               << "  W[0-9]+     - Set the White Score\n"
               << "  T[0-9]+     - Set the Game Clock\n"
+              << "  C           - Start/Stop the Game Clock\n"
               << "  G[CFSHRWBO] - Set the Game State\n"
-              << "    GC        - Wall Clock\n"
-              << "    GF        - First Half\n"
-              << "    GS        - Second Half\n"
-              << "    GH        - Half Time\n"
-              << "    GR        - Ref Time Out\n"
-              << "    GW        - White Time Out\n"
-              << "    GB        - Black Time Out\n"
-              << "    GO        - Game Over\n"
+              << "    GC          - Wall Clock\n"
+              << "    GF          - First Half\n"
+              << "    GS          - Second Half\n"
+              << "    GH          - Half Time\n"
+              << "    GR          - Ref Time Out\n"
+              << "    GW          - White Time Out\n"
+              << "    GB          - Black Time Out\n"
+              << "    GO          - Game Over\n"
+              << "  P[NRWB]     - Set the Timeout State\n"
+              << "    PN          - No Timeout\n"
+              << "    PR          - Ref Timeout\n"
+              << "    PW          - White Timeout\n"
+              << "    PB          - Black Timeout\n"
               << "  H           - This menu\n"
               << "  Q           - Quit\n";
     goto Success;
@@ -95,14 +101,26 @@ bool Console::ParseLine(std::string I) {
       goto ParseError;
 
     switch (toupper(I[1])) {
-    case 'C': M.setGameState(GameModel::WallClock); goto Success;
-    case 'F': M.setGameState(GameModel::FirstHalf); goto Success;
-    case 'S': M.setGameState(GameModel::SecondHalf); goto Success;
-    case 'H': M.setGameState(GameModel::HalfTime); goto Success;
-    case 'R': M.setGameState(GameModel::RefTimeOut); goto Success;
-    case 'B': M.setGameState(GameModel::BlackTimeOut); goto Success;
-    case 'W': M.setGameState(GameModel::WhiteTimeOut); goto Success;
-    case 'O': M.setGameState(GameModel::GameOver); goto Success;
+    case 'C': M.setGameState(GameModel::GS_WallClock); goto Success;
+    case 'F': M.setGameState(GameModel::GS_FirstHalf); goto Success;
+    case 'S': M.setGameState(GameModel::GS_SecondHalf); goto Success;
+    case 'H': M.setGameState(GameModel::GS_HalfTime); goto Success;
+    case 'O': M.setGameState(GameModel::GS_GameOver); goto Success;
+    default:
+      goto ParseError;
+    }
+  }
+
+  case 'P':
+  case 'p': {
+    if (I.size() != 2)
+      goto ParseError;
+
+    switch (toupper(I[1])) {
+    case 'N': M.setTimeoutState(GameModel::TS_None); goto Success;
+    case 'R': M.setTimeoutState(GameModel::TS_RefTimeout); goto Success;
+    case 'W': M.setTimeoutState(GameModel::TS_WhiteTimeout); goto Success;
+    case 'B': M.setTimeoutState(GameModel::TS_BlackTimeout); goto Success;
     default:
       goto ParseError;
     }

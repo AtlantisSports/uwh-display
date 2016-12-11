@@ -22,8 +22,9 @@ public:
     : BlackScore(0)
     , WhiteScore(0)
     , GameClockSecs(0)
-    , State(GameModel::WallClock)
-    , Kind(GameModel::Master) {}
+    , GS(GameModel::GS_WallClock)
+    , TS(GameModel::TS_None)
+    , MK(GameModel::MK_Master) {}
   unsigned char BlackScore;
   unsigned char WhiteScore;
   int GameClockSecs;         // Amount of time left in the game when wall clock == PrevStartTime
@@ -31,23 +32,28 @@ public:
   bool ClockRunning;
 
   enum GameState {
-    WallClock,
-    FirstHalf,
-    SecondHalf,
-    HalfTime,
-    RefTimeOut,
-    WhiteTimeOut,
-    BlackTimeOut,
-    GameOver,
+    GS_WallClock,
+    GS_FirstHalf,
+    GS_SecondHalf,
+    GS_HalfTime,
+    GS_GameOver,
   };
-  GameState State;
+  GameState GS;
+
+  enum TimeoutState {
+    TS_None,
+    TS_RefTimeout,
+    TS_WhiteTimeout,
+    TS_BlackTimeout
+  };
+  TimeoutState TS;
 
   enum ModelKind {
-    Master,
-    PassiveSlave,
-    ActiveSlave,
+    MK_Master,
+    MK_PassiveSlave,
+    MK_ActiveSlave,
   };
-  ModelKind Kind;
+  ModelKind MK;
 
   std::string dump() const;
   std::string serialize() const;
@@ -80,15 +86,19 @@ public:
   unsigned char whiteScore();
   int gameClock();
   bool gameClockRunning();
+
   GameModel::GameState gameState();
   bool gameStateWallClock();
   bool gameStateFirstHalf();
   bool gameStateSecondHalf();
   bool gameStateHalfTime();
-  bool gameStateRefTimeOut();
-  bool gameStateWhiteTimeOut();
-  bool gameStateBlackTimeOut();
   bool gameStateGameOver();
+
+  GameModel::TimeoutState timeoutState();
+  bool timeoutStateNone();
+  bool timeoutStateRef();
+  bool timeoutStateBlack();
+  bool timeoutStateWhite();
 
   GameModel::ModelKind modelKind();
   bool modelKindMaster();
@@ -100,15 +110,18 @@ public:
   void setGameClock(int T);
   void setGameClockRunning(bool B);
 
-  void setGameState(GameModel::GameState S);
+  void setGameState(GameModel::GameState GS);
   void setGameStateWallClock();
   void setGameStateFirstHalf();
   void setGameStateSecondHalf();
   void setGameStateHalfTime();
-  void setGameStateRefTimeOut();
-  void setGameStateBlackTimeOut();
-  void setGameStateWhiteTimeOut();
   void setGameStateGameOver();
+
+  void setTimeoutState(GameModel::TimeoutState TS);
+  void setTimeoutStateNone();
+  void setTimeoutStateRef();
+  void setTimeoutStateBlack();
+  void setTimeoutStateWhite();
 
   void setModelKind(GameModel::ModelKind K);
   void setModelKindMaster();

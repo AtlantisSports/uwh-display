@@ -57,7 +57,7 @@ void renderGameDisplay(unsigned Version, GameModel M, UWHDCanvas *C) {
   case 1:
     renderTimeDisplay(M, C);
 
-    if (M.State != GameModel::WallClock) {
+    if (M.GS != GameModel::GS_WallClock) {
       renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
       renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
     }

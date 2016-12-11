@@ -20,7 +20,7 @@ static void CheckRoundTripSerialize(unsigned B, unsigned W, unsigned T,
   Src.WhiteScore = W;
   Src.GameClockSecs = T;
   Src.ClockRunning = ClockRunning;
-  Src.State = S;
+  Src.GS = S;
 
   std::string Ser = Src.serialize();
   GameModel Dst;
@@ -38,28 +38,25 @@ static void CheckRoundTripSerialize(unsigned B, unsigned W, unsigned T,
 }
 
 TEST(TestGameModel, SerializeGameState) {
-  CheckRoundTripSerialize(42, 37, 104, false, GameModel::WallClock);
-  CheckRoundTripSerialize(42, 37, 104, false, GameModel::FirstHalf);
-  CheckRoundTripSerialize(42, 37, 104, false, GameModel::HalfTime);
-  CheckRoundTripSerialize(42, 37, 104, false, GameModel::RefTimeOut);
-  CheckRoundTripSerialize(42, 37, 104, false, GameModel::WhiteTimeOut);
-  CheckRoundTripSerialize(42, 37, 104, false, GameModel::BlackTimeOut);
-  CheckRoundTripSerialize(42, 37, 104, false, GameModel::GameOver);
+  CheckRoundTripSerialize(42, 37, 104, false, GameModel::GS_WallClock);
+  CheckRoundTripSerialize(42, 37, 104, false, GameModel::GS_FirstHalf);
+  CheckRoundTripSerialize(42, 37, 104, false, GameModel::GS_HalfTime);
+  CheckRoundTripSerialize(42, 37, 104, false, GameModel::GS_GameOver);
 }
 
 TEST(TestGameModel, SerializeScore) {
   for (unsigned B = 0; B < 10; B++)
     for (unsigned W = 0; W < 10; W++)
       for (unsigned T = 0; T < 10; T++) {
-        CheckRoundTripSerialize(B, W, T, false, GameModel::WallClock);
-        CheckRoundTripSerialize(B, W, T, true,  GameModel::WallClock);
+        CheckRoundTripSerialize(B, W, T, false, GameModel::GS_WallClock);
+        CheckRoundTripSerialize(B, W, T, true,  GameModel::GS_WallClock);
       }
 }
 
 TEST(TestGameModel, SerializeEdgeCases) {
-  CheckRoundTripSerialize(99, 99, 9999, true, GameModel::WallClock);
-  CheckRoundTripSerialize(99, 99, 999999, false, GameModel::WallClock);
-  CheckRoundTripSerialize(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, true, GameModel::WallClock);
+  CheckRoundTripSerialize(99, 99, 9999, true, GameModel::GS_WallClock);
+  CheckRoundTripSerialize(99, 99, 999999, false, GameModel::GS_WallClock);
+  CheckRoundTripSerialize(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, true, GameModel::GS_WallClock);
 }
 
 static void CheckNotEquals(GameModel M1, GameModel M2) {
@@ -78,9 +75,10 @@ static void CheckNotEquals(GameModel M1, GameModel M2) {
   EXPECT_FALSE(M1.BlackScore == M2.BlackScore &&
                M1.WhiteScore == M2.WhiteScore &&
                M1.ClockRunning == M2.ClockRunning &&
-               ((M1.ClockRunning && M1.Kind != GameModel::PassiveSlave) ||
+               ((M1.ClockRunning && M1.MK != GameModel::MK_PassiveSlave) ||
                 M1.GameClockSecs == M2.GameClockSecs) &&
-               M1.State == M2.State)
+               M1.GS == M2.GS &&
+               M1.TS == M2.TS)
     << M1.serialize()
     << " == "
     << M2.serialize()
@@ -103,9 +101,10 @@ static void CheckEquals(GameModel M1, GameModel M2) {
   EXPECT_FALSE(M1.BlackScore != M2.BlackScore ||
                M1.WhiteScore != M2.WhiteScore ||
                M1.ClockRunning != M2.ClockRunning ||
-               ((!M1.ClockRunning && M1.Kind == GameModel::PassiveSlave) &&
+               ((!M1.ClockRunning && M1.MK == GameModel::MK_PassiveSlave) &&
                 M1.GameClockSecs != M2.GameClockSecs) ||
-               M1.State != M2.State)
+               M1.GS != M2.GS ||
+               M1.TS != M2.TS)
     << M1.serialize()
     << " != "
     << M2.serialize()
@@ -118,8 +117,8 @@ TEST(TestGameModel, Equality) {
   M1.WhiteScore = 2;
   M1.GameClockSecs = 15;
   M1.ClockRunning = true;
-  M1.State = GameModel::WallClock;
-  M1.Kind = GameModel::PassiveSlave;
+  M1.GS = GameModel::GS_WallClock;
+  M1.MK = GameModel::MK_PassiveSlave;
 
   GameModel M2 = M1;
   CheckEquals(M1, M2);
@@ -166,7 +165,7 @@ TEST(TestGameModel, Equality) {
   CheckNotEquals(M2, M1);
 
   M2 = M1;
-  M2.State = GameModel::SecondHalf;
+  M2.GS = GameModel::GS_SecondHalf;
   CheckNotEquals(M1, M2);
   CheckNotEquals(M2, M1);
 }
