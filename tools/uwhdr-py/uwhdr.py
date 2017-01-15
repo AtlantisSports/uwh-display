@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 import sys
@@ -9,10 +9,10 @@ try:
 except ImportError as e:
   NO_PIGPIO = True
 import os
-import ConfigParser
+import configparser
 from refbox.ui import NormalView
 
-config = ConfigParser.RawConfigParser()
+config = configparser.RawConfigParser()
 config.read('/home/pi/workdir/uwh-display/tools/uwhdr-py/game.cfg')
 HALF_PLAY_DURATION = config.getint('game', 'half_play_duration')
 HALF_TIME_DURATION = config.getint('game', 'half_time_duration')
@@ -58,15 +58,16 @@ class NOIOManager(object):
     pass
 
 def main():
-  print "Starting gpio..."
+  print("Starting gpio...")
   iomgr = NOIOManager() if NO_PIGPIO else IOManager()
 
-  print "Turning on wet displays"
+  print("Turning on wet displays")
   iomgr.turnOnWetDisplays()
 
-  print "Starting xbee comms..."
+  print("Starting xbee comms...")
   mgr = uwhd.GameModelManager()
   if not NO_PIGPIO:
+    print("starting xbee")
     xbee = uwhd.CreateXBeeSyncServer()
     xbee.Init()
     xbee.setMgr(mgr)
