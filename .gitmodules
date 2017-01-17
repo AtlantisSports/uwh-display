@@ -4,3 +4,4 @@
 [submodule "deps/uwh-refbox"]
 	path = deps/uwh-refbox
 	url = https://github.com/Navisjon/uwh-refbox
+	branch = master
