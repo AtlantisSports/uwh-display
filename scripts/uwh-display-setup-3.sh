@@ -62,13 +62,8 @@ cd ~/workdir
 git clone https://github.com/attie/libxbee3.git
 cd libxbee3 && make configure && make all && sudo make install && cd -
 
-git clone git@github.com:jroelofs/uwh-display.git
+git clone --recursive git@github.com:jroelofs/uwh-display.git
 cd uwh-display
-cd matrix
-git submodule init .
-git submodule update
-cd ../
 mkdir build
 cd build
-cmake ../ && make all
-
+cmake ../ && make -j
