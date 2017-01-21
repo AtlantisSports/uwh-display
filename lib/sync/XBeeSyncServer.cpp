@@ -243,6 +243,7 @@ ModelSyncServer *CreateXBeeSyncServer() {
 #ifdef UWHD_HAVE_LIBXBEE3
   return new XBeeSyncServer();
 #else
+  printf("warning: CreateXBeeSyncServer configured without UWHD_HAVE_LIBXBEE3\n");
   return nullptr;
 #endif
 }
@@ -251,6 +252,7 @@ ModelSync *CreateXBeeSyncClient() {
 #ifdef UWHD_HAVE_LIBXBEE3
   return new XBeeSyncClient();
 #else
+  printf("warning: CreateXBeeSyncClient configured without UWHD_HAVE_LIBXBEE3\n");
   return nullptr;
 #endif
 }
