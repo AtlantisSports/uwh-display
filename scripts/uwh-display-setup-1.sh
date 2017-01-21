@@ -7,7 +7,7 @@ fi
 
 this_script=`basename "$0"`
 
-apt-get install git cmake vim swig i2c-tools libi2c-dev ntpdate --assume-yes
+apt-get install git cmake vim swig i2c-tools libi2c-dev ntpdate minicom --assume-yes
 
 # Initial setup of i2c for the Chronodot
 cat << EOF >> /boot/config.txt
