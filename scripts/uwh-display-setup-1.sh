@@ -9,7 +9,7 @@ this_script=`basename "$0"`
 
 apt-get install git cmake vim swig i2c-tools libi2c-dev ntpdate minicom --assume-yes
 
-# Initial setup of i2c for the Chronodot
+# Initial setup of i2c for the Chronodot, remapping of the UART on Pi3
 cat << EOF >> /boot/config.txt
 #######################################
 # Automatically added by $this_script
@@ -22,8 +22,11 @@ hdmi_mode=1
 hdmi_mode=87
 hdmi_cvt=800 480 60 6 0 0 0
 max_usb_current=1
+dtoverlay=pi3-disable-bt
 #######################################
 EOF
+
+systemctl disable hciuart
 
 # More i2c setup for the Chronodot
 cat << EOF >> /etc/modules
