@@ -410,18 +410,20 @@ void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
     break;
   }
 
-  switch (M.TS) {
-  case GameModel::TS_None:
-    renderCondensedTime(C, 1, Now, UWHDSecondsColor, &UWHDBackground);
-    break;
-  case GameModel::TS_RefTimeout:
-    renderRefTimeout(Now, Toggle, C);
-    break;
-  case GameModel::TS_WhiteTimeout:
-    renderWhiteTimeout(Now, Toggle, C);
-    break;
-  case GameModel::TS_BlackTimeout:
-    renderBlackTimeout(Now, Toggle, C);
-    break;
+  if (M.GS != GameModel::GS_WallClock) {
+    switch (M.TS) {
+    case GameModel::TS_None:
+      renderCondensedTime(C, 1, Now, UWHDSecondsColor, &UWHDBackground);
+      break;
+    case GameModel::TS_RefTimeout:
+      renderRefTimeout(Now, Toggle, C);
+      break;
+    case GameModel::TS_WhiteTimeout:
+      renderWhiteTimeout(Now, Toggle, C);
+      break;
+    case GameModel::TS_BlackTimeout:
+      renderBlackTimeout(Now, Toggle, C);
+      break;
+    }
   }
 }
