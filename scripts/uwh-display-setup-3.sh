@@ -9,6 +9,7 @@ this_script=`basename "$0"`
 
 mkdir -p ~/.ssh/
 
+echo "Set up the github deploy key"
 cat << EOF > /home/pi/.ssh/uwhd_github_deploy
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEArDxTUThfr1Xb7KuFpZSp9fRka7XGD2IkvE0A1VP+d3uE/B+4
@@ -59,9 +60,11 @@ chmod 0600 ~/.ssh/config
 mkdir -p ~/workdir
 cd ~/workdir
 
+echo "Build libxbee"
 git clone https://github.com/attie/libxbee3.git
 cd libxbee3 && make configure && make all && sudo make install && cd -
 
+echo "Build uwh-display"
 git clone --recursive git@github.com:jroelofs/uwh-display.git
 cd uwh-display
 mkdir build

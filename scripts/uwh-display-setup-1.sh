@@ -11,7 +11,7 @@ apt-get update
 
 apt-get install git cmake vim swig i2c-tools libi2c-dev ntpdate minicom python3.4-dev --assume-yes
 
-# Initial setup of i2c for the Chronodot, remapping of the UART on Pi3
+echo "Initial setup of i2c for the Chronodot, remapping of the UART on Pi3"
 cat << EOF >> /boot/config.txt
 #######################################
 # Automatically added by $this_script
@@ -28,9 +28,10 @@ dtoverlay=pi3-disable-bt
 #######################################
 EOF
 
+echo "Disable the bluetooth service"
 systemctl disable hciuart
 
-# More i2c setup for the Chronodot
+echo "More i2c setup for the Chronodot"
 cat << EOF >> /etc/modules
 #######################################
 # Automatically added by $this_script
@@ -42,7 +43,9 @@ rtc-ds1307
 #######################################
 EOF
 
-# Default to the US keyboard layout
+echo "Default to the US keyboard layout"
 sed -i 's/XKBLAYOUT="gb"/XKBLAYOUT="us"/g' /etc/default/keyboard
 
+echo "Restart in 3s"
+sleep 3
 reboot
