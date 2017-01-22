@@ -1,4 +1,4 @@
-# RUN: python %s | display-check -
+# RUN: python3 %s | display-check -
 
 import uwhd
 
