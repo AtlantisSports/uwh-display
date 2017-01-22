@@ -491,7 +491,9 @@ void GameModelManager::setModelKind(GameModel::ModelKind MK) {
   modelChanged(M);
 }
 
-void GameModelManager::heartbeat() { }
+void GameModelManager::heartbeat() {
+  modelChanged(Model);
+}
 
 void GameModelManager::modelChanged(GameModel M) {
   for (auto *L : Listeners)
