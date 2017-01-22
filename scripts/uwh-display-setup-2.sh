@@ -7,7 +7,7 @@ fi
 
 this_script=`basename "$0"`
 
-# Set up the Chronodot
+echo "Set up the Chronodot"
 modprobe rtc-ds1307
 echo ds3231 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
 hwclock -s
@@ -19,7 +19,7 @@ ln -sf /usr/share/zoneinfo/America/Denver /etc/localtime
 ntpdate 0.pool.ntp.org
 hwclock -w
 
-# Update the system clock on boot
+echo "Update the system clock on boot"
 sed -i 's/^exit 0//g' /etc/rc.local
 cat << EOF >> /etc/rc.local
 #######################################
@@ -38,6 +38,7 @@ echo ds3231 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
 exit 0
 EOF
 
+echo "Blacklist the sound drivers"
 cat << EOF >> /etc/modprobe.d/raspi-blacklist.conf
 #######################################
 # Automatically added by $this_script
@@ -53,4 +54,7 @@ blacklist pcspkr
 #######################################
 EOF
 update-initramfs -u
+
+echo "Reboot in 3s"
+sleep 3
 reboot
