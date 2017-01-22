@@ -15,7 +15,7 @@
 
 class GameModel;
 
-void renderTimeDisplay(GameModel M, UWHDCanvas *C);
+void renderTimeDisplay(unsigned Version, GameModel M, UWHDCanvas *C);
 
 #endif
 

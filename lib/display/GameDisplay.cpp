@@ -50,19 +50,45 @@ void renderScore(unsigned Display, unsigned Score,
     renderDoubleDigitScore(32 * Display +  0, 1, Score, FG, BG, C);
 }
 
+static void renderGameDisplayV1(GameModel M, UWHDCanvas *C) {
+  renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
+  renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
+}
+
+static void renderGameDisplayV2(GameModel M, UWHDCanvas *C) {
+  BigNumber::Render(C, 0, M.BlackScore, 2, 1,
+                    BigNumber::Font::Digit15x29,
+                    UWHDBlackTeamFG, &UWHDWhiteTeamBG);
+
+  BigNumber::Render(C, 2, M.WhiteScore, 15, 1,
+                    BigNumber::Font::Digit15x29,
+                    UWHDWhiteTeamFG, &UWHDWhiteTeamBG);
+}
+
 void renderGameDisplay(unsigned Version, GameModel M, UWHDCanvas *C) {
   C->fill(UWHDBackground);
 
   switch (Version) {
-  case 1:
-    renderTimeDisplay(M, C);
-
-    if (M.GS != GameModel::GS_WallClock) {
-      renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
-      renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
-    }
+  case 2:
+    // Fall back on the v1 display if scores would be too wide to fit:
+    if (10 <= M.BlackScore || 10 <= M.WhiteScore)
+      Version = 1;
     break;
   default:
     break;
+  }
+
+  renderTimeDisplay(Version, M, C);
+
+  if (M.GS != GameModel::GS_WallClock) {
+    switch (Version) {
+    case 1:
+      renderGameDisplayV1(M, C);
+      break;
+    case 2:
+      renderGameDisplayV2(M, C);
+    default:
+      break;
+    }
   }
 }
