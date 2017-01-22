@@ -395,19 +395,23 @@ void renderTimeDisplay(GameModel M, UWHDCanvas *C) {
   // as the game clock might be paused.
   bool Toggle = time(nullptr) % 4;
 
-  switch (M.GS) {
-  case GameModel::GS_WallClock:
-    renderWallClock(C);
-    break;
-  case GameModel::GS_HalfTime:
-    renderHalfTime(Now, Toggle, C);
-    break;
-  case GameModel::GS_GameOver:
-    renderGameOver(Now, Toggle, C);
-    break;
-  case GameModel::GS_FirstHalf:
-  case GameModel::GS_SecondHalf:
-    break;
+  if (M.TS != GameModel::TS_RefTimeout &&
+      M.TS != GameModel::TS_WhiteTimeout &&
+      M.TS != GameModel::TS_BlackTimeout) {
+    switch (M.GS) {
+    case GameModel::GS_WallClock:
+      renderWallClock(C);
+      break;
+    case GameModel::GS_HalfTime:
+      renderHalfTime(Now, Toggle, C);
+      break;
+    case GameModel::GS_GameOver:
+      renderGameOver(Now, Toggle, C);
+      break;
+    case GameModel::GS_FirstHalf:
+    case GameModel::GS_SecondHalf:
+      break;
+    }
   }
 
   if (M.GS != GameModel::GS_WallClock) {
