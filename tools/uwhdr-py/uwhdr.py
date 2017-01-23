@@ -44,39 +44,26 @@ class IOManager(object):
   def setSound(self, setting):
     self.io.write(26, setting)
 
-class NOIOManager(object):
-  def __init__(self):
-    pass
-
-  def turnOnWetDisplays(self):
-    pass
-
-  def readClicker(self):
-    return False
-
-  def setSound(self, setting):
-    pass
-
 def main():
-  print("Starting gpio...")
-  iomgr = NOIOManager() if NO_PIGPIO else IOManager()
-
-  print("Turning on wet displays")
-  iomgr.turnOnWetDisplays()
+  print("Starting GameModelManager")
+  mgr = uwhd.GameModelManager()
 
   print("Starting xbee comms...")
-  mgr = uwhd.GameModelManager()
-  if not NO_PIGPIO:
-    print("starting xbee")
-    xbee = uwhd.CreateXBeeSyncServer()
-    xbee.Init()
-    xbee.setMgr(mgr)
+  xbee = uwhd.CreateXBeeSyncServer()
+  xbee.Init()
+  xbee.setMgr(mgr)
 
   mgr.setGameStateFirstHalf()
   mgr.setGameClockRunning(0)
   mgr.setBlackScore(0)
   mgr.setWhiteScore(0)
   mgr.setGameClock(HALF_PLAY_DURATION)
+
+  print("Starting gpio...")
+  iomgr = IOManager()
+
+  print("Turning on wet displays")
+  iomgr.turnOnWetDisplays()
 
   nv = NormalView(mgr, iomgr, NO_TITLE_BAR)
   nv.root.mainloop()
