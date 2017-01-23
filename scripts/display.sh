@@ -13,7 +13,7 @@ cat << EOF >> /etc/rc.local
 # Automatically added by $this_script
 #
 # Start the uwhdd daemon:
-/home/pi/workdir/uwhd-display/build/bin/uwhdd --daemon
+/home/pi/workdir/uwh-display/build/bin/uwhdd --daemon
 #######################################
 
 exit 0
