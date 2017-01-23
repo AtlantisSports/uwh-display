@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
     UWHDCanvas *Canvas;
 
     virtual void modelChanged(GameModel M) override {
-      renderGameDisplay(1, M, Canvas);
+      renderGameDisplay(2, M, Canvas);
       Viewer->show(Canvas);
     }
   };
