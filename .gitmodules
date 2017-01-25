@@ -5,3 +5,6 @@
 	path = deps/uwh-refbox
 	url = https://github.com/Navisjon/uwh-refbox
 	branch = master
+[submodule "deps/uwh-overlay"]
+	path = deps/uwh-overlay
+	url = git@github.com:Navisjon/uwh-overlay.git
