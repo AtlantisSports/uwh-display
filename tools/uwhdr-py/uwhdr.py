@@ -65,7 +65,7 @@ def main():
   print("Turning on wet displays")
   iomgr.turnOnWetDisplays()
 
-  nv = NormalView(mgr, iomgr, NO_TITLE_BAR)
+  nv = NormalView(mgr, iomgr, NO_TITLE_BAR, cfg=config)
   nv.root.mainloop()
 
 if __name__=="__main__":
