@@ -7,6 +7,9 @@ fi
 
 this_script=`basename "$0"`
 
+echo "Turn off the screensaver"
+sed -i -e 's/^#xserver-command=X/xserver-command=X -s 0 dpms/' /etc/lightdm/lightdm.conf
+
 echo "Set up the Chronodot"
 modprobe rtc-ds1307
 echo ds3231 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
