@@ -75,7 +75,7 @@ std::string GameModel::dump() const {
 std::string GameModel::serialize() const {
   std::stringstream SS;
 
-  SS << "S"
+  SS << "["
      << "B" << int(BlackScore)
      << "W" << int(WhiteScore)
      << "T" << int(displayedTimeLeft())
@@ -114,7 +114,7 @@ std::string GameModel::serialize() const {
   }
 #endif
 
-  SS << "E";
+  SS << "]";
 
   return SS.str();
 }
@@ -130,7 +130,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   std::stringstream SS;
   SS << S;
 
-  if (check(SS, 'S'))
+  if (check(SS, '['))
     return true;
 
   if (check(SS, 'B'))
@@ -212,7 +212,7 @@ bool GameModel::deSerialize(std::string S, GameModel &Mod) {
   }
 #endif
 
-  if (check(SS, 'E'))
+  if (check(SS, ']'))
     return true;
 
   gettimeofday(&NewM.PrevStartTime, nullptr);

@@ -213,7 +213,7 @@ void XBeeSyncClient::Init() {
         Msg << C;
         Queue.pop();
 
-        if (C == 'E') {
+        if (C == ']') {
           GameModel Model;
           if (GameModel::deSerialize(Msg.str(), Model)) {
             printf("failed to deserialize [%s]\n", Msg.str().c_str());
