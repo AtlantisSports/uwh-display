@@ -170,7 +170,7 @@ void XBeeSyncServer::Init() {
 }
 
 void XBeeSyncServer::modelChanged(GameModel Model) {
-  std::string Message = Model.serialize();
+  std::string Message = Model.serialize() + "\r\n";
   write(fd, Message.c_str(), Message.size());
 }
 
@@ -210,21 +210,25 @@ void XBeeSyncClient::Init() {
 
       while (!Queue.empty()) {
         char C = Queue.front();
-        Msg << C;
         Queue.pop();
 
-        if (C == ']') {
-          GameModel Model;
-          if (GameModel::deSerialize(Msg.str(), Model)) {
-            printf("failed to deserialize [%s]\n", Msg.str().c_str());
-          } else {
-            //printf("updating model:\n");
-            receivedModel(Model);
-          }
+        if  (C == '\r') {
+         // skip
+        } else if (C == '\n') {
+          if (Msg.str() != "") {
+            GameModel Model;
+            if (GameModel::deSerialize(Msg.str(), Model)) {
+              printf("failed to deserialize '%s' %d\n", Msg.str().c_str(), Msg.str().length());
+            } else {
+              //printf("updating model:\n");
+              receivedModel(Model);
+            }
 
-          Msg.str("");
-          Msg.clear();
-        }
+            Msg.str("");
+            Msg.clear();
+          }
+        } else
+          Msg << C;
       }
 
       usleep(100);
