@@ -51,18 +51,37 @@ void renderScore(unsigned Display, unsigned Score,
 }
 
 static void renderGameDisplayV1(GameModel M, UWHDCanvas *C) {
-  renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
-  renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
+  if (M.GS == GameModel::GS_FirstHalf ||
+      M.GS == GameModel::GS_HalfTime) {
+    renderScore(0, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
+    renderScore(2, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
+  } else if (M.GS == GameModel::GS_SecondHalf ||
+             M.GS == GameModel::GS_GameOver) {
+    renderScore(0, M.WhiteScore, UWHDWhiteTeamFG, &UWHDWhiteTeamBG, C);
+    renderScore(2, M.BlackScore, UWHDBlackTeamFG, &UWHDBlackTeamBG, C);
+  }
 }
 
 static void renderGameDisplayV2(GameModel M, UWHDCanvas *C) {
-  BigNumber::Render(C, 0, M.BlackScore, 2, 1,
-                    BigNumber::Font::Digit15x29,
-                    UWHDBlackTeamFG, &UWHDWhiteTeamBG);
+  if (M.GS == GameModel::GS_FirstHalf ||
+      M.GS == GameModel::GS_HalfTime) {
+    BigNumber::Render(C, 0, M.BlackScore, 2, 1,
+                      BigNumber::Font::Digit15x29,
+                      UWHDBlackTeamFG, &UWHDWhiteTeamBG);
 
-  BigNumber::Render(C, 2, M.WhiteScore, 15, 1,
-                    BigNumber::Font::Digit15x29,
-                    UWHDWhiteTeamFG, &UWHDWhiteTeamBG);
+    BigNumber::Render(C, 2, M.WhiteScore, 15, 1,
+                      BigNumber::Font::Digit15x29,
+                      UWHDWhiteTeamFG, &UWHDWhiteTeamBG);
+  } else if (M.GS == GameModel::GS_SecondHalf ||
+             M.GS == GameModel::GS_GameOver) {
+    BigNumber::Render(C, 0, M.WhiteScore, 2, 1,
+                      BigNumber::Font::Digit15x29,
+                      UWHDWhiteTeamFG, &UWHDWhiteTeamBG);
+
+    BigNumber::Render(C, 2, M.BlackScore, 15, 1,
+                      BigNumber::Font::Digit15x29,
+                      UWHDBlackTeamFG, &UWHDWhiteTeamBG);
+  }
 }
 
 void renderGameDisplay(unsigned Version, GameModel M, UWHDCanvas *C) {
