@@ -22,6 +22,7 @@ const UWHDPixel StatusColor2 = UWHDPixel(255, 0, 200);
 const UWHDPixel BGColor      = UWHDPixel(  0, 0,   0);
 
 static const char *UWHDGitSha = UWHD_GIT_SHA;
+static const char *UWHDGitTag = UWHD_GIT_TAG;
 static const char *UWHDBuildDate = UWHD_BUILD_DATE;
 
 void renderStatus(UWHDCanvas *C) {
@@ -36,14 +37,22 @@ void renderStatus(UWHDCanvas *C) {
   } else
     BigNumber::printf(C, 0, 0, StatusColor1, &BGColor, "*ERR*");
 
-  // Version
-  char ShortSha[8];
+  // Git Version
+  char ShortSha[17];
   memset(ShortSha, 0, sizeof(ShortSha));
   strncpy(ShortSha, UWHDGitSha, sizeof(ShortSha)-1);
   std::transform(std::begin(ShortSha), std::end(ShortSha),
                  std::begin(ShortSha), ::toupper);
-  BigNumber::printf(C, 0, 8, StatusColor2, &BGColor, "UWHDD: %s", ShortSha);
+  BigNumber::printf(C, 0, 8, StatusColor2, &BGColor, "%s", ShortSha);
+
+  // Git Tag
+  char GitTag[17];
+  memset(GitTag, 0, sizeof(GitTag));
+  strncpy(GitTag, UWHDGitSha, sizeof(GitTag)-1);
+  std::transform(std::begin(GitTag), std::end(GitTag),
+                 std::begin(GitTag), ::toupper);
+  BigNumber::printf(C, 0, 16, StatusColor1, &BGColor, "%s", GitTag);
 
   // Build Date
-  BigNumber::printf(C, 0, 16, StatusColor1, &BGColor, "%s", UWHDBuildDate);
+  BigNumber::printf(C, 0, 24, StatusColor1, &BGColor, "%s", UWHDBuildDate);
 }

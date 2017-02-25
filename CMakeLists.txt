@@ -92,6 +92,13 @@ exec_program(
 add_definitions(-DUWHD_GIT_SHA="${UWHD_GIT_SHA}")
 
 exec_program(
+    "git"
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ARGS "tag -l --points-at HEAD"
+    OUTPUT_VARIABLE UWHD_GIT_TAG)
+add_definitions(-DUWHD_GIT_TAG="${UWHD_GIT_TAG}")
+
+exec_program(
     "date"
     ${CMAKE_CURRENT_SOURCE_DIR}
     ARGS "+\"%Y%m%d %R\""
