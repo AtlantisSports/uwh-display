@@ -343,6 +343,9 @@ void GameModelManager::setGameClockRunning(bool B) {
     if (!Model.ClockRunning && B)
       gettimeofday(&Model.PrevStartTime, nullptr);
 
+    if (Model.ClockRunning && !B)
+      Model.GameClockSecs = Model.displayedTimeLeft();
+
     Model.ClockRunning = B;
 
     M = Model;
