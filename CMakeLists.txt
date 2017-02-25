@@ -99,6 +99,13 @@ exec_program(
 add_definitions(-DUWHD_GIT_TAG="${UWHD_GIT_TAG}")
 
 exec_program(
+    "git"
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ARGS "diff-index --quiet HEAD"
+    RETURN_VALUE UWHD_GIT_DIRTY)
+add_definitions(-DUWHD_GIT_DIRTY=${UWHD_GIT_DIRTY})
+
+exec_program(
     "date"
     ${CMAKE_CURRENT_SOURCE_DIR}
     ARGS "+\"%Y%m%d %R\""

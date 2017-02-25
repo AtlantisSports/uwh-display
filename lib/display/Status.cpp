@@ -45,14 +45,18 @@ void renderStatus(UWHDCanvas *C) {
                  std::begin(ShortSha), ::toupper);
   BigNumber::printf(C, 0, 8, StatusColor2, &BGColor, "%s", ShortSha);
 
+#if UWHD_GIT_DIRTY
+  BigNumber::printf(C, 0, 16, StatusColor1, &BGColor, "DIRTY WORK DIR");
+#else
   // Git Tag
   char GitTag[17];
   memset(GitTag, 0, sizeof(GitTag));
-  strncpy(GitTag, UWHDGitSha, sizeof(GitTag)-1);
+  strncpy(GitTag, UWHDGitTag, sizeof(GitTag)-1);
   std::transform(std::begin(GitTag), std::end(GitTag),
                  std::begin(GitTag), ::toupper);
   BigNumber::printf(C, 0, 16, StatusColor1, &BGColor, "%s", GitTag);
+#endif
 
   // Build Date
-  BigNumber::printf(C, 0, 24, StatusColor1, &BGColor, "%s", UWHDBuildDate);
+  BigNumber::printf(C, 0, 24, StatusColor2, &BGColor, "%s", UWHDBuildDate);
 }
