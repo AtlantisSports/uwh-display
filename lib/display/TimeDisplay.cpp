@@ -502,9 +502,14 @@ void renderTimeDisplay(unsigned Version, GameModel M, UWHDCanvas *C) {
   bool Toggle = time(nullptr) % 4;
 
   switch (M.GS) {
-  case GameModel::GS_WallClock:
-    renderWallClock(C);
-    break;
+  case GameModel::GS_WallClock: {
+    static unsigned StartupCount = 0;
+    if (StartupCount < 100) {
+      renderStatus(C);
+      StartupCount++;
+    } else
+      renderWallClock(C);
+  } break;
   case GameModel::GS_HalfTime:
     renderHalfTime(Version, M, Toggle, C);
     break;
