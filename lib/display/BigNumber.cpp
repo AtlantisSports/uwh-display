@@ -408,6 +408,16 @@ _,_,_,_,_,
 _,_,_,_,_,
 };
 
+static const char Ascii5x7_DOT[5*7] = {
+_,_,_,_,_,
+_,_,_,_,_,
+_,_,_,_,_,
+_,_,_,_,_,
+_,_,_,_,_,
+_,_,1,_,_,
+_,_,_,_,_,
+};
+
 static const char Ascii5x7_LCURL[5*7] = {
 _,_,_,1,_,
 _,_,1,_,_,
@@ -1038,7 +1048,7 @@ static const char *Ascii5x7[128] = {
   /* 0x10 */        0,                  0,           0,              0,           0,              0,           0,           0,
                     0,                  0,           0,              0,           0,              0,           0,           0,
   /* 0x20 */ /* ! */0,                  0,    /* # */0,       /* $ */0,    /* % */0,       /* & */0,    /* ' */0, Ascii5x7_LPAREN,
-             Ascii5x7_RPAREN,    /* * */0,    /* + */0,       /* ' */0,    /* , */0, Ascii5x7_HYPHEN,   /* . */0, Ascii5x7_FSLASH,
+             Ascii5x7_RPAREN,    /* * */0,    /* + */0,       /* ' */0,    /* , */0, Ascii5x7_HYPHEN, Ascii5x7_DOT, Ascii5x7_FSLASH,
   /* 0x30 */ Number5x7_0,     Number5x7_1, Number5x7_2,    Number5x7_3, Number5x7_4,    Number5x7_5, Number5x7_6, Number5x7_7,
              Number5x7_8,     Number5x7_9, Ascii5x7_COLON,    /* ; */0,    /* < */0,       /* = */0,    /* > */0,    /* ? */0,
   /* 0x40 */ Ascii5x7_AT,      Ascii5x7_A,  Ascii5x7_B,     Ascii5x7_C,  Ascii5x7_D,     Ascii5x7_E,  Ascii5x7_F,  Ascii5x7_G,
