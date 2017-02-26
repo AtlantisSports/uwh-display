@@ -10,6 +10,7 @@
 #include "uwhd/display/Status.h"
 
 #include "uwhd/canvas/Canvas.h"
+#include "uwhd/config/Status.h"
 #include "uwhd/display/BigNumber.h"
 
 #include <algorithm>

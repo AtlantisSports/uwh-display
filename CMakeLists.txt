@@ -80,37 +80,37 @@ endif()
 # -----------------------------------------------------------------------------
 # Config file
 # -----------------------------------------------------------------------------
-configure_file(${CMAKE_SOURCE_DIR}/include/uwhd/config/Config.h.cmake
-               ${CMAKE_BINARY_DIR}/include/uwhd/config/Config.h)
-include_directories(${CMAKE_BINARY_DIR}/include)
-
 exec_program(
     "git"
     ${CMAKE_CURRENT_SOURCE_DIR}
     ARGS "rev-parse HEAD"
     OUTPUT_VARIABLE UWHD_GIT_SHA)
-add_definitions(-DUWHD_GIT_SHA="${UWHD_GIT_SHA}")
 
 exec_program(
     "git"
     ${CMAKE_CURRENT_SOURCE_DIR}
     ARGS "tag -l --points-at HEAD"
     OUTPUT_VARIABLE UWHD_GIT_TAG)
-add_definitions(-DUWHD_GIT_TAG="${UWHD_GIT_TAG}")
 
 exec_program(
     "git"
     ${CMAKE_CURRENT_SOURCE_DIR}
     ARGS "diff-index --quiet HEAD"
     RETURN_VALUE UWHD_GIT_DIRTY)
-add_definitions(-DUWHD_GIT_DIRTY=${UWHD_GIT_DIRTY})
 
 exec_program(
     "date"
     ${CMAKE_CURRENT_SOURCE_DIR}
     ARGS "+\"%Y%m%d %R\""
     OUTPUT_VARIABLE UWHD_BUILD_DATE)
-add_definitions(-DUWHD_BUILD_DATE="${UWHD_BUILD_DATE}")
+
+configure_file(${CMAKE_SOURCE_DIR}/include/uwhd/config/Status.h.cmake
+               ${CMAKE_BINARY_DIR}/include/uwhd/config/Status.h)
+include_directories(${CMAKE_BINARY_DIR}/include)
+
+configure_file(${CMAKE_SOURCE_DIR}/include/uwhd/config/Config.h.cmake
+               ${CMAKE_BINARY_DIR}/include/uwhd/config/Config.h)
+include_directories(${CMAKE_BINARY_DIR}/include)
 
 # -----------------------------------------------------------------------------
 # Build libraries, and tools
