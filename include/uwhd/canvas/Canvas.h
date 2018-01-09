@@ -5,11 +5,12 @@
 #include <iosfwd>
 
 struct UWHDPixel {
-  char r;
-  char g;
-  char b;
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
 
-  UWHDPixel(char r, char g, char b) : r(r), g(g), b(b) {}
+  UWHDPixel(unsigned char r, unsigned char g, unsigned char b)
+    : r(r), g(g), b(b) {}
 };
 
 #ifndef SWIG
